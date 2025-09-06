@@ -1,0 +1,1 @@
+Docs folder to store documentation about code along with project notes and other research
