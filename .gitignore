@@ -3,3 +3,6 @@
 /.vscode
 /docs/project_notes/
 /.vscode/
+/build
+/CMakeLists.txt
+/src/Enviroment/tests
