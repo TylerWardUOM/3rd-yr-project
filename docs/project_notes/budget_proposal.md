@@ -169,7 +169,7 @@ Other: PSU (24 V/3‑5 A) + wiring + 3D prints/frame (£50–£90)
 | ---- | ---- |
 | Cheapest 2‑DOF haptics; proven parts; very light & backdrivable | Low torque; careful FOC tuning; single‑axis drivers = more wiring |
 
-### Option B — Student Mid‑Range 2‑DOF (SimpleFOC) ~£300–£420
+### Option B — Mid‑Range 2‑DOF (SimpleFOC) ~£300–£420
 
 MCU: Teensy 4.1 (£35) (or STM32 Nucleo £25)
 
@@ -201,7 +201,7 @@ Other: PSU (24 V/5–10 A) + wiring + frame (£80–£120)
 | ---- | ---- |
 | Easiest robust path; dual‑axis on one board; torque/velocity/position modes; great PC/ROS/Isaac Sim workflow | Highest cost of the three; ODrive is oversized for tiny gimbals |
 
-### Option D — 2× VESC (alternative mid/high) ~£420–£560
+### Option D — 2× VESC (alternative high) ~£420–£560
 
 Drivers: 2× VESC 4/6 (2× £120 = £240)
 
