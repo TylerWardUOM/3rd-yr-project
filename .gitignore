@@ -7,3 +7,15 @@
 /CMakeLists.txt
 /src/Enviroment/tests
 /.vs/
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.VC.db
+*.opendb
+
+# Build outputs
+Debug/
+Release/
+x64/
+*.log
