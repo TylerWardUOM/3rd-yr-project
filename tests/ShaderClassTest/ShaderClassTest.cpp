@@ -63,12 +63,19 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float timeValue = glfwGetTime(); // seconds since init
-        float offset = sin(timeValue) * 0.5f; // oscillates between -0.5 and +0.5
-        ourShader.setFloat("offset", offset);
+        double cx, cy;
+        glfwGetCursorPos(win.handle(), &cx, &cy);
+
+        int ww, wh;
+        glfwGetWindowSize(win.handle(), &ww, &wh);   // logical size
+        // If you want pixel-exact (HiDPI), use glfwGetFramebufferSize instead and pass that to shaders as u_resolution.
+
+        float mx = (float)((cx / ww) * 2.0 - 1.0);
+        float my = (float)(1.0 - (cy / wh) * 2.0); // flip Y to OpenGL-style up
 
         // render the triangle
         ourShader.use();
+        ourShader.setVec2("u_mouse", mx, my);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
