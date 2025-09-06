@@ -7,9 +7,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow* window)
 {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
@@ -79,7 +79,7 @@ int main() {
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    
+
     // Create and compile vertex shader
     unsigned int vertexShader; // Vertex Shader ID
     vertexShader = glCreateShader(GL_VERTEX_SHADER); //create vertex shader object and get its ID
@@ -90,8 +90,8 @@ int main() {
     int  success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success); //check if compilation was successful
-    
-    if(!success) //if not successful, print the error log
+
+    if (!success) //if not successful, print the error log
     {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -101,13 +101,13 @@ int main() {
     // Create and compile fragment shader
     unsigned int orange_fragmentShader; // Fragment Shader ID
     orange_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); //create fragment shader object and get its ID
-    
+
     glShaderSource(orange_fragmentShader, 1, &orange_fragmentShaderSource, NULL); //attach the shader source code to the shader object
     glCompileShader(orange_fragmentShader); //compile the shader
 
     glGetShaderiv(orange_fragmentShader, GL_COMPILE_STATUS, &success); //check if compilation was successful
-    
-    if(!success) //if not successful, print the error log
+
+    if (!success) //if not successful, print the error log
     {
         glGetShaderInfoLog(orange_fragmentShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -116,13 +116,13 @@ int main() {
     // Create and compile blue fragment shader
     unsigned int blue_fragmentShader; // Fragment Shader ID
     blue_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); //create fragment shader object and get its ID
-    
+
     glShaderSource(blue_fragmentShader, 1, &blue_fragmentShaderSource, NULL); //attach the shader source code to the shader object
     glCompileShader(blue_fragmentShader); //compile the shader
 
     glGetShaderiv(blue_fragmentShader, GL_COMPILE_STATUS, &success); //check if compilation was successful
-    
-    if(!success) //if not successful, print the error log
+
+    if (!success) //if not successful, print the error log
     {
         glGetShaderInfoLog(blue_fragmentShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -144,21 +144,21 @@ int main() {
 
     //check if linking was successful
     glGetProgramiv(orange_shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
+    if (!success) {
         glGetProgramInfoLog(orange_shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
-    
+
     glDeleteShader(vertexShader); //delete the vertex shader as it's no longer needed
     glDeleteShader(orange_fragmentShader); //delete the fragment shader as it's no longer needed
 
-        //check if linking was successful
+    //check if linking was successful
     glGetProgramiv(blue_shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
+    if (!success) {
         glGetProgramInfoLog(blue_shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
-    
+
     glDeleteShader(vertexShader); //delete the vertex shader as it's no longer needed
     glDeleteShader(blue_fragmentShader); //delete the fragment shader as it's no longer needed
 
@@ -191,7 +191,7 @@ int main() {
     glEnableVertexAttribArray(0); //enable the vertex attribute
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO while a VAO is active as the bound EBO is stored in the VAO; keep the EBO bound.
 
     unsigned int VAO_b, VBO_b; // Element Buffer Object, Vertex Array Object, Vertex Buffer Object
@@ -206,7 +206,7 @@ int main() {
     glEnableVertexAttribArray(0); //enable the vertex attribute
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO while a VAO is active as the bound EBO is stored in the VAO; keep the EBO bound.
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
@@ -217,7 +217,7 @@ int main() {
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
-        
+
         // Input
         processInput(window);
 
