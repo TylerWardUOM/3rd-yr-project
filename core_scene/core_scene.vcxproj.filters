@@ -35,5 +35,8 @@
     <ClCompile Include="..\src\scene\ui\Ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\scene\ui\ViewportController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

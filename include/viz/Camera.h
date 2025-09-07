@@ -36,6 +36,10 @@ struct Camera {
         if (pitchDeg > maxDeg) pitchDeg = maxDeg;
     }
 
-    void addYaw(float dyaw)   { yawDeg   += dyaw * mouseSens;  }
-    void addPitch(float dpitch){ pitchDeg += dpitch * mouseSens; }
+    void addYawPitch(float dYaw, float dPitch) {
+        yawDeg   += dYaw;
+        pitchDeg += dPitch;
+        clampPitch();
+        updateVectors();
+    }
 };

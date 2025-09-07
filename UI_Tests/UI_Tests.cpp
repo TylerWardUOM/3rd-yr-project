@@ -10,6 +10,7 @@
 #include "scene/Body.h"
 #include "scene/ui/Ui.h"
 #include "imgui.h"
+#include "scene/ui/ViewportController.h"
 #include <iostream>
 #include <cstdlib>
 
@@ -38,6 +39,12 @@ int main() {
     UICameraState    camState{};
     UISceneStats     stats{};
     UIPanelConfig    cfg{};
+	UIControllerState controllerState{};
+
+    // Controller setup
+    ViewportController view_controller(win.handle());
+    view_controller.setCamera(&camera);
+    view_controller.setDragTarget(&sphereBody);
 
     UICommands cmds;
     cmds.setBodyPosition = [&](float x, float y, float z) {
@@ -52,6 +59,12 @@ int main() {
         camera.updateVectors();
         };
 
+    cmds.setMoveSpeed = [&](float v) { view_controller.setMoveSpeed(v); };
+    cmds.setMouseSensitivity = [&](float v) { view_controller.setMouseSensitivity(v); };
+    cmds.setScrollZoomSpeed = [&](float v) { view_controller.setScrollZoomSpeed(v); };
+    cmds.setScrollZoomSpeed = [&](float v) { view_controller.setScrollZoomSpeed(v); };
+    cmds.setInvertY = [&](bool  v) { view_controller.setInvertY(v); };
+    cmds.setRmbToLook = [&](bool  v) { view_controller.setRmbToLook(v); };
     // hand off to UI once
     ui.setCommands(cmds);
 
@@ -79,14 +92,16 @@ int main() {
         if (groundBody.primitive()->phi(bodyState.position) < 0.0) {
 			sphereBody.setPosition(groundBody.primitive()->project(bodyState.position));
         }
+		controllerState.moveSpeed = view_controller.moveSpeed();
+		controllerState.mouseSensitivity = view_controller.mouseSensitivity();
+         
 		imgui.begin();
         ui.drawDebugPanel(stats);
 		ui.drawBodyPanel(bodyState, cmds);
+		ui.drawControllerPanel(controllerState, cmds);
 
         // ---- Input gated by ImGui capture
-        if (!imgui.wantCaptureMouse() && !imgui.wantCaptureKeyboard()) {
-            processInput(win.handle(), &camera, (float)dx, (float)dy, &sphereBody);
-        }
+        const bool uiCapturing = imgui.wantCaptureMouse() || imgui.wantCaptureKeyboard();
 
         // ---- 3D render
         glEnable(GL_DEPTH_TEST);
@@ -95,6 +110,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         sphereBody.render(camera);
 		groundBody.render(camera);
+        view_controller.update(/*dt=*/0.f, uiCapturing);
+
 
         // ---- Render UI on top
         imgui.end();
