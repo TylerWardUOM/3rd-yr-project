@@ -32,16 +32,6 @@ std::vector<double> MarchingCubes::sampleSDFGrid(
     return F;
 }
 
-glm::dvec3 MarchingCubes::estimateNormal(
-    const std::function<double(const glm::dvec3&)>& sdf,
-    const glm::dvec3& p, double h)
-{
-    const glm::dvec3 ex{h,0,0}, ey{0,h,0}, ez{0,0,h};
-    double dx = sdf(p + ex) - sdf(p - ex);
-    double dy = sdf(p + ey) - sdf(p - ey);
-    double dz = sdf(p + ez) - sdf(p - ez);
-    return glm::normalize(glm::dvec3{dx,dy,dz});
-}
 
 glm::dvec3 MarchingCubes::lerpEdge(
     const glm::dvec3& p0, const glm::dvec3& p1,
@@ -90,7 +80,8 @@ void MarchingCubes::appendOrientedTri(
 Mesh MarchingCubes::generateMeshFromSDF(
     const std::function<double(const glm::dvec3&)>& sdf,
     const glm::dvec3& minBound, const glm::dvec3& maxBound,
-    int nx, int ny, int nz, double iso) const
+    int nx, int ny, int nz, double iso,
+    const std::function<glm::dvec3(const glm::dvec3&)>& gradFn) const
 {
     Mesh mesh;
     if (nx < 2 || ny < 2 || nz < 2) return mesh;
@@ -102,7 +93,6 @@ Mesh MarchingCubes::generateMeshFromSDF(
         size.y / double(ny-1),
         size.z / double(nz-1)
     };
-    const double h = std::min({ std::abs(step.x), std::abs(step.y), std::abs(step.z) }) * 0.5;
 
     // Sample scalar field
     std::vector<double> F = sampleSDFGrid(sdf, minBound, step, nx, ny, nz);
@@ -152,9 +142,9 @@ Mesh MarchingCubes::generateMeshFromSDF(
                     const glm::dvec3 p1 = E[e1];
                     const glm::dvec3 p2 = E[e2];
 
-                    const glm::dvec3 n0 = estimateNormal(sdf, p0, h);
-                    const glm::dvec3 n1 = estimateNormal(sdf, p1, h);
-                    const glm::dvec3 n2 = estimateNormal(sdf, p2, h);
+                    const glm::dvec3 n0 = gradFn(p0);
+                    const glm::dvec3 n1 = gradFn(p1);
+                    const glm::dvec3 n2 = gradFn(p2);
 
                     appendOrientedTri(mesh, p0,n0, p1,n1, p2,n2);
                 }

@@ -1,4 +1,3 @@
-#include "env/MarchingCubes.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -6,6 +5,8 @@
 #include "viz/Window.h"
 #include <iostream>
 #include <stdlib.h>
+#include "env/primitives//PlaneEnv.h"
+#include "env/Mesher.h"
 
 // --- minimal vec/mat helpers (column-major, OpenGL-style) ---
 struct Vec3f { float x, y, z; };
@@ -51,95 +52,9 @@ static void matLookAt(float out[16], Vec3f eye, Vec3f center, Vec3f up) {
 
 void processInput(GLFWwindow* window);
 
-// Helpers (inline)
-inline Vector3 vabs(const Vector3& a) { return { std::fabs(a.x), std::fabs(a.y), std::fabs(a.z) }; }
-inline Vector3 vmax(const Vector3& a, double s) { return { std::max(a.x, s), std::max(a.y, s), std::max(a.z, s) }; }
-
-// Axis-aligned box SDF with half-extents b (cube: b={1,1,1} for size 2)
-static double boxSDF_AABB(const Vector3& p, const Vector3& b) {
-    Vector3 q = vabs(p) - b;
-    double outside = norm(vmax(q, 0.0));                          // distance outside
-    double inside = std::min(std::max({ q.x, q.y, q.z }), 0.0);    // negative inside
-    return outside + inside;
-}
-
-std::vector<float> buildCubeMesh() {
-    MarchingCubes mc;
-
-    // Choose half-extents (unit cube)
-    const Vector3 half = { 1.0, 1.0, 1.0 };
-
-    // AABB cube SDF (capture 'half')
-    auto cubeSDF = [half](const Vector3& p) -> double {
-        return boxSDF_AABB(p, half);
-        // Or try rounded edges: return roundedBoxSDF_AABB(p, half, /*r=*/0.05);
-        };
-
-    Mesh m = mc.generateMeshFromSDF(
-        cubeSDF,
-        Vector3{ -1.5, -1.5, -1.5 },
-        Vector3{ 1.5,  1.5,  1.5 },
-        /*nx,ny,nz*/ 64, 64, 64,
-        /*iso*/ 0.0
-    );
-
-    std::cout << "Cube mesh: " << m.vertices.size()
-        << " verts, " << m.indices.size() / 3 << " tris\n";
-
-    // Pack to interleaved float array [pos.xyz | nrm.xyz]
-    std::vector<float> vertices;
-    vertices.reserve(m.vertices.size() * 6);
-    for (const auto& v : m.vertices) {
-        vertices.push_back(static_cast<float>(v.pos.x));
-        vertices.push_back(static_cast<float>(v.pos.y));
-        vertices.push_back(static_cast<float>(v.pos.z));
-        // (optional) renormalize normals to be safe
-        double L = std::sqrt(v.nrm.x * v.nrm.x + v.nrm.y * v.nrm.y + v.nrm.z * v.nrm.z);
-        double inv = (L > 1e-12) ? 1.0 / L : 1.0;
-        vertices.push_back(static_cast<float>(v.nrm.x * inv));
-        vertices.push_back(static_cast<float>(v.nrm.y * inv));
-        vertices.push_back(static_cast<float>(v.nrm.z * inv));
-    }
-    return vertices;
-}
-
-
-// Example SDF: unit sphere at origin
-static double sphereSDF(const Vector3& p) {
-    return std::sqrt(p.x * p.x + p.y * p.y + p.z * p.z) - 1.0;
-}
-
-std::vector<float> buildSphereMesh() {
-    MarchingCubes mc;
-
-    Mesh m = mc.generateMeshFromSDF(
-        sphereSDF,
-        Vector3{ -1.5,-1.5,-1.5 },
-        Vector3{ 1.5, 1.5, 1.5 },
-        /*nx,ny,nz*/ 64, 64, 64,
-        /*iso*/ 0.0
-    );
-    std::cout << "Generated mesh with " << m.vertices.size() << " vertices and " << m.indices.size() / 3 << " triangles.\n";
-    std::vector<Vector3> vertexArray;
-    for (const auto& v : m.vertices) {
-        vertexArray.push_back(Vector3{ v.pos.x, v.pos.y, v.pos.z });
-    }
-    std::vector<float> vertices;
-    for (const auto& v : m.vertices) {
-        // Add position (x, y, z)
-        vertices.push_back(v.pos.x);
-        vertices.push_back(v.pos.y);
-        vertices.push_back(v.pos.z);
-
-        vertices.push_back(v.nrm.x); // x
-        vertices.push_back(v.nrm.y); // y
-        vertices.push_back(v.nrm.z); // z
-
-    }
-    return vertices;
-
-
-}
+PlaneEnv plane({1.0,0.0,0.0},0.0);
+Mesh m = Mesher::makeMeshMC(plane, { -1.5,-1.5,-1.5 }, { 1.5,1.5,1.5 }, 64, 64, 64, 0.0);
+auto vertices = Mesher::packPosNrmFloat(m);
 
 int main()
 {
@@ -160,7 +75,7 @@ int main()
     // 2) build MVP (camera at (0,0,3) looking at origin)
     float P[16], V[16], M[16], VP[16], MVP[16];
     matPerspective(P, /*fov*/ 60.0f * 3.1415926f / 180.0f, (float)fbw / (float)fbh, 0.1f, 100.0f);
-    matLookAt(V, /*eye*/{ 1,3,3 }, /*center*/{ 0,0,0 }, /*up*/{ 0,1,0 });
+    matLookAt(V, /*eye*/{ -10,0,0 }, /*center*/{ 0,0,0 }, /*up*/{ 0,1,0 });
     matIdent(M);
     matMul(VP, P, V);
     matMul(MVP, VP, M);
@@ -175,7 +90,6 @@ int main()
     glUniformMatrix4fv(loc, 1, GL_FALSE, MVP); // GL_FALSE: already column-major
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    std::vector<float> vertices = buildCubeMesh();
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
