@@ -14,14 +14,26 @@ Mesh Mesher::makeMeshMC(const EnvInterface& env,
     );
 }
 
-// Pack mesh vertices as float array: [px,py,pz,nx,ny,nz]...
-std::vector<float> Mesher::packPosNrmFloat(const Mesh& m) {
-    std::vector<float> out; out.reserve(m.vertices.size()*6);
+void Mesher::packPosNrmIdx(const Mesh& m,
+                           std::vector<float>& outPN,
+                           std::vector<unsigned>& outIdx) {
+    outPN.clear(); outIdx.clear();
+    outPN.reserve(m.vertices.size() * 6);
+    outIdx.reserve(m.indices.size());
+
     for (const auto& v : m.vertices) {
-        out.push_back((float)v.pos.x); out.push_back((float)v.pos.y); out.push_back((float)v.pos.z);
+        outPN.push_back((float)v.pos.x);
+        outPN.push_back((float)v.pos.y);
+        outPN.push_back((float)v.pos.z);
+
         const double L = std::sqrt(v.nrm.x*v.nrm.x + v.nrm.y*v.nrm.y + v.nrm.z*v.nrm.z);
-        const double inv = (L>1e-12)? 1.0/L : 1.0;
-        out.push_back((float)(v.nrm.x*inv)); out.push_back((float)(v.nrm.y*inv)); out.push_back((float)(v.nrm.z*inv));
+        const double inv = (L > 1e-12) ? 1.0/L : 1.0;
+        outPN.push_back((float)(v.nrm.x * inv));
+        outPN.push_back((float)(v.nrm.y * inv));
+        outPN.push_back((float)(v.nrm.z * inv));
     }
-    return out;
+
+    for (auto idx : m.indices)
+        outIdx.push_back(static_cast<unsigned>(idx));
 }
+
