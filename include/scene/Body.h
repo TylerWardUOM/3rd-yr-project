@@ -24,7 +24,10 @@ public:
     void setModel(const glm::mat4& M);
     void translate(const glm::vec3& dt);
     void rotate(float radians, const glm::vec3& axis);
-    // (You can add scale() later if you want remesh-on-scale policy.)
+    void setRotation(float radians, const glm::vec3& axis);
+    void setPosition(const glm::vec3& pos);
+
+    glm::vec3 getPosition() const;
 
     // ---------- Meshing ----------
     void remeshIfPossible(); // build triangles from SDF & upload to GPU

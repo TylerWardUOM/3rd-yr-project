@@ -43,6 +43,33 @@ void Body::rotate(float radians, const glm::vec3& axis) {
     syncSDF();
 }
 
+void Body::setRotation(float radians, const glm::vec3& axis) {
+    // Extract current translation
+    glm::vec3 translation = glm::vec3(transform_.model[3]);
+
+    // Start from identity and apply translation + new rotation
+    transform_.model = glm::mat4(1.0f);
+    transform_.model = glm::translate(transform_.model, translation);
+    transform_.model = glm::rotate(transform_.model, radians, axis);
+
+    syncSDF();
+}
+
+glm::vec3 Body::getPosition() const {
+    // Extract translation directly from model matrix
+    return glm::vec3(transform_.model[3]);
+}
+
+
+void Body::setPosition(const glm::vec3& pos) {
+    // Keep the current rotation + scale
+    glm::mat4 model = transform_.model;
+    model[3] = glm::vec4(pos, 1.0f);  // overwrite translation column
+
+    transform_.model = model;
+    syncSDF();
+}
+
 // ---------- Meshing ----------
 void Body::remeshIfPossible() {
     if (!mesher_ || !prim_ || !mesh_) return;

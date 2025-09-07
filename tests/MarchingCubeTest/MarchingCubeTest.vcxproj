@@ -24,6 +24,7 @@
     <ProjectGuid>{0acf8a03-706c-4746-8949-c48a470f9daa}</ProjectGuid>
     <RootNamespace>MarchingCubeTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MainTests</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
