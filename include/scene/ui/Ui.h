@@ -16,6 +16,14 @@ struct UICameraState {
     float pitchDeg = -20.f;
 };
 
+struct UIControllerState {
+    float moveSpeed        = 0.02f; // WASD units per tick
+    float mouseSensitivity = 0.10f; // deg per pixel
+    float scrollZoomSpeed  = 1.50f; // fov delta per scroll unit
+    bool  invertY          = false; // for look
+    bool  rmbToLook        = true;  // require RMB to rotate
+};
+
 struct UISceneStats {
     float fps = 0.f;
     int   drawCalls = 0;
@@ -32,6 +40,13 @@ struct UICommands {
     std::function<void(float nearPlane)> setCameraNear = {};
     std::function<void(float farPlane)> setCameraFar = {};
     std::function<void(float yawDeg, float pitchDeg)> setCameraAngles = {};
+
+    //Viewport controller
+    std::function<void(float)> setMoveSpeed        = {};
+    std::function<void(float)> setMouseSensitivity = {};
+    std::function<void(float)> setScrollZoomSpeed  = {};
+    std::function<void(bool)>  setInvertY          = {};
+    std::function<void(bool)>  setRmbToLook        = {};
 };
 
 // --- UI Panel configuration ---
@@ -40,6 +55,7 @@ struct UIPanelConfig {
     bool showBody    = true;
     bool showCamera  = true;
     bool showMetrics = true;
+    bool showController = true;  
     std::string title = "Controls";
 };
 
@@ -49,6 +65,7 @@ public:
     void draw(const UIPanelConfig& cfg,
               const UITransformState& bodyState,
               const UICameraState& camState,
+              const UIControllerState& ctrlState,
               const UISceneStats& stats,
               const UICommands& cmds);
 
@@ -58,6 +75,7 @@ public:
     // Convenience: split panels if you want independent windows later
     void drawBodyPanel(const UITransformState& bodyState, const UICommands& cmds);
     void drawCameraPanel(const UICameraState& camState, const UICommands& cmds);
+    void drawControllerPanel(const UIControllerState& ctrlState, const UICommands& cmds); 
     void drawDebugPanel(const UISceneStats& stats);
 
 private:

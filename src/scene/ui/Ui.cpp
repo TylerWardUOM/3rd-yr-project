@@ -4,6 +4,7 @@
 void UI::draw(const UIPanelConfig& cfg,
                    const UITransformState& bodyState,
                    const UICameraState& camState,
+                   const UIControllerState& ctrlState,
                    const UISceneStats& stats,
                    const UICommands& cmds)
 {
@@ -92,5 +93,36 @@ void UI::drawDebugPanel(const UISceneStats& stats) {
     ImGui::Text("FPS: %.1f", stats.fps);
     ImGui::Text("Draw Calls: %d", stats.drawCalls);
     ImGui::Text("Triangles: %d", stats.triangles);
+    ImGui::End();
+}
+
+void UI::drawControllerPanel(const UIControllerState& s, const UICommands& cmds)
+{
+    if (ImGui::Begin("Controller")) {
+        float move = s.moveSpeed;
+        if (ImGui::SliderFloat("Move speed", &move, 0.001f, 1.0f, "%.3f")) {
+            if (cmds.setMoveSpeed) cmds.setMoveSpeed(move);
+        }
+
+        float sens = s.mouseSensitivity;
+        if (ImGui::SliderFloat("Mouse sensitivity", &sens, 0.01f, 1.0f, "%.3f")) {
+            if (cmds.setMouseSensitivity) cmds.setMouseSensitivity(sens);
+        }
+
+        float zoom = s.scrollZoomSpeed;
+        if (ImGui::SliderFloat("Scroll zoom speed", &zoom, 0.1f, 5.0f, "%.2f")) {
+            if (cmds.setScrollZoomSpeed) cmds.setScrollZoomSpeed(zoom);
+        }
+
+        bool invY = s.invertY;
+        if (ImGui::Checkbox("Invert Y look", &invY)) {
+            if (cmds.setInvertY) cmds.setInvertY(invY);
+        }
+
+        bool rmb = s.rmbToLook;
+        if (ImGui::Checkbox("RMB to look", &rmb)) {
+            if (cmds.setRmbToLook) cmds.setRmbToLook(rmb);
+        }
+    }
     ImGui::End();
 }
