@@ -77,6 +77,14 @@ int main() {
     bool firstMouse = true;
     double lastX = 0.0, lastY = 0.0;
 
+    glfwSetWindowUserPointer(win.handle(), &view_controller);
+    glfwSetScrollCallback(win.handle(),
+        [](GLFWwindow* w, double /*xoff*/, double yoff) {
+            if (auto* vc = static_cast<ViewportController*>(glfwGetWindowUserPointer(w))) {
+                vc->onScroll(yoff);
+            }
+        }
+    );
 
     while (win.isOpen()) {
         double x, y;

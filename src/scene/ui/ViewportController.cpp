@@ -1,7 +1,7 @@
 // ViewportController.cpp
 #include "scene/ui/ViewportController.h"
 #include <glm/gtc/matrix_transform.hpp>
-//#include "viz/Ray.h"
+#include "viz/Ray.h"
 
 void ViewportController::update(float /*dt*/, bool uiCapturing) {
     if (!cam || !win) return;
@@ -17,7 +17,7 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
         if (glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS) cam->eye -= cam->right * moveSpeed_;
         if (glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS) cam->eye += cam->right * moveSpeed_;
         if (glfwGetKey(win, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) cam->eye -= cam->camUp * moveSpeed_;
-        if (glfwGetKey(win, GLFW_KEY_SPACE) == GLFW_PRESS) cam->eye += cam->camUp * moveSpeed_;
+        if (glfwGetKey(win, GLFW_KEY_SPACE) == GLFW_PRESS)      cam->eye += cam->camUp * moveSpeed_;
     }
 
     // Mouse buttons
@@ -33,12 +33,48 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
             glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
-        if (lmb == GLFW_PRESS && !lmbDown) { lmbDown = true; }
-        else if (lmb == GLFW_RELEASE && lmbDown) { lmbDown = false; }
+        // LMB transitions + initialise drag depth on press
+        if (lmb == GLFW_PRESS && !lmbDown) {
+            lmbDown   = true;
+            dragging_ = true;
+
+            // Cursor → NDC
+            double x, y; glfwGetCursorPos(win, &x, &y);
+            float ndcX =  2.f * float(x) / float(width)  - 1.f;
+            float ndcY = -2.f * float(y) / float(height) + 1.f;
+            glm::vec2 ndc(ndcX, ndcY);
+
+            // Ray through cursor
+            glm::mat4 invVP = glm::inverse(cam->proj() * cam->view());
+            Ray ray = rayFromNDC(ndc, invVP);
+
+            // ----- Avoid ternary: pick spherePos explicitly as dvec3
+            glm::dvec3 spherePos;
+            if (dragTarget) {
+                spherePos = dragTarget->getPosition();             // dvec3
+            } else {
+                spherePos = glm::dvec3(cam->eye);                  // vec3 -> dvec3
+            }
+
+            glm::dvec3 rayOrigin = glm::dvec3(ray.o);              // vec3 -> dvec3
+            glm::dvec3 rayDir    = glm::normalize(glm::dvec3(ray.d));
+
+            glm::dvec3 camToSphere = spherePos - rayOrigin;
+            double depth = glm::dot(camToSphere, rayDir);
+
+            // keep positive & store as float
+            dragDepth_ = (depth > 0.05) ? static_cast<float>(depth) : 0.05f;
+
+        } else if (lmb == GLFW_RELEASE && lmbDown) {
+            lmbDown   = false;
+            dragging_ = false;
+        }
+
     } else {
         // If UI is capturing, ensure we’re not in a locked state
         if (rmbDown) { rmbDown = false; glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
-        lmbDown = false;
+        lmbDown   = false;
+        dragging_ = false;
         firstMouse = true;
     }
 
@@ -48,11 +84,32 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
     if (rmbDown) handleMouseLook(x, y);
     if (lmbDown) handleMouseDrag(x, y);
 
-    // Scroll zoom (only when not rotating & not over UI)
-    if (!uiCapturing && !rmbDown) {
-        double sx=0.0, sy=0.0;
-        // You can add a GLFW scroll callback and cache sy instead; here we poll the IO via ImGui if preferred.
-        // For simplicity, omit here. Optionally wire a callback to modify cam->fovDeg.
+// --- Scroll handling ---
+    if (pendingScrollY_ != 0.0) {
+        double sy = pendingScrollY_;
+        pendingScrollY_ = 0.0;
+
+        if (!uiCapturing) {
+            if (rmbDown) {
+                // Zoom camera via FOV (clamped)
+                cam->fovDeg = glm::clamp(cam->fovDeg - float(sy) * scrollZoomSpeed_, 20.f, 90.f);
+            } else if (lmbDown && dragging_) {
+                // Adjust drag depth along current mouse ray
+                // Recompute ray at current cursor pos
+                float ndcX =  2.f * float(x) / float(width)  - 1.f;
+                float ndcY = -2.f * float(y) / float(height) + 1.f;
+                glm::vec2 ndc(ndcX, ndcY);
+                glm::mat4 invVP = glm::inverse(cam->proj() * cam->view());
+                Ray ray = rayFromNDC(ndc, invVP);
+
+                // Scale step with current depth for nicer feel
+                float step = float(sy) * 0.2f * glm::max(0.5f, dragDepth_);
+                dragDepth_ = glm::max(0.05f, dragDepth_ + step);
+
+                glm::vec3 pos = ray.o + dragDepth_ * ray.d;
+                if (dragTarget) dragTarget->setPosition(glm::dvec3(pos));
+            }
+        }
     }
 }
 
@@ -69,7 +126,7 @@ void ViewportController::handleMouseDrag(double x, double y) {
     if (!dragTarget || !cam || width<=0 || height<=0) return;
 
     // Convert window coords -> NDC
-    float ndcX =  2.f * float(x) / float(width) - 1.f;
+    float ndcX =  2.f * float(x) / float(width)  - 1.f;
     float ndcY = -2.f * float(y) / float(height) + 1.f; // flip Y
     glm::vec2 ndc(ndcX, ndcY);
 
@@ -77,14 +134,10 @@ void ViewportController::handleMouseDrag(double x, double y) {
     glm::mat4 VP = cam->proj() * cam->view();
     glm::mat4 invVP = glm::inverse(VP);
 
-    // // Ray
-    // Ray ray = rayFromNDC(ndc, invVP);
+    // Ray through cursor
+    Ray ray = rayFromNDC(ndc, invVP);
 
-    // // Intersect with y=0 plane (ground)
-    // float t; glm::vec3 hit;
-    // if (intersectRayPlaneY0(ray, t, hit)) {
-    //     // Keep sphere at small offset above ground if desired
-    //     glm::dvec3 newPos = glm::dvec3(hit.x, hit.y + 0.1, hit.z);
-    //     dragTarget->setPosition(newPos);
-    // }
+    // Place object at current dragDepth_ along the ray
+    glm::vec3 pos = ray.o + dragDepth_ * ray.d;
+    dragTarget->setPosition(glm::dvec3(pos));
 }
