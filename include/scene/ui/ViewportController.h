@@ -13,6 +13,7 @@ public:
     void setViewport(int wpx, int hpx) { width = wpx; height = hpx; }
 
     void update(float dt, bool uiCapturing);
+    void onScroll(double yoff) { pendingScrollY_ += yoff; } // called by GLFW callback
 
     // setters hooked from UI
     void setMoveSpeed(float v)        { moveSpeed_ = v; }
@@ -33,18 +34,24 @@ private:
     Camera* cam{};
     Body* dragTarget{};
     int width{1}, height{1};
+    double pendingScrollY_{0.0};    // accumulated from GLFW callback
 
     bool rmbDown{false};
     bool lmbDown{false};
     double lastX{0.0}, lastY{0.0};
     bool firstMouse{true};
 
+    bool  dragging_{false};
+    float dragDepth_{1.0f}; // t along ray from near-point
+
+
     void handleMouseLook(double x, double y);
     void handleMouseDrag(double x, double y);
 
-    float moveSpeed_        = 0.02f;
+    float moveSpeed_        = 0.001f;
     float mouseSensitivity_ = 0.10f;
     float scrollZoomSpeed_  = 1.50f;
     bool  invertY_          = false;
     bool  rmbToLook_        = true;
+
 };
