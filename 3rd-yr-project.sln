@@ -11,13 +11,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_viz", "core_viz\core_v
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderClassTest", "tests\ShaderClassTest\ShaderClassTest.vcxproj", "{270FB6C0-1D62-4773-BD84-EAD2384C9E24}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarchingCubeTest", "tests\MarchingCubeTest\MarchingCubeTest.vcxproj", "{0ACF8A03-706C-4746-8949-C48A470F9DAA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainTests", "tests\MarchingCubeTest\MarchingCubeTest.vcxproj", "{0ACF8A03-706C-4746-8949-C48A470F9DAA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDF_tests", "tests\SDF_tests\SDF_tests.vcxproj", "{48AA2330-FB7D-47E5-BC64-C698B1B630B7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_meshing", "core_meshing\core_meshing.vcxproj", "{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_scene", "core_scene\core_scene.vcxproj", "{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UI_Tests", "UI_Tests\UI_Tests.vcxproj", "{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,14 @@ Global
 		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Release|x64.Build.0 = Release|x64
 		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Release|x86.ActiveCfg = Release|Win32
 		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Release|x86.Build.0 = Release|Win32
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Debug|x64.ActiveCfg = Debug|x64
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Debug|x64.Build.0 = Debug|x64
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Debug|x86.ActiveCfg = Debug|Win32
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Debug|x86.Build.0 = Debug|Win32
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Release|x64.ActiveCfg = Release|x64
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Release|x64.Build.0 = Release|x64
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Release|x86.ActiveCfg = Release|Win32
+		{BDBF1DDE-04AE-49AE-B910-67C90B3DEBC4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
