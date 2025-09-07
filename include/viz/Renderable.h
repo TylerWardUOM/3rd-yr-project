@@ -1,9 +1,9 @@
 // Renderable.h
 #pragma once
-#include "MeshGPU.h"
-#include "Transform.h"
-#include "Camera.h"
-#include "MVPUniforms.h"
+#include "viz/MeshGPU.h"
+#include "viz/Transform.h"
+#include "viz/Camera.h"
+#include "viz/MVPUniforms.h"
 #include "viz/Shader.h"
 
 struct Renderable {

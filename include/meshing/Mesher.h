@@ -3,10 +3,11 @@
 #include <vector>                
 #include <glm/glm.hpp>
 #include "env/env_interface.h"
-#include "env/MarchingCubes.h"
+#include "meshing/MarchingCubes.h"
 
 class Mesher {
 public:
+    Mesher() = default;
     static Mesh makeMeshMC(
         const EnvInterface& env,
         const glm::dvec3& minB, const glm::dvec3& maxB,

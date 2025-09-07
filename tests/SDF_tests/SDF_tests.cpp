@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "env/primitives/SphereEnv.h"
-#include "env/Mesher.h"
+#include "meshing/Mesher.h"
 
 int main()
 {

@@ -6,11 +6,11 @@
 #include <iostream>
 #include <stdlib.h>
 #include "env/primitives/SphereEnv.h"
-#include "env/Mesher.h"
-#include "viz/Renderable.h"
+#include "env/primitives/PlaneEnv.h"
+#include "scene/Body.h"
 
 
-void processInput(GLFWwindow* window, Camera* cam, float dx, float dy);
+void processInput(GLFWwindow* window, Camera* cam, float dx, float dy, Body* bod);
 
 
 int main()
@@ -21,22 +21,21 @@ int main()
 
     Camera camera;
     Shader shader("shaders/general.vert", "shaders/basic.frag");
-    SphereEnv sphere({ 0.0,0.0,0.0 }, 1.0);
-    Mesh m = Mesher::makeMeshMC(sphere, { -1.5,-1.5,-1.5 }, { 1.5,1.5,1.5 }, 64, 64, 64, 0.0);
-    std::cout << "Sphere mesh: " << m.vertices.size()
-        << " verts, " << m.indices.size() / 3 << " tris\n";
-    std::vector<float> interleavedPN;
-    std::vector<unsigned> indices;
+	Mesher mesher;
+    //auto prim = std::make_unique<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 1.0);
+	auto prim = std::make_unique<PlaneEnv>(glm::dvec3{ 0.0,1.0,0.0 }, 0.0);
+    auto mesh = std::make_unique<MeshGPU>();
+    Body sphereBody(std::move(prim), std::move(mesh), &mesher, &shader);
+    //std::cout << "Sphere mesh: " << m.vertices.size()
+    //    << " verts, " << m.indices.size() / 3 << " tris\n";
+    //std::vector<float> interleavedPN;
+    //std::vector<unsigned> indices;
 
-    Mesher::packPosNrmIdx(m, interleavedPN, indices);
-    MeshGPU sphereMesh;
-    sphereMesh.upload(interleavedPN, indices);
 
     int fbw = 0, fbh = 0;
     glfwGetFramebufferSize(win.handle(), &fbw, &fbh);
     glViewport(0, 0, fbw, fbh);
 
-    Renderable sphereRend{&sphereMesh, Transform{}, &shader};
 
     static bool firstMouse = true;
     static double lastX = 0.0, lastY = 0.0;
@@ -53,14 +52,14 @@ int main()
         double dy = lastY - y; // invert Y
 
         lastX = x; lastY = y;
-        processInput(win.handle(),&camera, dx, dy);
+        processInput(win.handle(),&camera, dx, dy,&sphereBody);
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE); // debug: disable culling first
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        sphereRend.render(camera);
+        sphereBody.render(camera);
 
         win.swap();
         win.poll();
@@ -71,7 +70,7 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window, Camera* cam,float dx,float dy)
+void processInput(GLFWwindow* window, Camera* cam,float dx,float dy,Body* bod)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
@@ -85,6 +84,8 @@ void processInput(GLFWwindow* window, Camera* cam,float dx,float dy)
         cam->eye -= cam->right * speed;     // strafe left
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cam->eye += cam->right * speed;     // strafe right
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		bod->rotate(0.0005f, { 0.0f,1.0f,0.0f });
 
     cam->addYaw(dx);
     cam->addPitch(dy);

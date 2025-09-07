@@ -21,27 +21,21 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\env\env_interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\env\plane_env.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core_env.cpp">
+    <ClCompile Include="core_meshing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\env\env_interface.cpp">
+    <ClCompile Include="..\src\meshing\MarchingCubesTables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\env\primitives\PlaneEnv.cpp">
+    <ClCompile Include="..\src\meshing\Mesher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\env\primitives\SphereEnv.cpp">
+    <ClCompile Include="..\src\meshing\MarchingCubes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

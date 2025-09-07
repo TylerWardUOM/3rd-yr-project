@@ -1,8 +1,8 @@
-#include "env/MarchingCubes.h"
+#include "meshing/MarchingCubes.h"
 #include <algorithm>
 #include <cmath>
 #include <glm/glm.hpp>              // glm::dvec3, dot/cross/normalize
-#include "env/MarchingCubesTables.h"
+#include "meshing/MarchingCubesTables.h"
 using namespace mc_tables;
 
 // ---------- Private static helpers ----------
