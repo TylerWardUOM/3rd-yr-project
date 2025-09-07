@@ -1,5 +1,5 @@
 #pragma once
-#include "env/env_interface.h"   // still needed for EnvInterface and Matrix4
+#include "env/env_interface.h"  
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
