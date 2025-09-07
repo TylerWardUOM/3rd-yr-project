@@ -33,7 +33,7 @@ glm::dvec3 SphereEnv::project(const glm::dvec3& x_world) const {
 
 
 
-void SphereEnv::update(const glm::mat4& world_from_local) {
+void SphereEnv::update(const glm::mat4& world_from_local)  {
     M = world_from_local;
 
     // Transform center as a point (w=1)

@@ -9,13 +9,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_haptics", "core_haptic
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_viz", "core_viz\core_viz.vcxproj", "{0FCB2D39-9AA7-4307-A218-6F297349388F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app_hello_triangle", "app_hello_triangle\app_hello_triangle.vcxproj", "{FACD17C5-373F-4883-ACDD-14387EC0797F}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderClassTest", "tests\ShaderClassTest\ShaderClassTest.vcxproj", "{270FB6C0-1D62-4773-BD84-EAD2384C9E24}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarchingCubeTest", "tests\MarchingCubeTest\MarchingCubeTest.vcxproj", "{0ACF8A03-706C-4746-8949-C48A470F9DAA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDF_tests", "tests\SDF_tests\SDF_tests.vcxproj", "{48AA2330-FB7D-47E5-BC64-C698B1B630B7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_meshing", "core_meshing\core_meshing.vcxproj", "{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_scene", "core_scene\core_scene.vcxproj", "{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,14 +51,6 @@ Global
 		{0FCB2D39-9AA7-4307-A218-6F297349388F}.Release|x64.Build.0 = Release|x64
 		{0FCB2D39-9AA7-4307-A218-6F297349388F}.Release|x86.ActiveCfg = Release|Win32
 		{0FCB2D39-9AA7-4307-A218-6F297349388F}.Release|x86.Build.0 = Release|Win32
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Debug|x64.ActiveCfg = Debug|x64
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Debug|x64.Build.0 = Debug|x64
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Debug|x86.ActiveCfg = Debug|Win32
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Debug|x86.Build.0 = Debug|Win32
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Release|x64.ActiveCfg = Release|x64
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Release|x64.Build.0 = Release|x64
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Release|x86.ActiveCfg = Release|Win32
-		{FACD17C5-373F-4883-ACDD-14387EC0797F}.Release|x86.Build.0 = Release|Win32
 		{270FB6C0-1D62-4773-BD84-EAD2384C9E24}.Debug|x64.ActiveCfg = Debug|x64
 		{270FB6C0-1D62-4773-BD84-EAD2384C9E24}.Debug|x64.Build.0 = Debug|x64
 		{270FB6C0-1D62-4773-BD84-EAD2384C9E24}.Debug|x86.ActiveCfg = Debug|Win32
@@ -81,6 +75,22 @@ Global
 		{48AA2330-FB7D-47E5-BC64-C698B1B630B7}.Release|x64.Build.0 = Release|x64
 		{48AA2330-FB7D-47E5-BC64-C698B1B630B7}.Release|x86.ActiveCfg = Release|Win32
 		{48AA2330-FB7D-47E5-BC64-C698B1B630B7}.Release|x86.Build.0 = Release|Win32
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Debug|x64.ActiveCfg = Debug|x64
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Debug|x64.Build.0 = Debug|x64
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Debug|x86.ActiveCfg = Debug|Win32
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Debug|x86.Build.0 = Debug|Win32
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Release|x64.ActiveCfg = Release|x64
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Release|x64.Build.0 = Release|x64
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Release|x86.ActiveCfg = Release|Win32
+		{0BE28D96-46B2-4ABD-8ECA-C1228CE264F2}.Release|x86.Build.0 = Release|Win32
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Debug|x64.ActiveCfg = Debug|x64
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Debug|x64.Build.0 = Debug|x64
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Debug|x86.ActiveCfg = Debug|Win32
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Debug|x86.Build.0 = Debug|Win32
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Release|x64.ActiveCfg = Release|x64
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Release|x64.Build.0 = Release|x64
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Release|x86.ActiveCfg = Release|Win32
+		{068E38C7-ED48-4DF3-94A5-BC7BB0CD95B9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

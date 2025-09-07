@@ -20,7 +20,7 @@ public:
     glm::dvec3 project(const glm::dvec3& x_world) const override;
 
     // Update world-space parameters using the given LOCAL->WORLD transform
-    void update(const glm::mat4& world_from_local);
+    void update(const glm::mat4& world_from_local) override; // add override
 
 private:
     // LOCAL-space definition

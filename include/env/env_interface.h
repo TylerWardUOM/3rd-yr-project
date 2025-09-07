@@ -33,6 +33,9 @@ public:
         return x - (f / g2) * g;
     }
 
+        // Update world-space parameters using the given transform
+    virtual void update(const glm::mat4& world_from_local) = 0;
+
     // Convenience bundled query
     virtual QueryResult query(const glm::dvec3& x) const {
         QueryResult r;

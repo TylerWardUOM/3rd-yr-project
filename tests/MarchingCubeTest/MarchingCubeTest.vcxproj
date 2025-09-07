@@ -133,6 +133,12 @@
     <ProjectReference Include="..\..\core_env\core_env.vcxproj">
       <Project>{0900179e-4a0f-4d90-997b-906fb49b58c0}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\core_meshing\core_meshing.vcxproj">
+      <Project>{0be28d96-46b2-4abd-8eca-c1228ce264f2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core_scene\core_scene.vcxproj">
+      <Project>{068e38c7-ed48-4df3-94a5-bc7bb0cd95b9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\core_viz\core_viz.vcxproj">
       <Project>{0fcb2d39-9aa7-4307-a218-6f297349388f}</Project>
     </ProjectReference>
