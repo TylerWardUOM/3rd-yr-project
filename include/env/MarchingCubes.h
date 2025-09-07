@@ -2,15 +2,24 @@
 #include <functional>
 #include <vector>
 
-struct Vertex { glm::dvec3 pos; glm::dvec3 nrm; };
-struct Mesh   { std::vector<Vertex> vertices; std::vector<uint32_t> indices; };
+/// Mesh format used by marching cubes / renderers
+struct Vertex {
+    glm::dvec3 pos;     // position (double precision)
+    glm::dvec3 nrm;     // normal   (double precision)
+};
+
+struct Mesh {
+    std::vector<Vertex>   vertices;
+    std::vector<uint32_t> indices;  // triangle index buffer
+};
 
 class MarchingCubes {
 public:
     Mesh generateMeshFromSDF(
         const std::function<double(const glm::dvec3&)>& sdf,
         const glm::dvec3& minBound, const glm::dvec3& maxBound,
-        int nx, int ny, int nz, double iso = 0.0) const;
+        int nx, int ny, int nz, double iso,
+        const std::function<glm::dvec3(const glm::dvec3&)>& gradFn) const;
 
 private:
     static std::size_t gridIndex(int i,int j,int k,int ny,int nz);
