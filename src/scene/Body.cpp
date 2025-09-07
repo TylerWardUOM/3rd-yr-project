@@ -5,6 +5,7 @@
 #include "meshing/Mesher.h"
 
 
+
 // ---------- Ctor ----------
 Body::Body(std::unique_ptr<EnvInterface> primitive,
            std::unique_ptr<MeshGPU>      mesh,
@@ -76,12 +77,8 @@ void Body::remeshIfPossible() {
 
     // Build CPU mesh from SDF in WORLD space.
     // Adjust bounds/resolution/iso as needed 
-    Mesh m = Mesher::makeMeshMC(
-        *prim_,
-        glm::dvec3(-1.5, -1.5, -1.5), glm::dvec3(1.5, 1.5, 1.5), // bounds
-        64, 64, 64,                                              // resolution
-        0.0                                                      // iso
-    );
+    Mesh m = Mesher::makeMeshMC(*prim_, mc_.minB, mc_.maxB, mc_.nx, mc_.ny, mc_.nz, mc_.iso);
+
 
     std::vector<float>    interleavedPN;
     std::vector<unsigned> indices;

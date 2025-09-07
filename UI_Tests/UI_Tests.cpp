@@ -27,6 +27,8 @@ int main() {
     auto prim_ground = std::make_unique<PlaneEnv>(glm::dvec3{ 0.0,1.0,0.0 }, 0.0);
     auto mesh_ground = std::make_unique<MeshGPU>();
     Body groundBody(std::move(prim_ground), std::move(mesh_ground), &mesher, &shader);
+	groundBody.setMCBounds({ -10.0,-0.1,-10.0 }, { 10.0,0.1,10.0 });
+	groundBody.remeshIfPossible();
 	//Define test sphere
     auto prim_sphere = std::make_unique<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1);
     auto mesh_sphere = std::make_unique<MeshGPU>();
