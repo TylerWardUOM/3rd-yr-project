@@ -40,8 +40,19 @@ void Window::initGLAD() {
 }
 
 void Window::setCallbacks() {
-    glfwSetFramebufferSizeCallback(win_, framebufferSizeCB);
-    // add more callbacks here (key, mouse, etc.) as needed
+    // framebuffer size
+    glfwSetFramebufferSizeCallback(win_, [](GLFWwindow* w, int W, int H){
+        if (auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w))) {
+            self->onFramebufferSize(W, H);
+        }
+    });
+
+    // scroll accumulates into Window (NOT into ViewportController!)
+    glfwSetScrollCallback(win_, [](GLFWwindow* w, double /*xoff*/, double yoff){
+        if (auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w))) {
+            self->scrollY_ += yoff;
+        }
+    });
 }
 
 void Window::framebufferSizeCB(GLFWwindow* w, int width, int height) {

@@ -7,7 +7,9 @@
 class ViewportController {
 public:
     explicit ViewportController(GLFWwindow* w) : win(w) {}
-
+    ViewportController(const ViewportController&) = delete;            // <-- add
+    ViewportController& operator=(const ViewportController&) = delete; // <-- add
+    
     void setCamera(Camera* c) { cam = c; }
     void setDragTarget(Body* b) { dragTarget = b; } // the sphere
     void setViewport(int wpx, int hpx) { width = wpx; height = hpx; }

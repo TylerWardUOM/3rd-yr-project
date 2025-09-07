@@ -71,32 +71,13 @@ int main() {
     ui.setCommands(cmds);
 
 
-    // viewport setup ...
-    int fbw = 0, fbh = 0; glfwGetFramebufferSize(win.handle(), &fbw, &fbh);
-    glViewport(0, 0, fbw, fbh);
 
-    // mouse state ...
-    bool firstMouse = true;
-    double lastX = 0.0, lastY = 0.0;
+    std::printf("camera@%p\n", (void*)&camera);
 
-    glfwSetWindowUserPointer(win.handle(), &view_controller);
-    glfwSetScrollCallback(win.handle(),
-        [](GLFWwindow* w, double /*xoff*/, double yoff) {
-            if (auto* vc = static_cast<ViewportController*>(glfwGetWindowUserPointer(w))) {
-                vc->onScroll(yoff);
-            }
-        }
-    );
 
     while (win.isOpen()) {
-        double x, y;
-        glfwGetCursorPos(win.handle(), &x, &y);
-
-        if (firstMouse) { firstMouse = false; lastX = x; lastY = y; }
-        double dx = x - lastX;
-        double dy = lastY - y; // invert Y
-        lastX = x; lastY = y;
-
+        double sy = win.popScrollY();
+        if (sy != 0.0) view_controller.onScroll(sy);
         stats.fps = ImGui::GetIO().Framerate;
 		bodyState.position = sphereBody.getPosition();
         if (groundBody.primitive()->phi(bodyState.position) < 0.0) {
@@ -112,6 +93,7 @@ int main() {
 
         // ---- Input gated by ImGui capture
         const bool uiCapturing = imgui.wantCaptureMouse() || imgui.wantCaptureKeyboard();
+        view_controller.update(/*dt=*/0.f, uiCapturing);
 
         // ---- 3D render
         glEnable(GL_DEPTH_TEST);
@@ -120,7 +102,6 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         sphereBody.render(camera);
 		groundBody.render(camera);
-        view_controller.update(/*dt=*/0.f, uiCapturing);
 
 
         // ---- Render UI on top
