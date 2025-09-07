@@ -1,8 +1,9 @@
 #version 330 core
+in vec3 vNrm;
 out vec4 FragColor;
 
-
-void main()
-{
-    FragColor = vec4(0.0, 0.5, 1.0, 1.0); // Light blue color
+void main() {
+    // simple normal-based color so you can "see" the surface curvature
+    vec3 n = normalize(vNrm) * 0.5 + 0.5;
+    FragColor = vec4(n, 1.0);
 }
