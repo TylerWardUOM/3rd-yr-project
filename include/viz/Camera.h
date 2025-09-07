@@ -16,6 +16,8 @@ struct Camera {
     glm::vec3 right{1.f,0.f,0.f};
     glm::vec3 camUp{0.f,1.f,0.f};
 
+    float mouseSens = 0.1f;     
+
     glm::mat4 view()  const { return glm::lookAt(eye, eye+front, camUp); }
     glm::mat4 proj()  const { return glm::perspective(glm::radians(fovDeg), aspect, znear, zfar); }
 
@@ -28,4 +30,12 @@ struct Camera {
         right = glm::normalize(glm::cross(front, glm::vec3(0.f,1.f,0.f)));
         camUp = glm::normalize(glm::cross(right, front));
     }
+
+    void clampPitch(float minDeg=-89.f, float maxDeg=+89.f) {
+        if (pitchDeg < minDeg) pitchDeg = minDeg;
+        if (pitchDeg > maxDeg) pitchDeg = maxDeg;
+    }
+
+    void addYaw(float dyaw)   { yawDeg   += dyaw * mouseSens;  }
+    void addPitch(float dpitch){ pitchDeg += dpitch * mouseSens; }
 };
