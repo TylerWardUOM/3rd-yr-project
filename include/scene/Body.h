@@ -6,9 +6,18 @@
 // Env / meshing forward decls (minimize header coupling)
 class EnvInterface;
 
+
 // Viz & scene types used *by value* need full headers
 #include "meshing/Mesher.h"
 #include "viz/Renderable.h"
+
+
+struct MCParams {
+    glm::dvec3 minB{-1.5,-1.5,-1.5};
+    glm::dvec3 maxB{ 1.5, 1.5, 1.5};
+    int nx{64}, ny{64}, nz{64};
+    double iso{0.0};
+};
 
 class Body {
 public:
@@ -27,6 +36,9 @@ public:
     void setRotation(float radians, const glm::vec3& axis);
     void setPosition(const glm::vec3& pos);
 
+    void setMCBounds(const glm::dvec3& minB, const glm::dvec3& maxB) { mc_.minB=minB; mc_.maxB=maxB; }
+    void setMCRes(int nx,int ny,int nz){ mc_.nx=nx; mc_.ny=ny; mc_.nz=nz; }
+
     glm::vec3 getPosition() const;
 
     // ---------- Meshing ----------
@@ -43,7 +55,7 @@ public:
 private:
     void syncSDF(); // keep SDF’s cached WORLD params in sync with model matrix
 
-private:
+    MCParams mc_;
     // World state
     Transform transform_{};
 
