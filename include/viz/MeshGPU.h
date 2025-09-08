@@ -2,10 +2,11 @@
 #include <glad/glad.h>
 #include <vector>
 
+// Simple GPU-resident mesh (VBO, EBO, VAO)
 class MeshGPU {
 public:
-    MeshGPU();
-    ~MeshGPU();
+    MeshGPU(); // constructor
+    ~MeshGPU(); //destructor
 
     // no copy
     MeshGPU(const MeshGPU&) = delete;
@@ -19,6 +20,7 @@ public:
     void upload(const std::vector<float>& interleavedPosNorm,
                 const std::vector<unsigned>& indices);
 
+    // Draw the mesh (assumes shader is bound)
     void draw() const;
 
 private:
