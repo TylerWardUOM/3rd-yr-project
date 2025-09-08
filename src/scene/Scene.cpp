@@ -7,6 +7,7 @@ Scene::Scene(Window& win, World& world):
     world_(world),
     cam_(),
     shader_("shaders/general.vert","shaders/basic.frag"),
+    redShader_("shaders/general.vert","shaders/red.frag"),
     mesher_(),
     imgui_(win),
     ui_(),
@@ -140,18 +141,19 @@ void Scene::render() {
 
 void Scene::init_Bodies(){
     body_ids_.push_back(addBody(world_,
-            std::make_shared<PlaneEnv>(glm::dvec3{ 0.0,1.0,0.0 }, 0.0),
+            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 2.0),
             &shader_,
-            MCParams{ .minB={-10.0,-0.1,-10.0}, .maxB={10.0,0.1,10.0}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
+            MCParams{ .minB={-10.0,-10.0,-10.0}, .maxB={10.0,10.0,10.0}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
     ));
     body_ids_.push_back(addBody(world_,
             std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
             &shader_,
             MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
     ));
+
         body_ids_.push_back(addBody(world_,
             std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-            &shader_,
+            &redShader_,
             MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
     ));
     //sphere_.setPosition({0.0f, 0.5f, 0.0f});
