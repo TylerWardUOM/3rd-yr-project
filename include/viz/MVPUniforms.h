@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "viz/Shader.h"
 
+// Model-View-Projection + Normal matrix uniforms
 struct MVPUniforms {
     glm::mat4 model{1.0f};
     glm::mat4 view{1.0f};

@@ -1,4 +1,5 @@
 #pragma once
+#include <imgui.h>
 struct GLFWwindow;
 
 class ImGuiLayer {

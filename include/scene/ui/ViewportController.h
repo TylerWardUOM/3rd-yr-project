@@ -15,7 +15,8 @@ public:
     void setViewport(int wpx, int hpx) { width = wpx; height = hpx; }
 
     void update(float dt, bool uiCapturing);
-    void onScroll(double yoff) { pendingScrollY_ += yoff; } // called by GLFW callback
+
+    void onScroll(double yoff) { pendingScrollY_ += yoff; } // accumulate scroll
 
     // setters hooked from UI
     void setMoveSpeed(float v)        { moveSpeed_ = v; }
