@@ -2,7 +2,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "viz/Camera.h"
 #include "viz/ray.h"
-struct GLFWwindow;
 
 
 // Convert window pixel coords to NDC (-1 to +1)
@@ -17,7 +16,7 @@ inline glm::mat4 invVP(const Camera& c) { return glm::inverse(c.proj()*c.view())
 
 
 // Create a world-space ray from window pixel coords + camera
-inline Ray makeRayAtCursor(GLFWwindow* win, double x, double y, int w, int h, const Camera& c) {
+inline Ray makeRayAtCursor(double x, double y, int w, int h, const Camera& c) {
     glm::vec2 ndc = toNDC(x, y, w, h);
     glm::mat4 invVPMatrix = invVP(c);
     return rayFromNDC(ndc, invVPMatrix);
