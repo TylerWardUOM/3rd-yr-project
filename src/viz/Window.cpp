@@ -4,6 +4,35 @@
 #include <stdexcept>
 #include <iostream>
 
+// -- key input conversion --
+static int toGLFW(Key k) {
+    switch (k) {
+        case Key::W:      return GLFW_KEY_W;
+        case Key::A:      return GLFW_KEY_A;
+        case Key::S:      return GLFW_KEY_S;
+        case Key::D:      return GLFW_KEY_D;
+        case Key::Space:  return GLFW_KEY_SPACE;
+        case Key::LShift: return GLFW_KEY_LEFT_SHIFT;
+        case Key::Escape: return GLFW_KEY_ESCAPE;
+        case Key::Left:   return GLFW_KEY_LEFT;
+        case Key::Right:  return GLFW_KEY_RIGHT;
+        case Key::Up:     return GLFW_KEY_UP;
+        case Key::Down:   return GLFW_KEY_DOWN;
+        default:          return GLFW_KEY_UNKNOWN;
+    }
+}
+
+// -- mouse button conversion --
+static int toGLFW(MouseButton b) {
+    switch (b) {
+        case MouseButton::Left:   return GLFW_MOUSE_BUTTON_LEFT;
+        case MouseButton::Right:  return GLFW_MOUSE_BUTTON_RIGHT;
+        case MouseButton::Middle: return GLFW_MOUSE_BUTTON_MIDDLE;
+        default:                  return -1;
+    }
+}
+
+
 Window::Window(const Config& cfg) {
     initGLFW(cfg);
     createWindow(cfg);
@@ -55,15 +84,16 @@ void Window::setCallbacks() {
     });
 }
 
-void Window::framebufferSizeCB(GLFWwindow* w, int width, int height) {
-    auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
-    if (self) self->onFramebufferSize(width, height);
-}
-
 void Window::onFramebufferSize(int width, int height) {
-    width_ = width; height_ = height;
+    //update stored size
+    width_ = width; 
+    height_ = height;
+    // update OpenGL viewport
     glViewport(0, 0, width_, height_);
 }
+
+// get framebuffer size
+void Window::getFramebufferSize(int& w, int& h) const { glfwGetFramebufferSize(win_, &w, &h); }
 
 bool Window::isOpen() const { return !glfwWindowShouldClose(win_); }
 void Window::poll() { glfwPollEvents(); }
@@ -76,4 +106,15 @@ void Window::clear(bool color, bool depth) {
     if (color) mask |= GL_COLOR_BUFFER_BIT;
     if (depth) mask |= GL_DEPTH_BUFFER_BIT;
     glClear(mask);
+}
+
+// -- input wrappers --
+void Window::getCursorPos(double& x, double& y) const { glfwGetCursorPos(win_, &x, &y); }
+bool Window::isKeyDown(Key k) const { return glfwGetKey(win_, toGLFW(k)) == GLFW_PRESS; }
+bool Window::isMouseButtonDown(MouseButton b) const { return glfwGetMouseButton(win_, toGLFW(b)) == GLFW_PRESS; }
+
+void Window::setCursorMode(CursorMode m) {
+    int mode = (m==CursorMode::Disabled)?GLFW_CURSOR_DISABLED:
+               (m==CursorMode::Hidden)?GLFW_CURSOR_HIDDEN:GLFW_CURSOR_NORMAL;
+    glfwSetInputMode(win_, GLFW_CURSOR, mode);
 }

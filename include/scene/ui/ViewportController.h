@@ -1,12 +1,13 @@
 // ViewportController.h
 #pragma once
 
+#include "viz/Window.h"
 #include "viz/Camera.h"
 #include "scene/Body.h"
 
 class ViewportController {
 public:
-    explicit ViewportController(GLFWwindow* w) : win(w) {}
+    explicit ViewportController(Window& w) : win(&w) {}
     ViewportController(const ViewportController&) = delete;            // <-- add
     ViewportController& operator=(const ViewportController&) = delete; // <-- add
     
@@ -33,7 +34,7 @@ public:
     bool  rmbToLook()        const { return rmbToLook_; }
 
 private:
-    GLFWwindow* win{};
+    Window* win;
     Camera* cam{};
     Body* dragTarget{};
     int width{1}, height{1};
