@@ -41,6 +41,7 @@ private:
     Window&          win_;
     Camera           cam_;
     Shader           shader_;
+    Shader           redShader_;
     Mesher           mesher_;
     ImGuiLayer       imgui_;
     UI               ui_;
