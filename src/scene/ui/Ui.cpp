@@ -35,6 +35,10 @@ void UI::draw(const UIPanelConfig& cfg,
         if (ImGui::SliderFloat("FOV (deg)", &fov, 10.f, 120.f) && cmds_.setCameraFov) {
             cmds_.setCameraFov(fov);
         }
+            float p[3] = { camState.position.x, camState.position.y, camState.position.z };
+        if (ImGui::DragFloat3("Position", p, 0.01f) && cmds_.setCameraPosition) {
+            cmds_.setCameraPosition(p[0], p[1], p[2]);
+        }
 
         float nearP = camState.znear;
         float farP  = camState.zfar;
@@ -76,6 +80,10 @@ void UI::drawCameraPanel(const UICameraState& camState) {
     float yaw = camState.yawDeg, pitch = camState.pitchDeg;
     if (ImGui::DragFloat("Yaw (deg)", &yaw, 0.2f) | ImGui::DragFloat("Pitch (deg)", &pitch, 0.2f)) {
         if (cmds_.setCameraAngles) cmds_.setCameraAngles(yaw, pitch);
+    }
+    float p[3] = { camState.position.x, camState.position.y, camState.position.z };
+    if (ImGui::DragFloat3("Position", p, 0.01f) && cmds_.setCameraPosition) {
+        cmds_.setCameraPosition(p[0], p[1], p[2]);
     }
     float nearP = camState.znear, farP = camState.zfar;
     bool changed = false;

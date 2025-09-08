@@ -10,6 +10,7 @@ struct UITransformState {
 
 struct UICameraState {
     float fovDeg   = 60.f;
+    glm::vec3 position{0.f, 0.f, 5.f};
     float znear    = 0.1f;
     float zfar     = 100.f;
     float yawDeg   = -135.f;
@@ -40,6 +41,7 @@ struct UICommands {
     std::function<void(float nearPlane)> setCameraNear = {};
     std::function<void(float farPlane)> setCameraFar = {};
     std::function<void(float yawDeg, float pitchDeg)> setCameraAngles = {};
+    std::function<void(float x, float y, float z)> setCameraPosition = {};
 
     //Viewport controller
     std::function<void(float)> setMoveSpeed        = {};

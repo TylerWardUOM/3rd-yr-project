@@ -8,20 +8,27 @@
 
 #include "meshing/Mesher.h"
 
-#include "scene/Body.h"
 #include "scene/ui/Ui.h"
 #include "scene/ui/ViewportController.h"
 
 #include "env/primitives/SphereEnv.h"
 #include "env/primitives/PlaneEnv.h"
 
+#include "world/world.h"
+
 class Scene {
 public:
-    explicit Scene(Window& win);
+    explicit Scene(Window& win, World& world);
     ~Scene();
     void run();
+
+    //temp mouse position outputs for haptic loop
+    void getMousePos(double& x, double& y) const { win_.getCursorPos(x,y); }
+
     // Load scene from file (future additon?)
     bool loadFromFile(const std::string& filepath);
+
+    World& world_; // shared state with haptics/physics thread
 
 private:
     // --- core loop functions ---
@@ -40,9 +47,7 @@ private:
     ViewportController vpCtrl_;
 
     // --- scene objects ---
-    Body ground_;
-    Body sphere_;
-
+    std::vector<BodyId> body_ids_;
     // --- UI state snapshots ---
     UITransformState bodyState_{};
     UICameraState    camState_{};
