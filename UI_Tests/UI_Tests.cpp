@@ -35,8 +35,8 @@ int main() {
     auto mesh_sphere = std::make_unique<MeshGPU>();
     Body sphereBody(std::move(prim_sphere), std::move(mesh_sphere), &mesher, &shader);
 
-	ImGuiLayer imgui; 
-    imgui.init(win.handle(), "#version 330"); // ImGui layer
+	ImGuiLayer imgui(win); 
+    imgui.init(); // ImGui layer
     UI ui;
 
     UITransformState bodyState{};
@@ -122,23 +122,4 @@ int main() {
 
     imgui.shutdown();
     return 0;
-}
-
-// Minimal input (same as your earlier version)
-void processInput(GLFWwindow* window, Camera* cam, float dx, float dy, Body* bod)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-
-    float speed = 0.01f;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cam->eye += cam->front * speed;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cam->eye -= cam->front * speed;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cam->eye -= cam->right * speed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cam->eye += cam->right * speed;
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) bod->rotate(0.01f, { 0.0f,1.0f,0.0f });
-
-    //cam->addYaw(dx);
-    //cam->addPitch(dy);
-    cam->clampPitch();
-    cam->updateVectors();
 }

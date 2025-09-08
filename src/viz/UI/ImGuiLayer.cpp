@@ -7,12 +7,12 @@
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 
-void ImGuiLayer::init(GLFWwindow* w, const char* glslVersion) {
-    window_ = w;
+ImGuiLayer::ImGuiLayer(Window& w, const char* glslVersion) {
+    win = &w;
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window_, true);
+    ImGui_ImplGlfw_InitForOpenGL(win->handle(), true);
     ImGui_ImplOpenGL3_Init(glslVersion);
     inited_ = true;
 }

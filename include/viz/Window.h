@@ -58,6 +58,8 @@ public:
     bool isMouseButtonDown(MouseButton b) const;    // Detect if a mouse button is pressed
     // updates positions passed by reference
     void getCursorPos(double& x, double& y) const;
+    //updates time passed by reference
+    void getTime(double& t) const;
 
 private:
     GLFWwindow* win_ = nullptr; // GLFW window handle

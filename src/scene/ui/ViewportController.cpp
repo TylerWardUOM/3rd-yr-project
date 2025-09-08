@@ -6,12 +6,12 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
     if (!cam || !win) return;
 
     // Update aspect each frame (in case of resize)
-    int fbw=0, fbh=0; 
-    win->getFramebufferSize(fbw, fbh);
-    if (fbw>0 && fbh>0) {
-        cam->aspect = float(fbw)/float(fbh); 
-        setViewport(fbw, fbh); 
-    }
+    // int fbw=0, fbh=0; 
+    // win->getFramebufferSize(fbw, fbh);
+    // if (fbw>0 && fbh>0) {
+    //     cam->aspect = float(fbw)/float(fbh); 
+    //     setViewport(fbw, fbh); 
+    // }
 
     //  -- Keyboard (WASD) — always on if not captured
     if (!uiCapturing) {
@@ -19,8 +19,8 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
         if (win->isKeyDown(Key::S)) cam->eye -= cam->front * moveSpeed_;
         if (win->isKeyDown(Key::A)) cam->eye -= cam->right * moveSpeed_;
         if (win->isKeyDown(Key::D)) cam->eye += cam->right * moveSpeed_;
-        if (win->isKeyDown(Key::LShift)) cam->eye -= cam->camUp * moveSpeed_;
-        if (win->isKeyDown(Key::Space)) cam->eye += cam->camUp * moveSpeed_;
+        if (win->isKeyDown(Key::LShift)) cam->eye -= cam->up * moveSpeed_;
+        if (win->isKeyDown(Key::Space)) cam->eye += cam->up * moveSpeed_;
     }
 
     // -- Mouse handling --

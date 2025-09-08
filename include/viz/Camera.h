@@ -4,11 +4,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 struct Camera {
-    glm::vec3 eye{1,3,3};
+    glm::vec3 eye{0,0,0};
     
     // Euler angles (degrees)
-    float yawDeg  = -135.f; // pointing roughly toward origin from (1,3,3)
-    float pitchDeg= -20.f;
+    float yawDeg  = 0.f; 
+    float pitchDeg= 0.f;
     
     //lens
     float fovDeg{60.f}, aspect{1.f}, znear{0.1f}, zfar{100.f};
@@ -16,10 +16,10 @@ struct Camera {
     // Derived vectors (updated from yaw/pitch)
     glm::vec3 front{0.f,0.f,-1.f};
     glm::vec3 right{1.f,0.f,0.f};
-    glm::vec3 camUp{0.f,1.f,0.f};
+    glm::vec3 up{0.f,1.f,0.f};
 
     // API to get view/proj matrices
-    glm::mat4 view()  const { return glm::lookAt(eye, eye+front, camUp); }
+    glm::mat4 view()  const { return glm::lookAt(eye, eye+front, up); }
     glm::mat4 proj()  const { return glm::perspective(glm::radians(fovDeg), aspect, znear, zfar); }
 
 
@@ -31,7 +31,7 @@ struct Camera {
         const float sp = sin(glm::radians(pitchDeg));
         front = glm::normalize(glm::vec3(cy*cp, sp, sy*cp));  
         right = glm::normalize(glm::cross(front, glm::vec3(0.f,1.f,0.f)));
-        camUp = glm::normalize(glm::cross(right, front));
+        up = glm::normalize(glm::cross(right, front));
     }
 
     // Clamp pitch to avoid flipping

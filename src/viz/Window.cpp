@@ -94,6 +94,8 @@ void Window::onFramebufferSize(int width, int height) {
 
 // get framebuffer size
 void Window::getFramebufferSize(int& w, int& h) const { glfwGetFramebufferSize(win_, &w, &h); }
+// get time
+void Window::getTime(double& t) const { t = glfwGetTime(); }
 
 bool Window::isOpen() const { return !glfwWindowShouldClose(win_); }
 void Window::poll() { glfwPollEvents(); }
