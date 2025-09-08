@@ -73,9 +73,9 @@ public:
     void setCommands(const UICommands& cmds) { cmds_ = cmds; }
 
     // Convenience: split panels if you want independent windows later
-    void drawBodyPanel(const UITransformState& bodyState, const UICommands& cmds);
-    void drawCameraPanel(const UICameraState& camState, const UICommands& cmds);
-    void drawControllerPanel(const UIControllerState& ctrlState, const UICommands& cmds); 
+    void drawBodyPanel(const UITransformState& bodyStates);
+    void drawCameraPanel(const UICameraState& camState);
+    void drawControllerPanel(const UIControllerState& ctrlState); 
     void drawDebugPanel(const UISceneStats& stats);
 
 private:
