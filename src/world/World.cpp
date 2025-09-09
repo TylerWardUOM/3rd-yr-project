@@ -37,7 +37,15 @@ bool World::setPose(EntityId id, const Pose& T_ws) {
     return false; // no matching entity
 }
 
-
+bool World::setColour(EntityId id, const Colour& colour) {
+    for (auto& s : surfaces_) {
+        if (s.id == id) {
+            s.colour = colour;
+            return true;
+        }
+    }
+    return false; // no matching entity
+}
 
 void World::publishSnapshot(double t_sec) {
     WorldSnapshot snap{};
