@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "viz/Camera.h"
 #include "viz/ray.h"
-
+#include <iostream>
 
 // Convert window pixel coords to NDC (-1 to +1)
 inline glm::vec2 toNDC(double x, double y, int w, int h) {

@@ -3,16 +3,16 @@
 
 #include "viz/Window.h"
 #include "viz/Camera.h"
-#include "scene/Body.h"
+#include "world/world.h"
 
 class ViewportController {
 public:
-    explicit ViewportController(Window& w) : win(&w) {}
-    ViewportController(const ViewportController&) = delete;            // <-- add
-    ViewportController& operator=(const ViewportController&) = delete; // <-- add
+    explicit ViewportController(Window& w, World& world) : win(&w), world_(world) {}
+    ViewportController(const ViewportController&) = delete;            
+    ViewportController& operator=(const ViewportController&) = delete; 
     
     void setCamera(Camera* c) { cam = c; }
-    void setDragTarget(Body* b) { dragTarget = b; } // the sphere
+    void setDragTarget(BodyId b) { dragTarget = b; } // the sphere
     void setViewport(int wpx, int hpx) { width = wpx; height = hpx; }
 
     void update(float dt, bool uiCapturing);
@@ -35,8 +35,9 @@ public:
 
 private:
     Window* win;
+    World& world_;
     Camera* cam{};
-    Body* dragTarget{};
+    BodyId dragTarget{};
     int width{1}, height{1};
     double pendingScrollY_{0.0};    // accumulated from GLFW callback
 
@@ -44,6 +45,7 @@ private:
     bool lmbDown{false};
     double lastX{0.0}, lastY{0.0};
     bool firstMouse{true};
+
 
     bool  dragging_{false};
     float dragDepth_{1.0f}; // t along ray from near-point

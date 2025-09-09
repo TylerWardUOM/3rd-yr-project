@@ -1,24 +1,28 @@
 #include "scene/Scene.h"
+#include <vector>
+#include <iostream>
 
-Scene::Scene(Window& win):
+Scene::Scene(Window& win, World& world):
     win_(win),
+    world_(world),
     cam_(),
     shader_("shaders/general.vert","shaders/basic.frag"),
+    redShader_("shaders/general.vert","shaders/red.frag"),
     mesher_(),
     imgui_(win),
     ui_(),
-    vpCtrl_(win),
-    ground_(std::make_unique<PlaneEnv>(glm::dvec3{ 0.0,1.0,0.0 }, 0.0),
-            std::make_unique<MeshGPU>(),
-            &mesher_,
-            &shader_
-    ),
-    sphere_(std::make_unique<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-            std::make_unique<MeshGPU>(),
-            &mesher_,
-            &shader_
-    )
+    vpCtrl_(win, world)
 {
+    // ground_(std::make_unique<PlaneEnv>(glm::dvec3{ 0.0,1.0,0.0 }, 0.0),
+    //         std::make_unique<MeshGPU>(),
+    //         &mesher_,
+    //         &shader_
+    // ),
+    // sphere_(std::make_unique<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
+    //         std::make_unique<MeshGPU>(),
+    //         &mesher_,
+    //         &shader_
+    // )
     init_Bodies();
     init_Ui();
 
@@ -31,7 +35,7 @@ Scene::Scene(Window& win):
 
     // Viewport controller
     vpCtrl_.setCamera(&cam_);
-    vpCtrl_.setDragTarget(&sphere_);
+    vpCtrl_.setDragTarget(1);
 
     // Initial viewport size
     int fbw=0, fbh=0; 
@@ -90,13 +94,21 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     imgui_.getFps(stats_.fps);
     ctrlState_.moveSpeed        = vpCtrl_.moveSpeed();
     ctrlState_.mouseSensitivity = vpCtrl_.mouseSensitivity();
-    bodyState_.position         = sphere_.getPosition();
+    camState_.pitchDeg  = cam_.pitchDeg;
+    camState_.position  = cam_.eye;
+    camState_.yawDeg  = cam_.yawDeg;
+    Pose bodyPose;
+    readPose(world_,1,bodyPose);
 
-    // Constraint: keep sphere above plane temp logic will most likely move to haptic loop
-    glm::dvec3 p = sphere_.getPosition();
-    if (ground_.primitive()->phi(p) < 0.0) {
-        sphere_.setPosition(ground_.primitive()->project(p));
-    }
+    // // Constraint: keep sphere above plane temp logic will most likely move to haptic loop
+    // glm::dvec3 p = sphere_.getPosition();
+    // if (ground_.primitive()->phi(p) < 0.0) {
+    //     sphere_.setPosition(ground_.primitive()->project(p));
+    // }
+    double mx=0.0, my=0.0;
+    win_.getCursorPos(mx, my);          // GLFW — safe on render thread
+    //world_.writeMouse(mx, my);    // publish for haptics
+
 }
 
 void Scene::render() {
@@ -106,24 +118,46 @@ void Scene::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // 3D
-    sphere_.render(cam_);
-    ground_.render(cam_);
+    for (BodyId id : body_ids_) {
+        Pose pose;
+        if (readPose(world_, id, pose)) {
+            // build model matrix from pose, bind W.renderables[id], draw
+            const glm::dmat4 T = glm::translate(glm::dmat4(1.0), pose.p);     // p is dvec3
+            const glm::dmat4 R = glm::mat4_cast(pose.q);                       // q is dquat
+            glm::dmat4 model = T * R;
+            world_.renderables[id].render(cam_, model);
+        }
+    }
 
     // UI
     imgui_.begin();
     ui_.drawDebugPanel(stats_);
     ui_.drawBodyPanel(bodyState_);
     ui_.drawControllerPanel(ctrlState_);
+    ui_.drawCameraPanel(camState_);
     imgui_.end();
 }
 
 
 void Scene::init_Bodies(){
-	ground_.setMCBounds({ -10.0,-0.1,-10.0 }, { 10.0,0.1,10.0 }); //Region to mesh
-	ground_.remeshIfPossible();
+    body_ids_.push_back(addBody(world_,
+            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 2.0),
+            &shader_,
+            MCParams{ .minB={-10.0,-10.0,-10.0}, .maxB={10.0,10.0,10.0}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
+    ));
+    body_ids_.push_back(addBody(world_,
+            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
+            &shader_,
+            MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
+    ));
 
-    sphere_.remeshIfPossible();
-    sphere_.setPosition({0.0f, 0.5f, 0.0f});
+        body_ids_.push_back(addBody(world_,
+            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
+            &redShader_,
+            MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
+    ));
+    //sphere_.setPosition({0.0f, 0.5f, 0.0f});
+
 }
 
 void Scene::init_Ui(){
@@ -132,7 +166,7 @@ void Scene::init_Ui(){
 
     // Body commands
     cmds.setBodyPosition = [&](float x, float y, float z) {
-        sphere_.setPosition({x, y, z});
+        //sphere_.setPosition({x, y, z});
     };
 
     // Camera commands
