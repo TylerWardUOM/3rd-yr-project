@@ -71,43 +71,46 @@ void GlSceneRenderer::render() {
         switch (s.type) {
         case SurfaceType::Plane: {
             glm::vec2 half = {25.f,25.f};
-            drawPlaneRenderable(M, half);
+            drawPlaneRenderable(M, half, s.colour);
         } break;
 
         case SurfaceType::Sphere:
-            drawSphereRenderable(M, s.sphere.radius);
+            drawSphereRenderable(M, s.sphere.radius, s.colour);
             break;
 
         case SurfaceType::TriMesh: {
             auto it = triMeshes_.find(s.mesh);
-            if (it != triMeshes_.end()) drawMeshRenderable(it->second, M);
+            if (it != triMeshes_.end()) drawMeshRenderable(it->second, M, s.colour);
         } break;
         }
     }
 }
 
 // ========== helpers: draw ==========
-void GlSceneRenderer::drawMeshRenderable(const MeshGPU& m, const glm::mat4& M) {
+void GlSceneRenderer::drawMeshRenderable(const MeshGPU& m, const glm::mat4& M, const glm::vec3& colour) {
     Renderable r;
     r.mesh = &m;
     r.shader = &shader_;
+    r.colour = colour;
     r.render(camera_, M);
 }
 
-void GlSceneRenderer::drawPlaneRenderable(const glm::mat4& M, const glm::vec2& halfExtents) {
+void GlSceneRenderer::drawPlaneRenderable(const glm::mat4& M, const glm::vec2& halfExtents, const glm::vec3& colour) {
     glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3(halfExtents.x*2.f, 1.f, halfExtents.y*2.f));
     Renderable r;
     r.mesh = &unitPlane_;  
     r.shader = &shader_;
+    r.colour = colour;
     r.render(camera_, M * S);
 }
 
 
-void GlSceneRenderer::drawSphereRenderable(const glm::mat4& M, double radius) {
+void GlSceneRenderer::drawSphereRenderable(const glm::mat4& M, double radius, const glm::vec3& colour) {
     glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3((float)radius));
     Renderable r;
     r.mesh = &unitSphere_; 
     r.shader = &shader_;
+    r.colour = colour;
     r.render(camera_, M * S);}
 
 

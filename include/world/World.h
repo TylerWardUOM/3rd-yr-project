@@ -17,9 +17,9 @@ public:
     EntityId createEntity();
 
     // New entity with surface
-    EntityId addPlane(const Pose& T_ws); // Plane at T_ws
-    EntityId addSphere(const Pose& T_ws, double radius); // Sphere with radius
-    EntityId addTriMesh(const Pose& T_ws, MeshId meshId); // TriMesh with mesh resource id
+    EntityId addPlane(const Pose& T_ws, glm::vec3 colour); // Plane at T_ws
+    EntityId addSphere(const Pose& T_ws, double radius, glm::vec3 colour); // Sphere with radius
+    EntityId addTriMesh(const Pose& T_ws, MeshId meshId, glm::vec3 colour); // TriMesh with mesh resource id
 
     // ---- Authoritative state access (physics writes) ----
     std::vector<SurfaceDef>&       surfaces()       { return surfaces_; }

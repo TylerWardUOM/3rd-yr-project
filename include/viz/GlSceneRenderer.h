@@ -53,9 +53,9 @@ class GlSceneRenderer : public ISceneRenderer {
         static void createUnitSphere(MeshGPU& out); // icosphere
         static void createUnitPlane(MeshGPU& out);  // quad on XZ at y=0
 
-        void drawMeshRenderable(const MeshGPU& m, const glm::mat4& M);
-        void drawPlaneRenderable(const glm::mat4& M, const glm::vec2& halfExtents);
-        void drawSphereRenderable(const glm::mat4& M, double radius);
+        void drawMeshRenderable(const MeshGPU& m, const glm::mat4& M, const glm::vec3& colour);
+        void drawPlaneRenderable(const glm::mat4& M, const glm::vec2& halfExtents, const glm::vec3& colour);
+        void drawSphereRenderable(const glm::mat4& M, double radius, const glm::vec3& colour);
 
 
 };

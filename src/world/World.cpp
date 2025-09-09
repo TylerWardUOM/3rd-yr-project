@@ -8,21 +8,21 @@ World::EntityId World::createEntity() {
     return id;
 }
 
-World::EntityId World::addPlane(const Pose& T_ws) {
+World::EntityId World::addPlane(const Pose& T_ws, glm::vec3 colour) {
     auto id = createEntity();
-    SurfaceDef s{}; s.id=id; s.type=SurfaceType::Plane; s.T_ws=T_ws;
+    SurfaceDef s{}; s.id=id; s.type=SurfaceType::Plane; s.T_ws=T_ws; s.colour=colour;
     surfaces_.push_back(s);
     return id;
 }
-World::EntityId World::addSphere(const Pose& T_ws, double r) {
+World::EntityId World::addSphere(const Pose& T_ws, double r, glm::vec3 colour) {
     auto id = createEntity();
-    SurfaceDef s{}; s.id=id; s.type=SurfaceType::Sphere; s.T_ws=T_ws; s.sphere.radius=r;
+    SurfaceDef s{}; s.id=id; s.type=SurfaceType::Sphere; s.T_ws=T_ws; s.sphere.radius=r; s.colour=colour;
     surfaces_.push_back(s);
     return id;
 }
-World::EntityId World::addTriMesh(const Pose& T_ws, MeshId mesh) {
+World::EntityId World::addTriMesh(const Pose& T_ws, MeshId mesh, glm::vec3 colour) {
     auto id = createEntity();
-    SurfaceDef s{}; s.id=id; s.type=SurfaceType::TriMesh; s.T_ws=T_ws; s.mesh=mesh;
+    SurfaceDef s{}; s.id=id; s.type=SurfaceType::TriMesh; s.T_ws=T_ws; s.mesh=mesh; s.colour=colour;
     surfaces_.push_back(s);
     return id;
 }
