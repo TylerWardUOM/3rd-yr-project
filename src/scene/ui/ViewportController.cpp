@@ -1,6 +1,7 @@
 // ViewportController.cpp
 #include "scene/ui/ViewportController.h"
 #include "util/CameraUtils.h"
+#include <iostream>
 
 void ViewportController::update(float /*dt*/, bool uiCapturing) {
     if (!cam || !win) return;
@@ -12,7 +13,7 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
     //     cam->aspect = float(fbw)/float(fbh); 
     //     setViewport(fbw, fbh); 
     // }
-
+    win->getFramebufferSize(width, height);
     //  -- Keyboard (WASD) — always on if not captured
     if (!uiCapturing) {
         if (win->isKeyDown(Key::W)) cam->eye += cam->front * moveSpeed_;
@@ -49,11 +50,13 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
 
             // Ray through cursor
             Ray ray = makeRayAtCursor(x, y, width, height, *cam); 
-
+            //std::cout << width;
             // ----- Get drag target position
             glm::dvec3 spherePos;
             if (dragTarget) {
-                spherePos = dragTarget->getPosition();             // dvec3
+                Pose pose;
+                readPose(world_, dragTarget, pose);
+                spherePos = pose.p;             // dvec3
             } else {
                 spherePos = glm::dvec3(cam->eye);                  // vec3 -> dvec3
             }
@@ -105,7 +108,9 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
                 dragDepth_ = glm::max(0.05f, dragDepth_ + step); // keep positive
 
                 glm::vec3 pos = ray.o + dragDepth_ * ray.d; // new position along ray
-                if (dragTarget) dragTarget->setPosition(glm::dvec3(pos));
+                Pose pose;
+                readPose(world_, dragTarget, pose);
+                if (dragTarget) writePose(world_, dragTarget, {(glm::dvec3(pos)),pose.q});
             }
         }
     }
@@ -131,5 +136,7 @@ void ViewportController::handleMouseDrag(double x, double y) {
 
     // Place object at current dragDepth_ along the ray
     glm::vec3 pos = ray.o + dragDepth_ * ray.d;
-    dragTarget->setPosition(glm::dvec3(pos));
+    Pose pose;
+    readPose(world_, dragTarget, pose);
+    if (dragTarget) writePose(world_, dragTarget, {(glm::dvec3(pos)),pose.q});
 }
