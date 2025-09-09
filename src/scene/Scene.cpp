@@ -2,14 +2,15 @@
 #include <vector>
 #include <iostream>
 
-Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam):
+Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/):
     win_(win),
     world_(world),
     renderer_(renderer),
     cam_(cam),
     imgui_(win),
     ui_(),
-    vpCtrl_(win, world)
+    vpCtrl_(win, world),
+    haptic_(haptic) // temp for mouse pos
 {
     init_Ui();
 
@@ -88,6 +89,7 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     Pose selectedPose = snap.surfaces[selectedIdx].T_ws;
     //std::cout << "Selected position: " << selectedPose.p.x << ", " << selectedPose.p.y << ", " << selectedPose.p.z << std::endl;
     bodyState_.position = glm::vec3(selectedPose.p);
+    haptic_.setToolPose(selectedPose); // temp for haptics
     bodyState_.colour   = glm::vec3(snap.surfaces[selectedIdx].colour);
     // Build options each frame
     struct Option { World::EntityId id; std::string label; };

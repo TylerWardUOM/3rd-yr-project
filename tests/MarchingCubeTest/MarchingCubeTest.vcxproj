@@ -135,6 +135,9 @@
     <ProjectReference Include="..\..\core_env\core_env.vcxproj">
       <Project>{0900179e-4a0f-4d90-997b-906fb49b58c0}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\core_haptics\core_haptics.vcxproj">
+      <Project>{4922054c-4161-4197-b0ba-0692cd1b7b4d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\core_meshing\core_meshing.vcxproj">
       <Project>{0be28d96-46b2-4abd-8eca-c1228ce264f2}</Project>
     </ProjectReference>

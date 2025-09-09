@@ -11,10 +11,11 @@
 #include "scene/ISceneRenderer.h"
 
 #include "world/world.h"
+#include "haptics/HapticEngine.h" //temp for mouse pos
 
 class Scene {
 public:
-    explicit Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam);
+    explicit Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/);
     ~Scene();
     void run();
 
@@ -45,6 +46,7 @@ private:
     Window&          win_;
     ISceneRenderer&  renderer_;
     Camera&           cam_;
+    HapticEngine&    haptic_; // temp for mouse pos
 
     // --- owned resources ---
     ImGuiLayer       imgui_;
