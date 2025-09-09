@@ -3,16 +3,12 @@
 #include "util/CameraUtils.h"
 #include <iostream>
 
-void ViewportController::update(float /*dt*/, bool uiCapturing) {
-    if (!cam || !win) return;
 
-    // Update aspect each frame (in case of resize)
-    // int fbw=0, fbh=0; 
-    // win->getFramebufferSize(fbw, fbh);
-    // if (fbw>0 && fbh>0) {
-    //     cam->aspect = float(fbw)/float(fbh); 
-    //     setViewport(fbw, fbh); 
-    // }
+
+void ViewportController::update(float /*dt*/, bool uiCapturing, EntityId selected) {
+    if (!cam || !win) return;
+    dragTarget = selected;
+    // Get framebuffer size
     win->getFramebufferSize(width, height);
     //  -- Keyboard (WASD) — always on if not captured
     if (!uiCapturing) {
@@ -55,7 +51,9 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
             glm::dvec3 spherePos;
             if (dragTarget) {
                 WorldSnapshot snap = world_.readSnapshot();
-                spherePos = snap.surfaces[dragTarget].T_ws.p;
+                int dragTargetIdx = world_.findSurfaceIndexById(snap, selected);
+                spherePos = snap.surfaces[dragTargetIdx].T_ws.p;
+                //std::cout << "Sphere position: " << spherePos.x << ", " << spherePos.y << ", " << spherePos.z << ", " << snap.t_sec << std::endl;
                 
             } else {
                 spherePos = glm::dvec3(cam->eye);                  // vec3 -> dvec3
@@ -109,12 +107,12 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
 
                 glm::vec3 pos = ray.o + dragDepth_ * ray.d; // new position along ray
                 WorldSnapshot snap = world_.readSnapshot();
-                Pose spherePose = snap.surfaces[dragTarget].T_ws;
+                int dragTargetIdx = world_.findSurfaceIndexById(snap, selected);
+                Pose spherePose = snap.surfaces[dragTargetIdx].T_ws;
                 if (dragTarget) world_.setPose(dragTarget, {(glm::dvec3(pos)),spherePose.q});
             }
         }
     }
-    world_.publishSnapshot(0.0); // publish any changes
 }
 
 void ViewportController::handleMouseLook(double x, double y) {
@@ -138,6 +136,7 @@ void ViewportController::handleMouseDrag(double x, double y) {
     // Place object at current dragDepth_ along the ray
     glm::vec3 pos = ray.o + dragDepth_ * ray.d;
     WorldSnapshot snap = world_.readSnapshot();
-    Pose spherePose = snap.surfaces[dragTarget].T_ws;
+    int dragTargetIdx = world_.findSurfaceIndexById(snap, dragTarget);
+    Pose spherePose = snap.surfaces[dragTargetIdx].T_ws;
     if (dragTarget) world_.setPose(dragTarget, {(glm::dvec3(pos)),spherePose.q});
 }

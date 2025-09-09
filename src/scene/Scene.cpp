@@ -11,19 +11,10 @@ Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam):
     ui_(),
     vpCtrl_(win, world)
 {
-    init_Bodies();
     init_Ui();
-
-    // Camera defaults
-    cam_.eye    = {0.0f, 1.0f, 1.0f};
-    cam_.up     = {0.0f, 1.0f, 0.0f};
-    cam_.fovDeg = 60.f;
-    cam_.yawDeg   = 0.f;
-    cam_.pitchDeg = -45.f;
 
     // Viewport controller
     vpCtrl_.setCamera(&cam_);
-    vpCtrl_.setDragTarget(2);
 
     // Initial viewport size
     int fbw=0, fbh=0; 
@@ -32,6 +23,13 @@ Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam):
         cam_.aspect = float(fbw)/float(fbh); 
         vpCtrl_.setViewport(fbw, fbh); 
     }
+
+    // Camera defaults
+    cam_.eye    = {0.0f, 1.0f, 1.0f};
+    cam_.up     = {0.0f, 1.0f, 0.0f};
+    cam_.fovDeg = 60.f;
+    cam_.yawDeg   = 0.f;
+    cam_.pitchDeg = -45.f;
 
     // Initial Camera vectors
     cam_.updateVectors();
@@ -45,24 +43,20 @@ Scene::~Scene() {
 void Scene::run() {
     double last = 0.0;
     while (win_.isOpen()) {
-        // timing 
+        // --- Timing 
         double now;
         win_.getTime(now);
         float dt = float(now - last);
         last = now;
-
-        // dispatch scroll
-        double sy = win_.popScrollY();
-        if (sy != 0.0) vpCtrl_.onScroll(sy);
-
         // UI capture gates controller
         bool uiCapturing = imgui_.wantCaptureMouse() || imgui_.wantCaptureKeyboard();
-
+        // --- Update + Render ---
         update(dt, uiCapturing);
         render();
-
+        // --- Swap + Poll ---
         win_.swap();
         win_.poll();
+        world_.publishSnapshot(now); // publish once per frame
     }
 }
 
@@ -72,22 +66,31 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     int fbw=0, fbh=0; win_.getFramebufferSize(fbw, fbh);
     if (fbw>0 && fbh>0) {
         cam_.aspect = float(fbw)/float(fbh);
-        glViewport(0,0,fbw,fbh); // or win_.setViewport wrapper
+        renderer_.onResize(fbw, fbh);
     }
 
-    // Controllers (keyboard/mouse)
-    vpCtrl_.update(/*dt*/0.f, uiCapturing);
 
-    // UI snapshots (minimal)
+    // Controllers (keyboard/mouse)
+    vpCtrl_.update(/*dt*/0.f, uiCapturing, selected_);
+    // Scroll
+    double sy = win_.popScrollY();
+    if (sy != 0.0) vpCtrl_.onScroll(sy);
+
+    // Update UI snapshots (minimal)
     imgui_.getFps(stats_.fps);
     ctrlState_.moveSpeed        = vpCtrl_.moveSpeed();
     ctrlState_.mouseSensitivity = vpCtrl_.mouseSensitivity();
     camState_.pitchDeg  = cam_.pitchDeg;
     camState_.position  = cam_.eye;
     camState_.yawDeg  = cam_.yawDeg;
+    WorldSnapshot snap = world_.readSnapshot();
+    int selectedIdx = world_.findSurfaceIndexById(snap, selected_);
+    Pose selectedPose = snap.surfaces[selectedIdx].T_ws;
+    //std::cout << "Selected position: " << selectedPose.p.x << ", " << selectedPose.p.y << ", " << selectedPose.p.z << std::endl;
+    bodyState_.position = glm::vec3(selectedPose.p);
 
 
-
+    // -- temp Mouse position (for haptics) temp ---
     double mx=0.0, my=0.0;
     win_.getCursorPos(mx, my);          // GLFW — safe on render thread
     //world_.writeMouse(mx, my);    // publish for haptics
@@ -108,28 +111,13 @@ void Scene::render() {
 }
 
 
-void Scene::init_Bodies(){
-    entity_ids_.push_back(world_.addPlane(Pose{glm::dvec3{0.0,0.0,0.0}, glm::dquat{1.0,0.0,0.0,0.0}})); // ground plane
-    entity_ids_.push_back(world_.addSphere(Pose{glm::dvec3{0.0,0.5,0.0}, glm::dquat{1.0,0.0,0.0,0.0}}, 0.1)); // small sphere
-    world_.publishSnapshot(0.0);
-    // body_ids_.push_back(addBody(world_,
-    //         std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 2.0),
-    //         &shader_,
-    //         MCParams{ .minB={-10.0,-10.0,-10.0}, .maxB={10.0,10.0,10.0}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    // ));
-    // body_ids_.push_back(addBody(world_,
-    //         std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-    //         &shader_,
-    //         MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    // ));
 
-    //     body_ids_.push_back(addBody(world_,
-    //         std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-    //         &redShader_,
-    //         MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    // ));
-    //sphere_.setPosition({0.0f, 0.5f, 0.0f});
+EntityId Scene::addPlane(Pose pose, glm::vec3 color){
+    return world_.addPlane(pose);
+}
 
+EntityId Scene::addSphere(Pose pose, float radius, glm::vec3 color){
+    return world_.addSphere(pose, radius);
 }
 
 void Scene::init_Ui(){
@@ -138,7 +126,9 @@ void Scene::init_Ui(){
 
     // Body commands
     cmds.setBodyPosition = [&](float x, float y, float z) {
-        //sphere_.setPosition({x, y, z});
+        WorldSnapshot snap = world_.readSnapshot();
+        Pose selectedPose = snap.surfaces[selected_].T_ws;
+        world_.setPose(selected_, {(glm::dvec3({x,y,z})),selectedPose.q});
     };
 
     // Camera commands

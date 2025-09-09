@@ -4,7 +4,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "viz/MVPUniforms.h"
-#include <iostream>
 
 // --- utils ---
 // build model matrix from Pose
@@ -168,7 +167,6 @@ void GlSceneRenderer::createUnitSphere(MeshGPU& out) {
     }
 
     std::vector<float> PN; makeInterleavedPN(P,N,PN);
-    std::cout << "Created unit sphere with " << P.size() << " vertices, " << (I.size()/3) << " triangles.\n";
     out = MeshGPU();
     out.upload(PN, I);
 }
