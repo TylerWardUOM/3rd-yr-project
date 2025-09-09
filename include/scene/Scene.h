@@ -24,8 +24,8 @@ public:
     void setSelected(EntityId id) { selected_ = id; }
 
     // --- scene management ---
-    EntityId addPlane(Pose pose, glm::vec3 color);
-    EntityId addSphere(Pose pose, float radius, glm::vec3 color);
+    EntityId addPlane(Pose pose, glm::vec3 colour);
+    EntityId addSphere(Pose pose, float radius, glm::vec3 colour);
 
     // Load scene from file (future additon?)
     bool loadFromFile(const std::string& filepath);

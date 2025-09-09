@@ -9,6 +9,7 @@
 struct Renderable {
     const MeshGPU* mesh{};   // non-owning
     Shader* shader{};
+    Colour colour = {0.8f,0.8f,0.8f}; // default white
 
     void render(const Camera& cam, const glm::dmat4& model) {
         if (!mesh || !shader) return;
@@ -17,6 +18,7 @@ struct Renderable {
         u.model = model;
         u.view  = cam.view();
         u.proj  = cam.proj();
+        u.colour = colour;
         u.upload(*shader);
         mesh->draw();
     }

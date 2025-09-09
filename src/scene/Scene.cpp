@@ -112,12 +112,12 @@ void Scene::render() {
 
 
 
-EntityId Scene::addPlane(Pose pose, glm::vec3 color){
-    return world_.addPlane(pose);
+EntityId Scene::addPlane(Pose pose, glm::vec3 colour){
+    return world_.addPlane(pose, colour);
 }
 
-EntityId Scene::addSphere(Pose pose, float radius, glm::vec3 color){
-    return world_.addSphere(pose, radius);
+EntityId Scene::addSphere(Pose pose, float radius, glm::vec3 colour){
+    return world_.addSphere(pose, radius, colour);
 }
 
 void Scene::init_Ui(){

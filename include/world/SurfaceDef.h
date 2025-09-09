@@ -4,6 +4,7 @@
 
 
 using EntityId = uint32_t;
+using Colour = glm::vec3; // RGB
 
 enum class SurfaceType : uint8_t { Plane, Sphere, TriMesh };
 
@@ -17,6 +18,7 @@ struct SurfaceDef {
     EntityId    id;             // entity this surface belongs to
     SurfaceType type;           // type of surface Plane/Sphere/TriMesh
     Pose        T_ws;           // world pose
+    Colour      colour = {0.8f,0.8f,0.8f}; // diffuse colour
     union {
         SurfacePlane plane;
         SurfaceSphere sphere;

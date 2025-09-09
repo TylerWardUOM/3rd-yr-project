@@ -33,7 +33,7 @@ int main() {
 	Scene scene(win, world, renderer, camera); // Scene Object
 
 	scene.addPlane({ {0,0,0}, {1.0,0,0,0} }, { 0.8f, 0.8f, 0.8f }); // Add a plane at origin
-	EntityId sphereId = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.8f, 0.1f, 0.1f }); // Add a sphere above the plane
+	EntityId sphereId = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
     EntityId sphereId2 = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.8f, 0.1f, 0.1f }); // Add a sphere above the plane
 	scene.setSelected(sphereId); // Set drag target to the sphere entity
 	world.publishSnapshot(0.0); // Initial publish to populate snapshot
