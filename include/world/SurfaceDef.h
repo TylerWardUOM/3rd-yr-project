@@ -18,7 +18,7 @@ struct SurfaceDef {
     EntityId    id;             // entity this surface belongs to
     SurfaceType type;           // type of surface Plane/Sphere/TriMesh
     Pose        T_ws;           // world pose
-    Colour      colour = {0.8f,0.8f,0.8f}; // diffuse colour
+    Colour      colour = {0.8f,0.8f,0.8f}; //  colour
     union {
         SurfacePlane plane;
         SurfaceSphere sphere;
