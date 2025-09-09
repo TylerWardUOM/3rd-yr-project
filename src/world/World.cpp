@@ -1,4 +1,3 @@
-// world/World.cpp
 #include "world/World.h"
 #include <unordered_map>
 
