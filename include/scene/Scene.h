@@ -21,6 +21,12 @@ public:
     //temp mouse position outputs for haptic loop
     void getMousePos(double& x, double& y) const { win_.getCursorPos(x,y); }
 
+    void setSelected(EntityId id) { selected_ = id; }
+
+    // --- scene management ---
+    EntityId addPlane(Pose pose, glm::vec3 color);
+    EntityId addSphere(Pose pose, float radius, glm::vec3 color);
+
     // Load scene from file (future additon?)
     bool loadFromFile(const std::string& filepath);
 
@@ -33,6 +39,7 @@ private:
     // Update scene
     void update(float dt, bool uiCapturing);
 
+    EntityId selected_{0}; // currently selected entity
 
     // --- external references ---
     Window&          win_;
@@ -44,8 +51,6 @@ private:
     UI               ui_;
     ViewportController vpCtrl_;
 
-    // --- scene objects ---
-    std::vector<EntityId> entity_ids_;
     // --- UI state snapshots ---
     UITransformState bodyState_{};
     UICameraState    camState_{};
@@ -54,7 +59,6 @@ private:
     UIControllerState ctrlState_{};
 
     // --- helper functions ---
-    void init_Bodies();
     void init_Ui();
 };;
 

@@ -39,29 +39,6 @@ bool World::setPose(EntityId id, const Pose& T_ws) {
 
 
 
-// // Optional convenience: apply a translation in world space
-// bool World::translate(EntityId id, const glm::dvec3& dp) {
-//     std::scoped_lock lk(mtx_);
-//     auto it = surfaceIndex_.find(id);
-//     if (it == surfaceIndex_.end()) return false;
-//     auto& T = surfaces_[it->second].T_ws;
-//     T.p += dp;
-//     dirty_ = true;
-//     return true;
-// }
-
-// // Optional convenience: apply a rotation in world space (compose quaternions)
-// bool World::rotate(EntityId id, const glm::dquat& dq) {
-//     std::scoped_lock lk(mtx_);
-//     auto it = surfaceIndex_.find(id);
-//     if (it == surfaceIndex_.end()) return false;
-//     auto& T = surfaces_[it->second].T_ws;
-//     T.q = glm::normalize(dq * T.q);
-//     dirty_ = true;
-//     return true;
-// }
-
-
 void World::publishSnapshot(double t_sec) {
     WorldSnapshot snap{};
     snap.t_sec = t_sec;

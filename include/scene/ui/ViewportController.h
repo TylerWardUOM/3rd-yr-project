@@ -15,7 +15,7 @@ public:
     void setDragTarget(EntityId b) { dragTarget = b; } // the sphere
     void setViewport(int wpx, int hpx) { width = wpx; height = hpx; }
 
-    void update(float dt, bool uiCapturing);
+    void update(float dt, bool uiCapturing, EntityId selected);
 
     void onScroll(double yoff) { pendingScrollY_ += yoff; } // accumulate scroll
 

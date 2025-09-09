@@ -34,6 +34,12 @@ public:
     bool translate(EntityId id, const glm::dvec3& dp);   // optional convenience
     bool rotate(EntityId id, const glm::dquat& dq);      // optional convenience
 
+    static int findSurfaceIndexById(const WorldSnapshot& snap, World::EntityId id) {
+        for (uint32_t i = 0; i < snap.numSurfaces; ++i) {
+            if (snap.surfaces[i].id == id) return (int)i;
+        }
+        return -1;
+    }
 private:
     EntityId nextId_ = 1;
     std::vector<EntityId> entities_;
