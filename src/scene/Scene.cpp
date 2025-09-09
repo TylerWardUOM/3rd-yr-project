@@ -2,27 +2,15 @@
 #include <vector>
 #include <iostream>
 
-Scene::Scene(Window& win, World& world):
+Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam):
     win_(win),
     world_(world),
-    cam_(),
-    shader_("shaders/general.vert","shaders/basic.frag"),
-    redShader_("shaders/general.vert","shaders/red.frag"),
-    mesher_(),
+    renderer_(renderer),
+    cam_(cam),
     imgui_(win),
     ui_(),
     vpCtrl_(win, world)
 {
-    // ground_(std::make_unique<PlaneEnv>(glm::dvec3{ 0.0,1.0,0.0 }, 0.0),
-    //         std::make_unique<MeshGPU>(),
-    //         &mesher_,
-    //         &shader_
-    // ),
-    // sphere_(std::make_unique<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-    //         std::make_unique<MeshGPU>(),
-    //         &mesher_,
-    //         &shader_
-    // )
     init_Bodies();
     init_Ui();
 
@@ -35,7 +23,7 @@ Scene::Scene(Window& win, World& world):
 
     // Viewport controller
     vpCtrl_.setCamera(&cam_);
-    vpCtrl_.setDragTarget(1);
+    vpCtrl_.setDragTarget(2);
 
     // Initial viewport size
     int fbw=0, fbh=0; 
@@ -97,14 +85,9 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     camState_.pitchDeg  = cam_.pitchDeg;
     camState_.position  = cam_.eye;
     camState_.yawDeg  = cam_.yawDeg;
-    Pose bodyPose;
-    readPose(world_,1,bodyPose);
 
-    // // Constraint: keep sphere above plane temp logic will most likely move to haptic loop
-    // glm::dvec3 p = sphere_.getPosition();
-    // if (ground_.primitive()->phi(p) < 0.0) {
-    //     sphere_.setPosition(ground_.primitive()->project(p));
-    // }
+
+
     double mx=0.0, my=0.0;
     win_.getCursorPos(mx, my);          // GLFW — safe on render thread
     //world_.writeMouse(mx, my);    // publish for haptics
@@ -112,23 +95,9 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
 }
 
 void Scene::render() {
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glClearColor(0.2f,0.3f,0.3f,1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // 3D
-    for (BodyId id : body_ids_) {
-        Pose pose;
-        if (readPose(world_, id, pose)) {
-            // build model matrix from pose, bind W.renderables[id], draw
-            const glm::dmat4 T = glm::translate(glm::dmat4(1.0), pose.p);     // p is dvec3
-            const glm::dmat4 R = glm::mat4_cast(pose.q);                       // q is dquat
-            glm::dmat4 model = T * R;
-            world_.renderables[id].render(cam_, model);
-        }
-    }
-
+    renderer_.setViewProj(cam_.view(), cam_.proj());
+    renderer_.submit(world_.readSnapshot(), HapticsVizSnapshot{});
+    renderer_.render();
     // UI
     imgui_.begin();
     ui_.drawDebugPanel(stats_);
@@ -140,22 +109,25 @@ void Scene::render() {
 
 
 void Scene::init_Bodies(){
-    body_ids_.push_back(addBody(world_,
-            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 2.0),
-            &shader_,
-            MCParams{ .minB={-10.0,-10.0,-10.0}, .maxB={10.0,10.0,10.0}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    ));
-    body_ids_.push_back(addBody(world_,
-            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-            &shader_,
-            MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    ));
+    entity_ids_.push_back(world_.addPlane(Pose{glm::dvec3{0.0,0.0,0.0}, glm::dquat{1.0,0.0,0.0,0.0}})); // ground plane
+    entity_ids_.push_back(world_.addSphere(Pose{glm::dvec3{0.0,0.5,0.0}, glm::dquat{1.0,0.0,0.0,0.0}}, 0.1)); // small sphere
+    world_.publishSnapshot(0.0);
+    // body_ids_.push_back(addBody(world_,
+    //         std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 2.0),
+    //         &shader_,
+    //         MCParams{ .minB={-10.0,-10.0,-10.0}, .maxB={10.0,10.0,10.0}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
+    // ));
+    // body_ids_.push_back(addBody(world_,
+    //         std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
+    //         &shader_,
+    //         MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
+    // ));
 
-        body_ids_.push_back(addBody(world_,
-            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-            &redShader_,
-            MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    ));
+    //     body_ids_.push_back(addBody(world_,
+    //         std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
+    //         &redShader_,
+    //         MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
+    // ));
     //sphere_.setPosition({0.0f, 0.5f, 0.0f});
 
 }

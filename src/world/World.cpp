@@ -1,0 +1,75 @@
+// world/World.cpp
+#include "world/World.h"
+#include <unordered_map>
+
+World::EntityId World::createEntity() {
+    EntityId id = nextId_++;
+    entities_.push_back(id);
+    return id;
+}
+
+World::EntityId World::addPlane(const Pose& T_ws) {
+    auto id = createEntity();
+    SurfaceDef s{}; s.id=id; s.type=SurfaceType::Plane; s.T_ws=T_ws;
+    surfaces_.push_back(s);
+    return id;
+}
+World::EntityId World::addSphere(const Pose& T_ws, double r) {
+    auto id = createEntity();
+    SurfaceDef s{}; s.id=id; s.type=SurfaceType::Sphere; s.T_ws=T_ws; s.sphere.radius=r;
+    surfaces_.push_back(s);
+    return id;
+}
+World::EntityId World::addTriMesh(const Pose& T_ws, MeshId mesh) {
+    auto id = createEntity();
+    SurfaceDef s{}; s.id=id; s.type=SurfaceType::TriMesh; s.T_ws=T_ws; s.mesh=mesh;
+    surfaces_.push_back(s);
+    return id;
+}
+
+bool World::setPose(EntityId id, const Pose& T_ws) {
+    for (auto& s : surfaces_) {
+        if (s.id == id) {
+            s.T_ws = T_ws;
+            return true;
+        }
+    }
+    return false; // no matching entity
+}
+
+
+
+// // Optional convenience: apply a translation in world space
+// bool World::translate(EntityId id, const glm::dvec3& dp) {
+//     std::scoped_lock lk(mtx_);
+//     auto it = surfaceIndex_.find(id);
+//     if (it == surfaceIndex_.end()) return false;
+//     auto& T = surfaces_[it->second].T_ws;
+//     T.p += dp;
+//     dirty_ = true;
+//     return true;
+// }
+
+// // Optional convenience: apply a rotation in world space (compose quaternions)
+// bool World::rotate(EntityId id, const glm::dquat& dq) {
+//     std::scoped_lock lk(mtx_);
+//     auto it = surfaceIndex_.find(id);
+//     if (it == surfaceIndex_.end()) return false;
+//     auto& T = surfaces_[it->second].T_ws;
+//     T.q = glm::normalize(dq * T.q);
+//     dirty_ = true;
+//     return true;
+// }
+
+
+void World::publishSnapshot(double t_sec) {
+    WorldSnapshot snap{};
+    snap.t_sec = t_sec;
+
+    // surfaces
+    snap.numSurfaces = (uint32_t)std::min<size_t>(surfaces_.size(), std::size(snap.surfaces));
+    for (uint32_t i=0; i<snap.numSurfaces; ++i) snap.surfaces[i] = surfaces_[i];
+
+ 
+    snapBuf_.write(snap);
+}
