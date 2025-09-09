@@ -5,7 +5,7 @@
 // Simple GPU-resident mesh (VBO, EBO, VAO)
 class MeshGPU {
 public:
-    MeshGPU(); // constructor
+    MeshGPU() noexcept = default; // constructor
     ~MeshGPU(); //destructor
 
     // no copy
@@ -23,7 +23,14 @@ public:
     // Draw the mesh (assumes shader is bound)
     void draw() const;
 
+    bool isUploaded() const noexcept { return count > 0; }
+
+
 private:
+
+    void destroy() noexcept;
+    void steal(MeshGPU& o) noexcept;
+
     GLuint VAO{}, VBO{}, EBO{};
     GLsizei count{};
 };

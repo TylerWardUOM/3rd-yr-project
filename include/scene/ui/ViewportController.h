@@ -12,10 +12,10 @@ public:
     ViewportController& operator=(const ViewportController&) = delete; 
     
     void setCamera(Camera* c) { cam = c; }
-    void setDragTarget(BodyId b) { dragTarget = b; } // the sphere
+    void setDragTarget(EntityId b) { dragTarget = b; } // the sphere
     void setViewport(int wpx, int hpx) { width = wpx; height = hpx; }
 
-    void update(float dt, bool uiCapturing);
+    void update(float dt, bool uiCapturing, EntityId selected);
 
     void onScroll(double yoff) { pendingScrollY_ += yoff; } // accumulate scroll
 
@@ -37,7 +37,7 @@ private:
     Window* win;
     World& world_;
     Camera* cam{};
-    BodyId dragTarget{};
+    EntityId dragTarget{};
     int width{1}, height{1};
     double pendingScrollY_{0.0};    // accumulated from GLFW callback
 

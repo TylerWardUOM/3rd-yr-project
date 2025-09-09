@@ -9,6 +9,7 @@ struct MVPUniforms {
     glm::mat4 model{1.0f};
     glm::mat4 view{1.0f};
     glm::mat4 proj{1.0f};
+    glm::vec3 colour{1.0f,1.0f,1.0f};
 
     // World-space normal matrix (upper-left 3x3 of model)
     glm::mat3 normalMatrix() const {
@@ -20,6 +21,7 @@ struct MVPUniforms {
         sh.setMat4("uModel", model);
         sh.setMat4("uView",  view);
         sh.setMat4("uProj",  proj);
+        sh.setVec3("uColour", colour);
         sh.setMat3("uNormalMatrix", normalMatrix());
     }
 };

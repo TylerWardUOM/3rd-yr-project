@@ -23,19 +23,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core_scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\scene\ui\Ui.cpp">
+    <ClCompile Include="core_world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\scene\ui\ViewportController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\scene\Scene.cpp">
+    <ClCompile Include="..\src\world\World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,40 +2,19 @@
 #include <vector>
 #include <iostream>
 
-Scene::Scene(Window& win, World& world):
+Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam):
     win_(win),
     world_(world),
-    cam_(),
-    shader_("shaders/general.vert","shaders/basic.frag"),
-    redShader_("shaders/general.vert","shaders/red.frag"),
-    mesher_(),
+    renderer_(renderer),
+    cam_(cam),
     imgui_(win),
     ui_(),
     vpCtrl_(win, world)
 {
-    // ground_(std::make_unique<PlaneEnv>(glm::dvec3{ 0.0,1.0,0.0 }, 0.0),
-    //         std::make_unique<MeshGPU>(),
-    //         &mesher_,
-    //         &shader_
-    // ),
-    // sphere_(std::make_unique<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-    //         std::make_unique<MeshGPU>(),
-    //         &mesher_,
-    //         &shader_
-    // )
-    init_Bodies();
     init_Ui();
-
-    // Camera defaults
-    cam_.eye    = {0.0f, 1.0f, 1.0f};
-    cam_.up     = {0.0f, 1.0f, 0.0f};
-    cam_.fovDeg = 60.f;
-    cam_.yawDeg   = 0.f;
-    cam_.pitchDeg = -45.f;
 
     // Viewport controller
     vpCtrl_.setCamera(&cam_);
-    vpCtrl_.setDragTarget(1);
 
     // Initial viewport size
     int fbw=0, fbh=0; 
@@ -44,6 +23,13 @@ Scene::Scene(Window& win, World& world):
         cam_.aspect = float(fbw)/float(fbh); 
         vpCtrl_.setViewport(fbw, fbh); 
     }
+
+    // Camera defaults
+    cam_.eye    = {0.0f, 1.0f, 1.0f};
+    cam_.up     = {0.0f, 1.0f, 0.0f};
+    cam_.fovDeg = 60.f;
+    cam_.yawDeg   = 0.f;
+    cam_.pitchDeg = -45.f;
 
     // Initial Camera vectors
     cam_.updateVectors();
@@ -57,24 +43,20 @@ Scene::~Scene() {
 void Scene::run() {
     double last = 0.0;
     while (win_.isOpen()) {
-        // timing 
+        // --- Timing 
         double now;
         win_.getTime(now);
         float dt = float(now - last);
         last = now;
-
-        // dispatch scroll
-        double sy = win_.popScrollY();
-        if (sy != 0.0) vpCtrl_.onScroll(sy);
-
         // UI capture gates controller
         bool uiCapturing = imgui_.wantCaptureMouse() || imgui_.wantCaptureKeyboard();
-
+        // --- Update + Render ---
         update(dt, uiCapturing);
         render();
-
+        // --- Swap + Poll ---
         win_.swap();
         win_.poll();
+        world_.publishSnapshot(now); // publish once per frame
     }
 }
 
@@ -84,27 +66,47 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     int fbw=0, fbh=0; win_.getFramebufferSize(fbw, fbh);
     if (fbw>0 && fbh>0) {
         cam_.aspect = float(fbw)/float(fbh);
-        glViewport(0,0,fbw,fbh); // or win_.setViewport wrapper
+        renderer_.onResize(fbw, fbh);
     }
 
-    // Controllers (keyboard/mouse)
-    vpCtrl_.update(/*dt*/0.f, uiCapturing);
 
-    // UI snapshots (minimal)
+    // Controllers (keyboard/mouse)
+    vpCtrl_.update(/*dt*/0.f, uiCapturing, selected_);
+    // Scroll
+    double sy = win_.popScrollY();
+    if (sy != 0.0) vpCtrl_.onScroll(sy);
+
+    // Update UI snapshots (minimal)
     imgui_.getFps(stats_.fps);
     ctrlState_.moveSpeed        = vpCtrl_.moveSpeed();
     ctrlState_.mouseSensitivity = vpCtrl_.mouseSensitivity();
     camState_.pitchDeg  = cam_.pitchDeg;
     camState_.position  = cam_.eye;
     camState_.yawDeg  = cam_.yawDeg;
-    Pose bodyPose;
-    readPose(world_,1,bodyPose);
+    WorldSnapshot snap = world_.readSnapshot();
+    int selectedIdx = world_.findSurfaceIndexById(snap, selected_);
+    Pose selectedPose = snap.surfaces[selectedIdx].T_ws;
+    //std::cout << "Selected position: " << selectedPose.p.x << ", " << selectedPose.p.y << ", " << selectedPose.p.z << std::endl;
+    bodyState_.position = glm::vec3(selectedPose.p);
+    bodyState_.colour   = glm::vec3(snap.surfaces[selectedIdx].colour);
+    // Build options each frame
+    struct Option { World::EntityId id; std::string label; };
+    std::vector<Option> options;
 
-    // // Constraint: keep sphere above plane temp logic will most likely move to haptic loop
-    // glm::dvec3 p = sphere_.getPosition();
-    // if (ground_.primitive()->phi(p) < 0.0) {
-    //     sphere_.setPosition(ground_.primitive()->project(p));
-    // }
+    // Rebuild the options list each frame (cheap, small)
+    bodyState_.entityOptions.clear();
+    bodyState_.entityOptions.reserve(snap.numSurfaces);
+    for (uint32_t i = 0; i < snap.numSurfaces; ++i) {
+        const auto& s = snap.surfaces[i];
+        bodyState_.entityOptions.push_back(s.id);
+    }
+
+    // Keep the UI state in sync with app selection
+    bodyState_.selectedEntityId = selected_;   // std::optional<uint32_t>
+
+
+
+    // -- temp Mouse position (for haptics) temp ---
     double mx=0.0, my=0.0;
     win_.getCursorPos(mx, my);          // GLFW — safe on render thread
     //world_.writeMouse(mx, my);    // publish for haptics
@@ -112,23 +114,9 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
 }
 
 void Scene::render() {
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glClearColor(0.2f,0.3f,0.3f,1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // 3D
-    for (BodyId id : body_ids_) {
-        Pose pose;
-        if (readPose(world_, id, pose)) {
-            // build model matrix from pose, bind W.renderables[id], draw
-            const glm::dmat4 T = glm::translate(glm::dmat4(1.0), pose.p);     // p is dvec3
-            const glm::dmat4 R = glm::mat4_cast(pose.q);                       // q is dquat
-            glm::dmat4 model = T * R;
-            world_.renderables[id].render(cam_, model);
-        }
-    }
-
+    renderer_.setViewProj(cam_.view(), cam_.proj());
+    renderer_.submit(world_.readSnapshot(), HapticsVizSnapshot{});
+    renderer_.render();
     // UI
     imgui_.begin();
     ui_.drawDebugPanel(stats_);
@@ -139,25 +127,13 @@ void Scene::render() {
 }
 
 
-void Scene::init_Bodies(){
-    body_ids_.push_back(addBody(world_,
-            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 2.0),
-            &shader_,
-            MCParams{ .minB={-10.0,-10.0,-10.0}, .maxB={10.0,10.0,10.0}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    ));
-    body_ids_.push_back(addBody(world_,
-            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-            &shader_,
-            MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    ));
 
-        body_ids_.push_back(addBody(world_,
-            std::make_shared<SphereEnv>(glm::dvec3{ 0.0,0.0,0.0 }, 0.1),
-            &redShader_,
-            MCParams{ .minB={-1.5,-1.5,-1.5}, .maxB={1.5,1.5,1.5}, .nx=64, .ny=64, .nz=64, .iso=0.0 }
-    ));
-    //sphere_.setPosition({0.0f, 0.5f, 0.0f});
+EntityId Scene::addPlane(Pose pose, glm::vec3 colour){
+    return world_.addPlane(pose, colour);
+}
 
+EntityId Scene::addSphere(Pose pose, float radius, glm::vec3 colour){
+    return world_.addSphere(pose, radius, colour);
 }
 
 void Scene::init_Ui(){
@@ -165,8 +141,23 @@ void Scene::init_Ui(){
     UICommands cmds;
 
     // Body commands
-    cmds.setBodyPosition = [&](float x, float y, float z) {
-        //sphere_.setPosition({x, y, z});
+    cmds.setBodyPosition = [&](float x, float y, float z) { // fix to use index
+        WorldSnapshot snap = world_.readSnapshot();
+        Pose selectedPose = snap.surfaces[selected_].T_ws;
+        world_.setPose(selected_, {(glm::dvec3({x,y,z})),selectedPose.q});
+        world_.publishSnapshot(0.0);
+
+    };
+    cmds.setBodyColour = [&](float r, float g, float b) {
+        WorldSnapshot snap = world_.readSnapshot();
+        int selectedIdx = world_.findSurfaceIndexById(snap, selected_);
+        world_.setColour(selected_,{r,g,b});
+        world_.publishSnapshot(0.0);
+        
+    };
+
+    cmds.setSelectedEntity = [&](EntityId entityId) {
+        selected_ = entityId;
     };
 
     // Camera commands
