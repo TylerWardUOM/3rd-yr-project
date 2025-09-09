@@ -1,5 +1,7 @@
 // main.cpp 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "viz/Window.h"
 #include "world/world.h"
 #include "viz/Camera.h"
@@ -32,7 +34,7 @@ int main() {
 
 	Scene scene(win, world, renderer, camera); // Scene Object
 
-	scene.addPlane({ {0,0,0}, {1.0,0,0,0} }, { 0.8f, 0.8f, 0.8f }); // Add a plane at origin
+	EntityId planeId = scene.addPlane({ {0,0,0}, {1.0,0,0,0} }, { 0.8f, 0.8f, 0.8f }); // Add a plane at origin
 	EntityId sphereId = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
     EntityId sphereId2 = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.8f, 0.1f, 0.1f }); // Add a sphere above the plane
 	scene.setSelected(sphereId); // Set drag target to the sphere entity
@@ -57,24 +59,38 @@ int main() {
 
             // ===== WORK =====
 			WorldSnapshot snap = world.readSnapshot();
+			Pose planePose = snap.surfaces[world.findSurfaceIndexById(snap, planeId)].T_ws;
+            // local frame normal
+            glm::dvec3 n_local{ 0.0, 1.0, 0.0 };
+
+            // rotate into world
+            glm::dmat3 R = glm::mat3_cast(glm::quat(planePose.q));   // rotation matrix
+            glm::dvec3 n_world = glm::normalize(R * n_local);
+
+            // pick a world point on the plane (pose origin in this convention)
+            glm::dvec3 p_world = planePose.p;
+
+            // plane equation: n�x = d
+            double d = glm::dot(n_world, p_world);
+
+            // now construct your plane SDF
+            PlaneEnv plane(n_world, d);
 			Pose pose = snap.surfaces[world.findSurfaceIndexById(snap,sphereId)].T_ws;
-			PlaneEnv plane1(glm::dvec3{ 0.0,1.0,0.0 }, 0.0);
-            if (plane1.phi(pose.p) < 0.0) {
-                pose.p = plane1.project(pose.p);
+            if (plane.phi(pose.p) < 0.0) {
+                pose.p = plane.project(pose.p);
                 world.setPose(sphereId2, pose);
-				world.publishSnapshot(0.0); // NEW: publish updated state
+				world.publishSnapshot(0.0); // publish updated state
             }
             else {
                 Pose pose2 = snap.surfaces[world.findSurfaceIndexById(snap, sphereId2)].T_ws;
-                //readPose(world, 2, pose2);        // NEW: was read into 'pose' by mistake
                 if (pose.p != pose2.p) {
                     world.setPose(sphereId2, pose);
-                    world.publishSnapshot(0.0); // NEW: publish updated sta                
+                    world.publishSnapshot(0.0); // publish updated sta                
                 }
             }
             // =================
 
-            // --- schedule next tick (NEW) ---
+            // --- schedule next tick  ---
             auto now = clock::now();
             if (now > next + 5 * period) {        // if badly behind (e.g., debugger), resync
                 next = now + period;

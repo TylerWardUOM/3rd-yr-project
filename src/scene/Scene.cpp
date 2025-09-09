@@ -88,6 +88,22 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     Pose selectedPose = snap.surfaces[selectedIdx].T_ws;
     //std::cout << "Selected position: " << selectedPose.p.x << ", " << selectedPose.p.y << ", " << selectedPose.p.z << std::endl;
     bodyState_.position = glm::vec3(selectedPose.p);
+    bodyState_.colour   = glm::vec3(snap.surfaces[selectedIdx].colour);
+    // Build options each frame
+    struct Option { World::EntityId id; std::string label; };
+    std::vector<Option> options;
+
+    // Rebuild the options list each frame (cheap, small)
+    bodyState_.entityOptions.clear();
+    bodyState_.entityOptions.reserve(snap.numSurfaces);
+    for (uint32_t i = 0; i < snap.numSurfaces; ++i) {
+        const auto& s = snap.surfaces[i];
+        bodyState_.entityOptions.push_back(s.id);
+    }
+
+    // Keep the UI state in sync with app selection
+    bodyState_.selectedEntityId = selected_;   // std::optional<uint32_t>
+
 
 
     // -- temp Mouse position (for haptics) temp ---
@@ -125,10 +141,23 @@ void Scene::init_Ui(){
     UICommands cmds;
 
     // Body commands
-    cmds.setBodyPosition = [&](float x, float y, float z) {
+    cmds.setBodyPosition = [&](float x, float y, float z) { // fix to use index
         WorldSnapshot snap = world_.readSnapshot();
         Pose selectedPose = snap.surfaces[selected_].T_ws;
         world_.setPose(selected_, {(glm::dvec3({x,y,z})),selectedPose.q});
+        world_.publishSnapshot(0.0);
+
+    };
+    cmds.setBodyColour = [&](float r, float g, float b) {
+        WorldSnapshot snap = world_.readSnapshot();
+        int selectedIdx = world_.findSurfaceIndexById(snap, selected_);
+        world_.setColour(selected_,{r,g,b});
+        world_.publishSnapshot(0.0);
+        
+    };
+
+    cmds.setSelectedEntity = [&](EntityId entityId) {
+        selected_ = entityId;
     };
 
     // Camera commands

@@ -31,6 +31,7 @@ public:
     WorldSnapshot readSnapshot() const { return snapBuf_.read(); }
 
     bool setPose(EntityId id, const Pose& T_ws);
+    bool setColour(EntityId id, const Colour& colour);
     bool translate(EntityId id, const glm::dvec3& dp);   // optional convenience
     bool rotate(EntityId id, const glm::dquat& dq);      // optional convenience
 

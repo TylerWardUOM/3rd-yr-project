@@ -2,9 +2,15 @@
 #include <functional>
 #include <string>
 #include <glm/vec3.hpp>
+#include <optional>
+
+using EntityId = uint32_t;
 
 struct UITransformState {
     glm::vec3 position{0.f, 0.f, 0.f};
+    glm::vec3 colour{0.8f, 0.8f, 0.8f};
+    std::vector<EntityId> entityOptions;     // built from WorldSnapshot each frame
+    std::optional<uint32_t>     selectedEntityId;  // currently selected entity
 };
 
 
@@ -27,14 +33,15 @@ struct UIControllerState {
 
 struct UISceneStats {
     float fps = 0.f;
-    int   drawCalls = 0;
-    int   triangles = 0;
 };
 
 // --- Commands the UI can emit (provided by caller) ---
 struct UICommands {
     // Body
     std::function<void(float x, float y, float z)> setBodyPosition = {};
+    std::function<void(float r, float g, float b)> setBodyColour = {};
+    
+    std::function<void(EntityId entityId)> setSelectedEntity = {};
 
     // Camera
     std::function<void(float fovDeg)> setCameraFov = {};
