@@ -1,53 +1,49 @@
 #pragma once
-#include <memory>
 #include <vector>
-#include <atomic>
-#include <glm/glm.hpp>
-#include "viz/Renderable.h"
-#include "env/env_interface.h"
+#include <cstdint>
+#include "Pose.h"
+#include "SurfaceDef.h"
+#include "WorldSnapshot.h"
+#include "DoubleBuffer.h"
+
+class World {
+public:
+    using EntityId = uint32_t;
+
+    World() = default;
+
+    // ---- Creation API ----
+    EntityId createEntity();
+
+    // New entity with surface
+    EntityId addPlane(const Pose& T_ws, glm::vec3 colour); // Plane at T_ws
+    EntityId addSphere(const Pose& T_ws, double radius, glm::vec3 colour); // Sphere with radius
+    EntityId addTriMesh(const Pose& T_ws, MeshId meshId, glm::vec3 colour); // TriMesh with mesh resource id
+
+    // ---- Authoritative state access (physics writes) ----
+    std::vector<SurfaceDef>&       surfaces()       { return surfaces_; }
+    const std::vector<SurfaceDef>& surfaces() const { return surfaces_; }
 
 
-struct MCParams {
-    glm::dvec3 minB{-1.5,-1.5,-1.5};
-    glm::dvec3 maxB{ 1.5, 1.5, 1.5};
-    int nx{64}, ny{64}, nz{64};
-    double iso{0.0};
+    // ---- Snapshot handoff (physics -> haptics/render) ----
+    void publishSnapshot(double t_sec);       // packs surfaces_ into buf
+    WorldSnapshot readSnapshot() const { return snapBuf_.read(); }
+
+    bool setPose(EntityId id, const Pose& T_ws);
+    bool setColour(EntityId id, const Colour& colour);
+    bool translate(EntityId id, const glm::dvec3& dp);   // optional convenience
+    bool rotate(EntityId id, const glm::dquat& dq);      // optional convenience
+
+    static int findSurfaceIndexById(const WorldSnapshot& snap, World::EntityId id) {
+        for (uint32_t i = 0; i < snap.numSurfaces; ++i) {
+            if (snap.surfaces[i].id == id) return (int)i;
+        }
+        return -1;
+    }
+private:
+    EntityId nextId_ = 1;
+    std::vector<EntityId> entities_;
+    std::vector<SurfaceDef> surfaces_;
+
+    DoubleBuffer<WorldSnapshot> snapBuf_;
 };
-
-
-using BodyId = uint32_t; 
-static constexpr BodyId kInvalidBody = UINT32_MAX; 
-
-// Simple pose (position + orientation)
-struct Pose { 
-    glm::dvec3 p{0.0,0.0,0.0}; // Position translation
-    glm::dquat q{1.0, 0.0, 0.0, 0.0};  // Orientation quaternion rotation
-};
-
-// Stores a body’s static env primative and other immutable data
-struct BodyStatic {
-    std::shared_ptr<const EnvInterface> env; 
-};
-
-// A buffer of poses with a sequence number for lock-free reading/writing
-struct PoseBuffer {
-    std::atomic<uint64_t> seq{0};
-    std::vector<Pose> poses;
-};
-
-// Two PoseBuffers for double-buffering
-struct Poses {
-    PoseBuffer buf[2];
-    std::atomic<uint8_t> read_index{0};
-};
-
-// The main world structure containing bodies, poses, and renderables
-struct World {
-    std::vector<BodyStatic> statics;
-    Poses poses;
-    std::vector<Renderable> renderables;
-};
-
-BodyId addBody(World& W, std::shared_ptr<const EnvInterface> env, Shader* shader, const MCParams& mc);
-void writePose(World& W, BodyId id, const Pose& p);
-bool readPose(const World& W, BodyId id, Pose& out);
