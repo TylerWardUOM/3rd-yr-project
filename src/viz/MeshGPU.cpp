@@ -1,28 +1,32 @@
 #include "viz/MeshGPU.h"
 
-MeshGPU::MeshGPU() {
-    glGenVertexArrays(1, &VAO); // create VAO first
-    glGenBuffers(1, &VBO);  // create VBO second
-    glGenBuffers(1, &EBO); // create EBO last
+
+
+MeshGPU::~MeshGPU() { destroy(); }
+
+void MeshGPU::destroy() noexcept {
+    if (EBO) glDeleteBuffers(1, &EBO);
+    if (VBO) glDeleteBuffers(1, &VBO);
+    if (VAO) glDeleteVertexArrays(1, &VAO);
+    VAO = VBO = EBO = 0;
+    count = 0;
 }
 
-MeshGPU::~MeshGPU() {
-    glDeleteBuffers(1, &EBO); // delete EBO first (bound to VAO)
-    glDeleteBuffers(1, &VBO); // delete VBO second
-    glDeleteVertexArrays(1, &VAO); // delete VAO last
+void MeshGPU::steal(MeshGPU& o) noexcept {
+    VAO   = o.VAO;
+    VBO   = o.VBO;
+    EBO   = o.EBO;
+    count = o.count;
+    o.VAO = o.VBO = o.EBO = 0;
+    o.count = 0;
 }
 
-MeshGPU::MeshGPU(MeshGPU&& o) noexcept {
-    *this = std::move(o);
-}
+MeshGPU::MeshGPU(MeshGPU&& o) noexcept { steal(o); }
 
 MeshGPU& MeshGPU::operator=(MeshGPU&& o) noexcept {
     if (this != &o) {
-        VAO = o.VAO;
-        VBO = o.VBO;
-        EBO = o.EBO;
-        count = o.count;
-        o = {};  // reset source
+        destroy();   // release current resources
+        steal(o);    // take ownership; zero out 'o' fields (no recursion)
     }
     return *this;
 }
@@ -32,6 +36,9 @@ void MeshGPU::upload(const std::vector<float>& interleavedPosNorm,
                      const std::vector<unsigned>& indices) {
     count = static_cast<GLsizei>(indices.size()); // number of indices to draw
 
+    glGenVertexArrays(1, &VAO); // create VAO first
+    glGenBuffers(1, &VBO);  // create VBO second
+    glGenBuffers(1, &EBO); // create EBO last
     // --- Set up buffers and upload data
     glBindVertexArray(VAO); // bind VAO first
 
