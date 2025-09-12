@@ -52,7 +52,7 @@ void ViewportController::update(float /*dt*/, bool uiCapturing, EntityId selecte
             if (dragTarget) {
                 WorldSnapshot snap = world_.readSnapshot();
                 int dragTargetIdx = world_.findSurfaceIndexById(snap, selected);
-                spherePos = snap.surfaces[dragTargetIdx].T_ws.p;
+                spherePos = world_.readToolPose().p; // use tool pose for sphere center
                 //std::cout << "Sphere position: " << spherePos.x << ", " << spherePos.y << ", " << spherePos.z << ", " << snap.t_sec << std::endl;
                 
             } else {
@@ -109,7 +109,11 @@ void ViewportController::update(float /*dt*/, bool uiCapturing, EntityId selecte
                 WorldSnapshot snap = world_.readSnapshot();
                 int dragTargetIdx = world_.findSurfaceIndexById(snap, selected);
                 Pose spherePose = snap.surfaces[dragTargetIdx].T_ws;
-                if (dragTarget) world_.setPose(dragTarget, {(glm::dvec3(pos)),spherePose.q});
+                if (dragTarget){
+                    // --- update world ---
+                    world_.setToolPose({(glm::dvec3(pos)),spherePose.q});
+                    world_.publishSnapshot(2.0);
+                }
             }
         }
     }
@@ -138,5 +142,9 @@ void ViewportController::handleMouseDrag(double x, double y) {
     WorldSnapshot snap = world_.readSnapshot();
     int dragTargetIdx = world_.findSurfaceIndexById(snap, dragTarget);
     Pose spherePose = snap.surfaces[dragTargetIdx].T_ws;
-    if (dragTarget) world_.setPose(dragTarget, {(glm::dvec3(pos)),spherePose.q});
+    if (dragTarget){
+        // --- update world ---
+        world_.setToolPose({(glm::dvec3(pos)),spherePose.q});
+        world_.publishSnapshot(3.0);
+    }
 }

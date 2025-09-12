@@ -8,22 +8,22 @@ class HapticEngine {
         ~HapticEngine();
 
         void run(); // main haptics loop
-        
-        void getProxyPose(Pose& p) const { p = proxyPose_.read(); }
-        void getRefPose(Pose& p) const { p = refPose_.read(); }
 
-        void setToolPose(const Pose& p) { toolPose_.write(p); }
+        void bindRoles(){
+            toolId_ = world_.entityFor(Role::Tool);
+            proxyId_ = world_.entityFor(Role::Proxy);
+            refId_ = world_.entityFor(Role::Reference);
+        }
+        
 
 
     private:
         World& world_; // shared state with scene/physics thread
 
-        // tool state (from scene/device)
-        DoubleBuffer<Pose>      toolPose_{};
+        World::EntityId toolId_{0}, proxyId_{0}, refId_{0};
 
-        // proxy/ref state (to scene)
-        DoubleBuffer<Pose>      proxyPose_{};
-        DoubleBuffer<Pose>      refPose_{};
+        Pose proxyPosePrev_{}; // previous proxy pose for velocity calc
+
 
         // --- core loop functions ---
         void update(float dt); // update haptics state

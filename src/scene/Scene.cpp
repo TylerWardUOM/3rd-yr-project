@@ -72,7 +72,7 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
 
 
     // Controllers (keyboard/mouse)
-    vpCtrl_.update(/*dt*/0.f, uiCapturing, selected_);
+    vpCtrl_.update(/*dt*/0.f, uiCapturing, world_.entityFor(Role::Tool));
     // Scroll
     double sy = win_.popScrollY();
     if (sy != 0.0) vpCtrl_.onScroll(sy);
@@ -84,12 +84,13 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     camState_.pitchDeg  = cam_.pitchDeg;
     camState_.position  = cam_.eye;
     camState_.yawDeg  = cam_.yawDeg;
+
     WorldSnapshot snap = world_.readSnapshot();
     int selectedIdx = world_.findSurfaceIndexById(snap, selected_);
     Pose selectedPose = snap.surfaces[selectedIdx].T_ws;
     //std::cout << "Selected position: " << selectedPose.p.x << ", " << selectedPose.p.y << ", " << selectedPose.p.z << std::endl;
     bodyState_.position = glm::vec3(selectedPose.p);
-    haptic_.setToolPose(selectedPose); // temp for haptics
+    //if (selected_ == world_.entityFor(Role::Tool)) world_.setToolPose(selectedPose); // temp for haptics
     bodyState_.colour   = glm::vec3(snap.surfaces[selectedIdx].colour);
     // Build options each frame
     struct Option { World::EntityId id; std::string label; };
@@ -145,16 +146,23 @@ void Scene::init_Ui(){
     // Body commands
     cmds.setBodyPosition = [&](float x, float y, float z) { // fix to use index
         WorldSnapshot snap = world_.readSnapshot();
-        Pose selectedPose = snap.surfaces[selected_].T_ws;
+        int selectedIndx = world_.findSurfaceIndexById(snap, selected_);
+        Pose selectedPose = snap.surfaces[selectedIndx].T_ws;
+        //std::cout << "Old position: " << selectedPose.p.x << ", " << selectedPose.p.y << ", " << selectedPose.p.z << std::endl;
+        //std::cout << "Setting body position to: " << x << ", " << y << ", " << z << std::endl;
+
+        // --- Update world ---
         world_.setPose(selected_, {(glm::dvec3({x,y,z})),selectedPose.q});
-        world_.publishSnapshot(0.0);
+        world_.publishSnapshot(12.0);
 
     };
     cmds.setBodyColour = [&](float r, float g, float b) {
         WorldSnapshot snap = world_.readSnapshot();
         int selectedIdx = world_.findSurfaceIndexById(snap, selected_);
+
+        // --- Update world ---
         world_.setColour(selected_,{r,g,b});
-        world_.publishSnapshot(0.0);
+        world_.publishSnapshot(15.0);
         
     };
 

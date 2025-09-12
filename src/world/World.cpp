@@ -46,6 +46,29 @@ bool World::setColour(EntityId id, const Colour& colour) {
     return false; // no matching entity
 }
 
+bool World::setToolPose(const Pose& T_ws) {
+    toolPoseBuf_.write(T_ws);
+    return true;
+}
+
+void World::setRole(EntityId id, Role r) {
+    for (auto& s : surfaces_) {
+        if (s.id == id) {
+            s.role = r;
+            return;
+        }
+    }
+}
+
+EntityId World::entityFor(Role r) const {
+    for (const auto& s : surfaces_) {
+        if (s.id != 0 && s.type != SurfaceType::TriMesh) { // only consider valid non-mesh surfaces
+            if (s.role == r) return s.id; // assuming entity id 1 is tool
+        }
+    }
+    return 0; // none found
+}
+
 void World::publishSnapshot(double t_sec) {
     WorldSnapshot snap{};
     snap.t_sec = t_sec;

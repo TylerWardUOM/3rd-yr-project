@@ -29,10 +29,15 @@ public:
     void publishSnapshot(double t_sec);       // packs surfaces_ into buf
     WorldSnapshot readSnapshot() const { return snapBuf_.read(); }
 
+    bool setToolPose(const Pose& T_ws);
+    Pose readToolPose() const { return toolPoseBuf_.read(); }
+
     bool setPose(EntityId id, const Pose& T_ws);
     bool setColour(EntityId id, const Colour& colour);
-    bool translate(EntityId id, const glm::dvec3& dp);   // optional convenience
-    bool rotate(EntityId id, const glm::dquat& dq);      // optional convenience
+    void setRole(EntityId id, Role r);
+    EntityId entityFor(Role r) const;                   // returns 0 if none
+    bool translate(EntityId id, const glm::dvec3& dp);   
+    bool rotate(EntityId id, const glm::dquat& dq);     
 
     static int findSurfaceIndexById(const WorldSnapshot& snap, World::EntityId id) {
         for (uint32_t i = 0; i < snap.numSurfaces; ++i) {
@@ -42,8 +47,10 @@ public:
     }
 private:
     EntityId nextId_ = 1;
+    DoubleBuffer<Pose> toolPoseBuf_;
     std::vector<EntityId> entities_;
     std::vector<SurfaceDef> surfaces_;
+
 
     DoubleBuffer<WorldSnapshot> snapBuf_;
 };
