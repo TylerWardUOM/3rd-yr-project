@@ -3,19 +3,18 @@
 
 #include "viz/Window.h"
 #include "viz/Camera.h"
-#include "world/world.h"
+#include "haptics/HapticEngine.h"
 
 class ViewportController {
 public:
-    explicit ViewportController(Window& w, World& world) : win(&w), world_(world) {}
+    explicit ViewportController(Window& w, HapticEngine& haptic) : win(&w), haptic_(haptic) {}
     ViewportController(const ViewportController&) = delete;            
     ViewportController& operator=(const ViewportController&) = delete; 
     
     void setCamera(Camera* c) { cam = c; }
-    void setDragTarget(EntityId b) { dragTarget = b; } // the sphere
     void setViewport(int wpx, int hpx) { width = wpx; height = hpx; }
 
-    void update(float dt, bool uiCapturing, EntityId selected);
+    void update(float dt, bool uiCapturing);
 
     void onScroll(double yoff) { pendingScrollY_ += yoff; } // accumulate scroll
 
@@ -35,9 +34,8 @@ public:
 
 private:
     Window* win;
-    World& world_;
+    HapticEngine& haptic_;
     Camera* cam{};
-    EntityId dragTarget{};
     int width{1}, height{1};
     double pendingScrollY_{0.0};    // accumulated from GLFW callback
 

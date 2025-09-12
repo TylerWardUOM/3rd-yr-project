@@ -5,9 +5,8 @@
 
 
 
-void ViewportController::update(float /*dt*/, bool uiCapturing, EntityId selected) {
+void ViewportController::update(float /*dt*/, bool uiCapturing) {
     if (!cam || !win) return;
-    dragTarget = selected;
     // Get framebuffer size
     win->getFramebufferSize(width, height);
     //  -- Keyboard (WASD) — always on if not captured
@@ -49,15 +48,10 @@ void ViewportController::update(float /*dt*/, bool uiCapturing, EntityId selecte
             //std::cout << width;
             // ----- Get drag target position
             glm::dvec3 spherePos;
-            if (dragTarget) {
-                WorldSnapshot snap = world_.readSnapshot();
-                int dragTargetIdx = world_.findSurfaceIndexById(snap, selected);
-                spherePos = world_.readToolPose().p; // use tool pose for sphere center
-                //std::cout << "Sphere position: " << spherePos.x << ", " << spherePos.y << ", " << spherePos.z << ", " << snap.t_sec << std::endl;
-                
-            } else {
-                spherePos = glm::dvec3(cam->eye);                  // vec3 -> dvec3
-            }
+            HapticSnapshot snap = haptic_.readSnapshot();
+            spherePos = snap.devicePose_ws.p; // use tool pose for sphere center
+            //std::cout << "Sphere position: " << spherePos.x << ", " << spherePos.y << ", " << spherePos.z << ", " << snap.t_sec << std::endl;
+
 
             // --- Convert ray to double precision (maybe change)
             glm::dvec3 rayOrigin = glm::dvec3(ray.o);              // vec3 -> dvec3
@@ -106,14 +100,9 @@ void ViewportController::update(float /*dt*/, bool uiCapturing, EntityId selecte
                 dragDepth_ = glm::max(0.05f, dragDepth_ + step); // keep positive
 
                 glm::vec3 pos = ray.o + dragDepth_ * ray.d; // new position along ray
-                WorldSnapshot snap = world_.readSnapshot();
-                int dragTargetIdx = world_.findSurfaceIndexById(snap, selected);
-                Pose spherePose = snap.surfaces[dragTargetIdx].T_ws;
-                if (dragTarget){
-                    // --- update world ---
-                    world_.setToolPose({(glm::dvec3(pos)),spherePose.q});
-                    world_.publishSnapshot(2.0);
-                }
+                HapticSnapshot snap = haptic_.readSnapshot();
+                Pose spherePose = snap.devicePose_ws;
+                haptic_.submitToolPose({(glm::dvec3(pos)),spherePose.q}, snap.t_sec);
             }
         }
     }
@@ -132,19 +121,14 @@ void ViewportController::handleMouseLook(double x, double y) {
 }
 
 void ViewportController::handleMouseDrag(double x, double y) {
-    if (!dragTarget || !cam || width<=0 || height<=0) return;
+    if (!cam || width<=0 || height<=0) return;
 
     // Ray through cursor
     Ray ray = makeRayAtCursor(x, y, width, height, *cam);
 
     // Place object at current dragDepth_ along the ray
     glm::vec3 pos = ray.o + dragDepth_ * ray.d;
-    WorldSnapshot snap = world_.readSnapshot();
-    int dragTargetIdx = world_.findSurfaceIndexById(snap, dragTarget);
-    Pose spherePose = snap.surfaces[dragTargetIdx].T_ws;
-    if (dragTarget){
-        // --- update world ---
-        world_.setToolPose({(glm::dvec3(pos)),spherePose.q});
-        world_.publishSnapshot(3.0);
-    }
+    HapticSnapshot snap = haptic_.readSnapshot();
+    Pose spherePose = snap.devicePose_ws;
+    haptic_.submitToolPose({(glm::dvec3(pos)),spherePose.q}, snap.t_sec);
 }

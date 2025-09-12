@@ -26,14 +26,14 @@ class GlSceneRenderer : public ISceneRenderer {
                             const uint32_t* idx, size_t idxCount) override;
         void onResize(int width, int height) override;
         void setViewProj(const glm::mat4& V, const glm::mat4& P) override;
-        void submit(const WorldSnapshot& world, const HapticsVizSnapshot& viz) override; // submit for rendering
+        void submit(const WorldSnapshot& world, const HapticSnapshot& haptic) override; // submit for rendering
         void render() override; // render submitted scene
 
     private:
         Camera& camera_;
         // --- cached last-submitted state
         WorldSnapshot       world_{};
-        HapticsVizSnapshot  viz_{};
+        HapticSnapshot  haptic_{};
 
         // --- GPU resources
         Shader shader_;   // generic lit shader (pos+norm)
@@ -57,6 +57,7 @@ class GlSceneRenderer : public ISceneRenderer {
         void drawPlaneRenderable(const glm::mat4& M, const glm::vec2& halfExtents, const glm::vec3& colour);
         void drawSphereRenderable(const glm::mat4& M, double radius, const glm::vec3& colour);
 
+        void drawOverlays();
 
 };
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "haptics/HapticBuffers.h"
 #include "world/World.h"
 
 class HapticEngine {
@@ -8,20 +9,21 @@ class HapticEngine {
         ~HapticEngine();
 
         void run(); // main haptics loop
-
-        void bindRoles(){
-            toolId_ = world_.entityFor(Role::Tool);
-            proxyId_ = world_.entityFor(Role::Proxy);
-            refId_ = world_.entityFor(Role::Reference);
-        }
         
+        HapticSnapshot readSnapshot() const { return bufs_.snapBuf.read(); }
+        
+        void submitToolPose(const Pose& T_ws, double t_sec) {
+            ToolIn in = bufs_.inBuf.read();
+            in.devicePose_ws = T_ws;
+            in.t_sec = t_sec;
+            bufs_.inBuf.write(in);
+        }
 
 
     private:
         World& world_; // shared state with scene/physics thread
 
-        World::EntityId toolId_{0}, proxyId_{0}, refId_{0};
-
+        HapticsBuffers bufs_; // local buffers
         Pose proxyPosePrev_{}; // previous proxy pose for velocity calc
 
 

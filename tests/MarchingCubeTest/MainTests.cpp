@@ -31,22 +31,18 @@ int main() {
 
 	GlSceneRenderer renderer(camera); // Renderer Object
 
-	ViewportController vpCtrl(win, world); // Viewport Controller Object
-
 
 	HapticEngine haptic(world); // Haptic Engine Object
 
     Scene scene(win, world, renderer, camera, haptic); // Scene Object
 
 	EntityId planeId = scene.addPlane({ {0,0,0}, {1.0,0,0,0} }, { 0.8f, 0.8f, 0.8f }); // Add a plane at origin
-	EntityId sphereId = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
-    EntityId sphereId2 = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.8f, 0.1f, 0.1f }); // Add a sphere above the plane
-    std::cout << "Plane ID: " << planeId << ", Sphere ID: " << sphereId << ", Sphere2 ID: " << sphereId2 << std::endl;
-    world.setRole(sphereId, Role::Tool);      // Designate sphere as tool
-    world.setRole(sphereId2, Role::Proxy);    // Designate second sphere as proxy
-	scene.setSelected(sphereId); // Set drag target to the sphere entity
+	EntityId sphereId = scene.addSphere({ {0,1.0,0}, {1.0,0,0,0} }, 1.0f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
+    //EntityId sphereId2 = scene.addSphere({ {0,0,0}, {1.0,0,0,0} }, 0.5f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
+    // EntityId sphereId2 = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.8f, 0.1f, 0.1f }); // Add a sphere above the plane
+    // std::cout << "Plane ID: " << planeId << ", Sphere ID: " << sphereId << ", Sphere2 ID: " << sphereId2 << std::endl;
+	scene.setSelected(planeId); // Set drag target to the sphere entity
 	world.publishSnapshot(0.0); // Initial publish to populate snapshot
-    haptic.bindRoles(); // Bind roles in haptic engine
 
     // High-priority "haptics" thread
     std::jthread haptics([&](std::stop_token st) {

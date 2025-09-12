@@ -1,6 +1,8 @@
 #include "haptics/HapticEngine.h"
 #include <thread>
 #include "env/primitives/PlaneEnv.h"
+#include "env/primitives/SphereEnv.h"
+#include <glm/gtc/matrix_transform.hpp>
 #include <stdexcept>
 #include <iostream>
 
@@ -31,15 +33,26 @@ PlaneEnv* planeHelper(Pose T_ws) {
     return &plane;
 }
 
+SphereEnv* sphereHelper(Pose T_ws, double radius) {
+    glm::vec3 center = T_ws.p;
+    SphereEnv* sphere = new SphereEnv(center, radius/2);
+    return sphere;
+}
+
 void HapticEngine::update(float time) {
     // 1) Inputs
-    Pose toolPose = world_.readToolPose();
+    WorldSnapshot snap = world_.readSnapshot();
+    ToolIn toolIn = bufs_.inBuf.read();
+    bool flag = false;
+    ToolOut toolOut{};
+    HapticSnapshot snapBuf{};
+    
+    Pose toolPose = toolIn.devicePose_ws;
     //std::cout << "Tool position: " << toolPose.p.x << ", " << toolPose.p.y << ", " << toolPose.p.z << std::endl;
     Pose refPose  = toolPose;                  // simple tracking for now
     Pose proxyPose = proxyPosePrev_;           // start from last
     int selectedIndx = -1;
     // 2) Env collision / projection
-    WorldSnapshot snap = world_.readSnapshot();
     //std::cout << snap.t_sec << std::endl;
     for (const SurfaceDef& surf : snap.surfaces) {
         EnvInterface* env = nullptr;
@@ -51,6 +64,10 @@ void HapticEngine::update(float time) {
                 }
                 break;
             case (SurfaceType::Sphere):
+                env = sphereHelper(surf.T_ws, surf.sphere.radius);
+                if (!env) {
+                    throw std::runtime_error("Failed to allocate SphereEnv");
+                }
                 //std::cout <<"Sphere Position" << surf.T_ws.p.x << ", " << surf.T_ws.p.y << ", " << surf.T_ws.p.z << std::endl;
                 break;
             default:
@@ -59,22 +76,25 @@ void HapticEngine::update(float time) {
         if (env){
             if (env->phi(refPose.p) < 0.0) {
                 proxyPose.p = env->project(refPose.p);
+                flag=true;
             } else {
-                proxyPose.p = refPose.p;
+                if (!flag){
+                    proxyPose.p = refPose.p;
+                }
             }
         }
     }
-    
-    world_.setPose(toolId_, toolPose); // update t for debug
+    //world_.setPose(toolId_, toolPose); // update t for debug
+    snapBuf.devicePose_ws = toolPose;
     // 3) Write outputs to world entities (by role)
-    if (proxyId_) {
-        world_.setPose(proxyId_, proxyPose);
+    toolOut.proxyPose_ws = proxyPose; // for viz
+    snapBuf.proxyPose_ws = proxyPose;
         //std::cout << "Proxy position: " << proxyPose.p.x << ", " << proxyPose.p.y << ", " << proxyPose.p.z << std::endl;
-    }
-    if (refId_)   world_.setPose(refId_,   refPose);
+
 
     // 4) Snapshot once per tick
-    world_.publishSnapshot(time);
+    bufs_.outBuf.write(toolOut);
+    bufs_.snapBuf.write(snapBuf);
 
     // 5) Keep state
     proxyPosePrev_ = proxyPose;
