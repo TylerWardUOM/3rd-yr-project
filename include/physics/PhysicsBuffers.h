@@ -1,4 +1,3 @@
-// physics/PhysicsBuffers.h
 #pragma once
 #include "world/DoubleBuffer.h"
 #include "physics/PhysicsCommands.h"

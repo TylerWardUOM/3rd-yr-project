@@ -11,7 +11,7 @@ void PhysicsEngine::step(double dt) {
     // 1) Read commands from haptics
     PhysicsCommands cmds = pbufs_.cmdBuf.read();
 
-    // 2) Apply them to our “toy” backend (position nudges)
+    // 2) Apply each command as a force at a point on a body
     for (const auto& c : cmds.wrenches) {
         applyForceAtPoint(c.body, c.F_ws, c.p_ws, c.duration_s);
     }
@@ -40,8 +40,7 @@ void PhysicsEngine::applyForceAtPoint(World::EntityId id,
     }
 
     // Nudge the entity’s pose in the world
-    // (assumes World::translate(id, dp) moves the T_ws.p by dp)
-    std::cout << "PhysicsEngine: moving entity " << id << " by (" << dp.x << ", " << dp.y << ", " << dp.z << ")\n";
+    //std::cout << "PhysicsEngine: moving entity " << id << " by (" << dp.x << ", " << dp.y << ", " << dp.z << ")\n";
     world_.translate(id, dp);
 }
 
