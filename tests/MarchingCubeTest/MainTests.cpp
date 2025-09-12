@@ -11,6 +11,8 @@
 #include "env/primitives/SphereEnv.h"
 #include "env/primitives/PlaneEnv.h"
 #include "haptics/HapticEngine.h"
+#include "physics/PhysicsEngine.h"
+#include "physics/PhysicsBuffers.h"
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -30,9 +32,11 @@ int main() {
 	World world; // World Object
 
 	GlSceneRenderer renderer(camera); // Renderer Object
+	PhysicsBuffers buf; // Physics Buffers Object
 
+	PhysicsEngine physics(world,buf); // Physics Engine Object
 
-	HapticEngine haptic(world); // Haptic Engine Object
+	HapticEngine haptic(world, buf); // Haptic Engine Object
 
     Scene scene(win, world, renderer, camera, haptic); // Scene Object
 
@@ -55,6 +59,22 @@ int main() {
         constexpr auto slack = std::chrono::microseconds(200);  // NEW: coarse sleep margin
         auto next = clock::now() + period;                       // NEW
         haptic.run(); // Start the haptic engine
+        });
+
+    // High-priority "physics" thread
+    std::jthread physicst([&](std::stop_token st) {
+#ifdef _WIN32
+        timeBeginPeriod(1); // NEW: better sleep granularity (undo at end)
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+#endif
+        using clock = std::chrono::steady_clock;
+        constexpr auto period = std::chrono::microseconds(1000); // NEW: 1 kHz
+        constexpr auto slack = std::chrono::microseconds(200);  // NEW: coarse sleep margin
+        auto next = clock::now() + period;// NEW
+		float dt = 0.001f; // 1 ms fixed step for now
+        while (true) {
+            physics.step(dt); // Start the physics engine
+        }
         });
 
 	scene.run();

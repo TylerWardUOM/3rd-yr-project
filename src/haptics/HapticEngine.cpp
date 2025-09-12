@@ -4,24 +4,23 @@
 #include "env/primitives/SphereEnv.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdexcept>
+#include <memory>
 #include <iostream>
 
-HapticEngine::HapticEngine(World& world)
-    : world_(world){}
+HapticEngine::HapticEngine(World& world, PhysicsBuffers& phys)
+    : world_(world), physBufs_(&phys){}
 
 HapticEngine::~HapticEngine() = default;
 
 void HapticEngine::run() {
     // Main haptics loop
     const float dt = 0.005f; // 1ms timestep
-    float time = 0.0f;
     while (true) {
-        update(time);
+        update(dt);
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        time += dt;
     }
 }
-PlaneEnv* planeHelper(Pose T_ws) {
+static std::unique_ptr<EnvInterface> makePlaneEnv(Pose T_ws) {
 
                     // world-space plane parameters
     glm::dvec3 n_local{0.0, 1.0, 0.0};
@@ -29,42 +28,44 @@ PlaneEnv* planeHelper(Pose T_ws) {
     glm::dvec3 n_world = glm::normalize(R * n_local);
     //std::cout << "Plane position: " << T_ws.p.x << ", " << T_ws.p.y << ", " << T_ws.p.z << std::endl;
     double d = glm::dot(n_world, T_ws.p);     // plane: phi(x)=n·x - d
-    PlaneEnv plane(n_local, d);
-    return &plane;
+    return std::make_unique<PlaneEnv>(n_world, d); // pass WORLD normal, not local
 }
 
-SphereEnv* sphereHelper(Pose T_ws, double radius) {
+static std::unique_ptr<EnvInterface> makeSphereEnv(Pose T_ws, double radius) {
     glm::vec3 center = T_ws.p;
-    SphereEnv* sphere = new SphereEnv(center, radius/2);
-    return sphere;
+    return std::make_unique<SphereEnv>(center, radius/2); 
+
 }
 
-void HapticEngine::update(float time) {
+void HapticEngine::update(float dt) {
     // 1) Inputs
     WorldSnapshot snap = world_.readSnapshot();
     ToolIn toolIn = bufs_.inBuf.read();
-    bool flag = false;
-    ToolOut toolOut{};
-    HapticSnapshot snapBuf{};
-    
+
     Pose toolPose = toolIn.devicePose_ws;
     //std::cout << "Tool position: " << toolPose.p.x << ", " << toolPose.p.y << ", " << toolPose.p.z << std::endl;
     Pose refPose  = toolPose;                  // simple tracking for now
     Pose proxyPose = proxyPosePrev_;           // start from last
-    int selectedIndx = -1;
+
+    // Contact search (track best penetration)
+    double bestPhi = +1e30;
+    World::EntityId contactEntity = 0;
+    glm::dvec3 contactPoint_ws{0}, contactNormal_ws{0,1,0};
+
+
     // 2) Env collision / projection
     //std::cout << snap.t_sec << std::endl;
     for (const SurfaceDef& surf : snap.surfaces) {
-        EnvInterface* env = nullptr;
+        std::unique_ptr<EnvInterface> env;
         switch (surf.type){
             case (SurfaceType::Plane):
-                env = planeHelper(surf.T_ws);        
+                env = makePlaneEnv(surf.T_ws);        
                 if (!env) {
                     throw std::runtime_error("Failed to allocate PlaneEnv");
                 }
                 break;
             case (SurfaceType::Sphere):
-                env = sphereHelper(surf.T_ws, surf.sphere.radius);
+                env = makeSphereEnv(surf.T_ws, surf.sphere.radius);
                 if (!env) {
                     throw std::runtime_error("Failed to allocate SphereEnv");
                 }
@@ -74,28 +75,69 @@ void HapticEngine::update(float time) {
                 break;
         }
         if (env){
-            if (env->phi(refPose.p) < 0.0) {
-                proxyPose.p = env->project(refPose.p);
-                flag=true;
-            } else {
-                if (!flag){
-                    proxyPose.p = refPose.p;
+            const double phi = env->phi(refPose.p); 
+            if (phi < bestPhi) {
+                bestPhi = phi;
+                if (phi < 0.0){
+                    contactEntity = surf.id;
+                    contactPoint_ws = env->project(refPose.p);
+                    contactNormal_ws = env->grad(contactPoint_ws);
+                    if (glm::dot(contactNormal_ws, contactNormal_ws) > 0) contactNormal_ws = glm::normalize(contactNormal_ws);
                 }
             }
         }
     }
-    //world_.setPose(toolId_, toolPose); // update t for debug
-    snapBuf.devicePose_ws = toolPose;
-    // 3) Write outputs to world entities (by role)
-    toolOut.proxyPose_ws = proxyPose; // for viz
-    snapBuf.proxyPose_ws = proxyPose;
-        //std::cout << "Proxy position: " << proxyPose.p.x << ", " << proxyPose.p.y << ", " << proxyPose.p.z << std::endl;
+
+    // Proxy position
+    if (bestPhi < 0.0) {
+        // constrain proxy to surface
+        proxyPose.p = contactPoint_ws;
+    } else {
+        proxyPose.p = refPose.p;
+        contactEntity = 0;
+    }
 
 
-    // 4) Snapshot once per tick
+    // Virtual Coupling
+    const double K_track = 2000.0; // [N/m]
+    const double D_track = 0.7 * 2.0 * std::sqrt(K_track * 0.2); // critical ish damping
+
+    const glm::dvec3 proxyVel = (proxyPose.p - proxyPosePrev_.p) * (1.0 / dt);
+    const glm::dvec3 toolVel  = glm::dvec3(0); // assume static tool for now
+
+
+    glm::dvec3 F_env_on_tool = -K_track * (toolPose.p - proxyPose.p)
+                               - D_track * (toolVel - proxyVel);
+    // Clamp for safety
+    const double Fmax = 15.0; // N
+    const double fmag = glm::length(F_env_on_tool);
+    if (fmag > Fmax) F_env_on_tool *= (Fmax / fmag);
+
+
+    // output force to world frame#
+    PhysicsCommands cmds{};
+    if (physBufs_ && contactEntity != 0) {
+        ApplyWrenchAtPoint w{};
+        w.body       = contactEntity;
+        w.F_ws       = -F_env_on_tool;   // environment gets opposite of what tool feels
+        w.p_ws       = contactPoint_ws;  // apply at contact point
+        w.duration_s = dt;
+        w.t_sec      = 0.0;
+        cmds.wrenches.push_back(w);
+    }
+    physBufs_->cmdBuf.write(cmds);  
+
+    // Outputs for viz/device
+    ToolOut toolOut{};
+    toolOut.proxyPose_ws = proxyPose;
+
+    HapticSnapshot hs{};
+    hs.devicePose_ws = toolPose;
+    hs.proxyPose_ws  = proxyPose;
+    hs.force_ws      = F_env_on_tool;   // for HUD plotting
+
     bufs_.outBuf.write(toolOut);
-    bufs_.snapBuf.write(snapBuf);
+    bufs_.snapBuf.write(hs);
 
-    // 5) Keep state
     proxyPosePrev_ = proxyPose;
 }

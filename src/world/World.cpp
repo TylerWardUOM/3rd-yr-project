@@ -46,6 +46,21 @@ bool World::setColour(EntityId id, const Colour& colour) {
     return false; // no matching entity
 }
 
+bool World::translate(EntityId id, const glm::dvec3& dp) {
+    for (auto& s : surfaces_) {
+        if (s.id == id) { s.T_ws.p += dp; return true; }
+    }
+    return false;
+}
+
+bool World::rotate(EntityId id, const glm::dquat& dq) {
+    for (auto& s : surfaces_) {
+        if (s.id == id) { s.T_ws.q = glm::normalize(dq * s.T_ws.q); return true; }
+    }
+    return false;
+}
+
+
 
 void World::publishSnapshot(double t_sec) {
     WorldSnapshot snap{};
