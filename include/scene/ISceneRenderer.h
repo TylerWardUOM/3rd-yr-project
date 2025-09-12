@@ -1,5 +1,6 @@
 #pragma once
 #include "world/WorldSnapshot.h"
+#include "haptics/HapticBuffers.h"
 #include "world/Pose.h"
 struct HapticsVizSnapshot { Pose refTool{}, proxyTool{}; };
 
@@ -12,6 +13,6 @@ public:
                                 const uint32_t* idx, size_t idxCount) = 0;
     virtual void onResize(int width, int height) = 0;  
     virtual void setViewProj(const glm::mat4& V, const glm::mat4& P) = 0;
-    virtual void submit(const WorldSnapshot& world, const HapticsVizSnapshot& viz) = 0; // submit for rendering
+    virtual void submit(const WorldSnapshot& world, const HapticSnapshot& haptic) = 0; // submit for rendering
     virtual void render() = 0; // render submitted scene
 };

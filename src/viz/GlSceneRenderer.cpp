@@ -48,9 +48,9 @@ void GlSceneRenderer::setViewProj(const glm::mat4& V, const glm::mat4& P) {
 }
 
 void GlSceneRenderer::submit(const WorldSnapshot& world,
-                             const HapticsVizSnapshot& viz) {
+                             const HapticSnapshot& haptic) {
     world_ = world; // POD copy
-    viz_   = viz;
+    haptic_   = haptic;
 }
 
 void GlSceneRenderer::render() {
@@ -84,6 +84,14 @@ void GlSceneRenderer::render() {
         } break;
         }
     }
+    drawOverlays();
+}
+
+void GlSceneRenderer::drawOverlays() {
+    // pick small radii for ghosts
+    drawSphereRenderable(compose(haptic_.devicePose_ws), 0.02f, {0.1f,1.0f,0.1f}); // device 
+    drawSphereRenderable(compose(haptic_.refPose_ws),    0.018f, {1.0f,0.1f,0.1f}); // ref   
+    drawSphereRenderable(compose(haptic_.proxyPose_ws),  0.022f, {0.1f,0.1f,1.0f}); // proxy 
 }
 
 // ========== helpers: draw ==========

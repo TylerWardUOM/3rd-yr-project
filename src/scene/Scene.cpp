@@ -9,7 +9,7 @@ Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, H
     cam_(cam),
     imgui_(win),
     ui_(),
-    vpCtrl_(win, world),
+    vpCtrl_(win, haptic),
     haptic_(haptic) // temp for mouse pos
 {
     init_Ui();
@@ -72,7 +72,7 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
 
 
     // Controllers (keyboard/mouse)
-    vpCtrl_.update(/*dt*/0.f, uiCapturing, world_.entityFor(Role::Tool));
+    vpCtrl_.update(/*dt*/0.f, uiCapturing);
     // Scroll
     double sy = win_.popScrollY();
     if (sy != 0.0) vpCtrl_.onScroll(sy);
@@ -118,7 +118,7 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
 
 void Scene::render() {
     renderer_.setViewProj(cam_.view(), cam_.proj());
-    renderer_.submit(world_.readSnapshot(), HapticsVizSnapshot{});
+    renderer_.submit(world_.readSnapshot(), haptic_.readSnapshot());
     renderer_.render();
     // UI
     imgui_.begin();
@@ -151,7 +151,7 @@ void Scene::init_Ui(){
         //std::cout << "Old position: " << selectedPose.p.x << ", " << selectedPose.p.y << ", " << selectedPose.p.z << std::endl;
         //std::cout << "Setting body position to: " << x << ", " << y << ", " << z << std::endl;
 
-        // --- Update world ---
+        // --- Update world debug use only ---
         world_.setPose(selected_, {(glm::dvec3({x,y,z})),selectedPose.q});
         world_.publishSnapshot(12.0);
 
@@ -160,7 +160,7 @@ void Scene::init_Ui(){
         WorldSnapshot snap = world_.readSnapshot();
         int selectedIdx = world_.findSurfaceIndexById(snap, selected_);
 
-        // --- Update world ---
+        // --- Update world debug use only ---
         world_.setColour(selected_,{r,g,b});
         world_.publishSnapshot(15.0);
         

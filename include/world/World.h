@@ -29,13 +29,8 @@ public:
     void publishSnapshot(double t_sec);       // packs surfaces_ into buf
     WorldSnapshot readSnapshot() const { return snapBuf_.read(); }
 
-    bool setToolPose(const Pose& T_ws);
-    Pose readToolPose() const { return toolPoseBuf_.read(); }
-
     bool setPose(EntityId id, const Pose& T_ws);
     bool setColour(EntityId id, const Colour& colour);
-    void setRole(EntityId id, Role r);
-    EntityId entityFor(Role r) const;                   // returns 0 if none
     bool translate(EntityId id, const glm::dvec3& dp);   
     bool rotate(EntityId id, const glm::dquat& dq);     
 
@@ -47,7 +42,6 @@ public:
     }
 private:
     EntityId nextId_ = 1;
-    DoubleBuffer<Pose> toolPoseBuf_;
     std::vector<EntityId> entities_;
     std::vector<SurfaceDef> surfaces_;
 
