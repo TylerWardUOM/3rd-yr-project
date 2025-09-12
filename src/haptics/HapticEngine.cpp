@@ -2,85 +2,80 @@
 #include <thread>
 #include "env/primitives/PlaneEnv.h"
 #include <stdexcept>
+#include <iostream>
 
 HapticEngine::HapticEngine(World& world)
-    : world_(world)
-{
-    // Initialize tool pose to identity
-    toolPose_.write(Pose{});
-    proxyPose_.write(Pose{});
-    refPose_.write(Pose{});
-}
+    : world_(world){}
 
 HapticEngine::~HapticEngine() = default;
 
 void HapticEngine::run() {
     // Main haptics loop
-    const float dt = 0.001f; // 1ms timestep
+    const float dt = 0.005f; // 1ms timestep
+    float time = 0.0f;
     while (true) {
-        update(dt);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        update(time);
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        time += dt;
     }
 }
+PlaneEnv* planeHelper(Pose T_ws) {
 
-void HapticEngine::update(float dt) {
-    // Read current tool pose
-    Pose toolPose = toolPose_.read();
+                    // world-space plane parameters
+    glm::dvec3 n_local{0.0, 1.0, 0.0};
+    glm::dmat3 R = glm::mat3_cast(T_ws.q);
+    glm::dvec3 n_world = glm::normalize(R * n_local);
+    //std::cout << "Plane position: " << T_ws.p.x << ", " << T_ws.p.y << ", " << T_ws.p.z << std::endl;
+    double d = glm::dot(n_world, T_ws.p);     // plane: phi(x)=n·x - d
+    PlaneEnv plane(n_local, d);
+    return &plane;
+}
 
-    // For simplicity, assume zero velocity and button not pressed
-    //glm::dvec3 toolVel{0.0, 0.0, 0.0};
-
-    // Compute forces and update proxy/ref poses
-    Pose proxyPose;
-    Pose refPose = toolPose;
-    glm::dvec3 force;
-    WorldSnapshot snap = world_.readSnapshot(); // ensure we have latest world state
-    double d;
-    for (SurfaceDef const& surf : snap.surfaces) {
-        Pose surfPose = surf.T_ws;
+void HapticEngine::update(float time) {
+    // 1) Inputs
+    Pose toolPose = world_.readToolPose();
+    //std::cout << "Tool position: " << toolPose.p.x << ", " << toolPose.p.y << ", " << toolPose.p.z << std::endl;
+    Pose refPose  = toolPose;                  // simple tracking for now
+    Pose proxyPose = proxyPosePrev_;           // start from last
+    int selectedIndx = -1;
+    // 2) Env collision / projection
+    WorldSnapshot snap = world_.readSnapshot();
+    //std::cout << snap.t_sec << std::endl;
+    for (const SurfaceDef& surf : snap.surfaces) {
         EnvInterface* env = nullptr;
-        switch (surf.type)
-        {
-        case (SurfaceType::Plane):
-            glm::dvec3 n_local{ 0.0, 1.0, 0.0 };
-            // rotate into world
-            glm::dmat3 R = glm::mat3_cast(glm::quat(surfPose.q));   // rotation matrix
-            glm::dvec3 n_world = glm::normalize(R * n_local);
-
-            // pick a world point on the plane (pose origin in this convention)
-            glm::dvec3 p_world = surfPose.p;
-
-            // plane equation: n�x = d
-            d = glm::dot(n_world, p_world);
-
-            // now construct your plane SDF
-            env = new PlaneEnv(n_world, d);   
-            if (!env) {
-                throw std::runtime_error("Failed to allocate PlaneEnv");
-            }
-            break;
-        
-        default:
-            break;
+        switch (surf.type){
+            case (SurfaceType::Plane):
+                env = planeHelper(surf.T_ws);        
+                if (!env) {
+                    throw std::runtime_error("Failed to allocate PlaneEnv");
+                }
+                break;
+            case (SurfaceType::Sphere):
+                //std::cout <<"Sphere Position" << surf.T_ws.p.x << ", " << surf.T_ws.p.y << ", " << surf.T_ws.p.z << std::endl;
+                break;
+            default:
+                break;
         }
-        if (!env) continue; // unsupported type
-        if (env->phi(refPose.p) < 0.0) {
-            proxyPose.p = env->project(refPose.p);
-            world_.setPose(3, proxyPose);
-            world_.publishSnapshot(0.0); // publish updated state
-        }
-        else {;
-            if (refPose.p != proxyPose.p) {
-                world_.setPose(3, refPose);
-                world_.publishSnapshot(0.0); // publish updated sta                
+        if (env){
+            if (env->phi(refPose.p) < 0.0) {
+                proxyPose.p = env->project(refPose.p);
+            } else {
+                proxyPose.p = refPose.p;
             }
-        }         
-        // Future: handle Sphere and TriMesh types
+        }
     }
-    //computeForces(toolPose, toolVel, toolButton, proxyPose, force, refPose);
+    
+    world_.setPose(toolId_, toolPose); // update t for debug
+    // 3) Write outputs to world entities (by role)
+    if (proxyId_) {
+        world_.setPose(proxyId_, proxyPose);
+        //std::cout << "Proxy position: " << proxyPose.p.x << ", " << proxyPose.p.y << ", " << proxyPose.p.z << std::endl;
+    }
+    if (refId_)   world_.setPose(refId_,   refPose);
 
-    // Write updated proxy/ref poses
-    proxyPose_.write(proxyPose);
-    refPose_.write(refPose);
+    // 4) Snapshot once per tick
+    world_.publishSnapshot(time);
 
+    // 5) Keep state
+    proxyPosePrev_ = proxyPose;
 }
