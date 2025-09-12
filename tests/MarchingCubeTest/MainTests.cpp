@@ -61,21 +61,40 @@ int main() {
         haptic.run(); // Start the haptic engine
         });
 
-    // High-priority "physics" thread
-    std::jthread physicst([&](std::stop_token st) {
-#ifdef _WIN32
-        timeBeginPeriod(1); // NEW: better sleep granularity (undo at end)
-        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-#endif
+    std::jthread physThread([&] (std::stop_token st) {
         using clock = std::chrono::steady_clock;
-        constexpr auto period = std::chrono::microseconds(1000); // NEW: 1 kHz
-        constexpr auto slack = std::chrono::microseconds(200);  // NEW: coarse sleep margin
-        auto next = clock::now() + period;// NEW
-		float dt = 0.001f; // 1 ms fixed step for now
-        while (true) {
-            physics.step(dt); // Start the physics engine
+        using namespace std::chrono;
+
+        const auto period = 4ms;                 // target: 1 kHz
+        const auto slack  = 200us;               // sleep until (next - slack), then spin
+        auto last = clock::now();
+        auto next = last + period;
+
+        while (!st.stop_requested()) {
+            // --- sleep-then-spin until the scheduled tick ---
+            auto wake = next - slack;
+            if (wake > clock::now())
+                std::this_thread::sleep_until(wake);
+            while (clock::now() < next) {
+                std::this_thread::yield();       // or _mm_pause() on x86 for less jitter
+            }
+
+            // --- run step with measured dt ---
+            const auto now  = clock::now();
+            const double dt = duration<double>(now - last).count();  // seconds
+            last = now;
+
+            physics.step(dt);  // your engine can internally fixed-substep (e.g., 240 Hz)
+
+            // schedule next tick; recover if we overran
+            next += period;
+            if (now > next + period) {           // fell far behind: resync
+                next = now + period;
+                last = now;
+            }
         }
-        });
+    });
+
 
 	scene.run();
 	return 0;

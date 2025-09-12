@@ -20,7 +20,7 @@ private:
 
 
     // Simple hack parameters (position-only “physics”)
-    double linMobility_ = 1e-3;  // [m / (N·s)]  -> tune to taste
+    double linMobility_ = 1e-2;  // [m / (N·s)]  -> tune to taste
     double maxStep_     = 0.05;  // [m] per step clamp
 
     // Backend hooks you will implement/wrap

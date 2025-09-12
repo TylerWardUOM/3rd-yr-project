@@ -14,10 +14,10 @@ HapticEngine::~HapticEngine() = default;
 
 void HapticEngine::run() {
     // Main haptics loop
-    const float dt = 0.005f; // 1ms timestep
+    const float dt = 0.001f; // 1ms timestep
     while (true) {
         update(dt);
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 static std::unique_ptr<EnvInterface> makePlaneEnv(Pose T_ws) {
