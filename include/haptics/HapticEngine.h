@@ -1,17 +1,18 @@
 #pragma once
 #include "haptics/HapticBuffers.h"
+#include "physics/PhysicsBuffers.h"
 #include "world/World.h"
 
 class HapticEngine {
 
     public:
-        HapticEngine(World& world);
+        HapticEngine(World& world, PhysicsBuffers& phys);
         ~HapticEngine();
 
         void run(); // main haptics loop
         
         HapticSnapshot readSnapshot() const { return bufs_.snapBuf.read(); }
-        
+
         void submitToolPose(const Pose& T_ws, double t_sec) {
             ToolIn in = bufs_.inBuf.read();
             in.devicePose_ws = T_ws;
@@ -25,6 +26,7 @@ class HapticEngine {
 
         HapticsBuffers bufs_; // local buffers
         Pose proxyPosePrev_{}; // previous proxy pose for velocity calc
+        PhysicsBuffers* physBufs_ = nullptr;
 
 
         // --- core loop functions ---
