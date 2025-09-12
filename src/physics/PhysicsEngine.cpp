@@ -41,7 +41,7 @@ void PhysicsEngine::applyForceAtPoint(World::EntityId id,
 
     // Nudge the entity’s pose in the world
     // (assumes World::translate(id, dp) moves the T_ws.p by dp)
-    std::cout << "PhysicsEngine: moving entity " << id << " by (" << dp.x << ", " << dp.y << ", " << dp.z << ")\n";
+    //std::cout << "PhysicsEngine: moving entity " << id << " by (" << dp.x << ", " << dp.y << ", " << dp.z << ")\n";
     world_.translate(id, dp);
 }
 
