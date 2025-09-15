@@ -21,6 +21,16 @@ public:
         return PhysicsProps(); // default
     }
 
+    //Physic Property setters
+    void setDynamic(World::EntityId id, bool dynamic);
+    void setDensity(World::EntityId id, double density);
+    void setLinDamping(World::EntityId id, double linDamping);
+    void setAngDamping(World::EntityId id, double angDamping);
+    void setStaticFriction(World::EntityId id, double staticFriction);
+    void setDynamicFriction(World::EntityId id, double dynamicFriction);
+    void setRestitution(World::EntityId id, double restitution);
+
+
     void rebuildActors() { buildActorsFromWorld(); } // recreate actors from current World surfaces
 
 private:

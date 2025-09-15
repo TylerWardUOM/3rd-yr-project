@@ -40,8 +40,9 @@ int main() {
 
     HapticEngine haptic(world, buf); // Haptic Engine Object
 
+    PhysicsEnginePhysX physics(world, buf); // Physics Engine Object
 
-    Scene scene(win, world, renderer, camera, haptic); // Scene Object
+    Scene scene(win, world, renderer, camera, haptic, physics); // Scene Object
 
     //Ground Plane
 	EntityId planeId = scene.addPlane({ {0,0,0}, {1.0,0,0,0} }, { 0.8f, 0.8f, 0.8f }); // Add a plane at origin
@@ -60,9 +61,8 @@ int main() {
     scene.setSelected(planeId); // Set drag target to the sphere entity
 	world.publishSnapshot(0.0); // Initial publish to populate snapshot
 
-    PhysicsEnginePhysX physics(world, buf); // Physics Engine Object
     PhysicsProps sphereprops = physics.getPhysicsProps(sphereId);
-    sphereprops.density = 600.0; // Make sphere static
+    sphereprops.restitution = 0.9; 
     physics.setPhysicsProps(sphereId, sphereprops); // Make sphere dynamic with some friction
     physics.rebuildActors(); // Rebuild actors to apply new properties
 

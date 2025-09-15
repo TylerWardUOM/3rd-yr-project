@@ -12,6 +12,7 @@
 
 #include "world/world.h"
 #include "haptics/HapticEngine.h" //temp for mouse pos
+#include "physics/PhysXEngine.h"
 
 /// @defgroup scene Scene management and rendering
 /// @brief Manages the main application loop, scene objects, and rendering
@@ -26,7 +27,7 @@ public:
     /// @param renderer Scene renderer reference
     /// @param cam Camera reference
     /// @param haptic Haptic engine reference (temp for mouse pos)
-    explicit Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/);
+    explicit Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/, PhysicsEnginePhysX& physics);
     
     /// @brief Destructor
     ~Scene();
@@ -78,6 +79,7 @@ private:
     ISceneRenderer&  renderer_; ///< Scene renderer reference
     Camera&           cam_; ///< Camera reference
     HapticEngine&    haptic_; ///< Haptic engine reference (temp for mouse pos)
+    PhysicsEnginePhysX& physics_; ///< Physics engine reference
 
     // --- owned resources ---
     ImGuiLayer       imgui_; ///< ImGui layer
