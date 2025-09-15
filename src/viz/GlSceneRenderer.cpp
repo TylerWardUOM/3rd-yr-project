@@ -166,7 +166,7 @@ void GlSceneRenderer::createUnitSphere(MeshGPU& out) {
             glm::vec3 n = { std::sin(phi)*std::cos(th),
                             std::cos(phi),
                             std::sin(phi)*std::sin(th) };
-            P.push_back(n * 0.5f); // radius = 0.5
+            P.push_back(n); // radius = 1
             N.push_back(glm::normalize(n));
         }
     }
