@@ -1,10 +1,12 @@
 #pragma once
-#include "env/env_interface.h"
+#include "env/EnvInterface.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+/// @ingroup env
+/// @brief Sphere implicit surface in 3D
 class SphereEnv : public EnvInterface {
 public:
     // Construct sphere in LOCAL coordinates: center c_in, radius r_in (>0)
@@ -13,7 +15,8 @@ public:
     // Signed distance in WORLD coordinates: phi(x) = ||x - c_world|| - r_world
     double phi(const glm::dvec3& x_world) const override;
 
-    // Gradient in WORLD coordinates: unit outward normal
+    /// @brief Gradient of phi in WORLD coordinates (unit normal)
+    /// @details Undefined at center; returns +X unit vector there.
     glm::dvec3 grad(const glm::dvec3& x_world) const override;
 
     // Orthogonal projection of a WORLD point onto the sphere
@@ -24,13 +27,13 @@ public:
 
 private:
     // LOCAL-space definition
-    glm::dvec3 c_local; // center (local)
-    double     r_local; // radius  (local, > 0)
+    glm::dvec3 c_local; ///< center (local)
+    double     r_local; ///< radius (local, >0)
 
     // WORLD-space cached values (after update)
-    glm::dvec3 c_world; // center (world)
-    double     r_world; // radius (world)
+    glm::dvec3 c_world; ///< center (world)
+    double     r_world; ///< radius (world)
 
-    glm::mat4 M{}; // local -> world transform (cached)
+    glm::mat4 M{}; ///< local -> world transform (cached)
 
 };

@@ -33,10 +33,20 @@ static std::unique_ptr<EnvInterface> makePlaneEnv(Pose T_ws) {
 
 static std::unique_ptr<EnvInterface> makeSphereEnv(Pose T_ws, double radius) {
     glm::vec3 center = T_ws.p;
-    return std::make_unique<SphereEnv>(center, radius/2); 
+    return std::make_unique<SphereEnv>(center, radius); 
 
 }
 
+/**
+ * @details 
+ * The update function performs the following steps:
+ * - Read inputs: current tool pose from device, world snapshot
+ * - Environment collision detection: for each surface in the world, compute signed distance to tool position
+ * - Proxy projection: if tool is penetrating, project proxy to contact point; else set proxy to tool position
+ * - Virtual coupling: compute force based on spring-damper between tool and proxy
+ * - Write outputs: force command to physics engine, haptics snapshot and tool output for rendering
+ * - The current implementation supports plane and sphere surfaces. The tool is assumed to be a point (no radius).
+ */
 void HapticEngine::update(float dt) {
     // 1) Inputs
     WorldSnapshot snap = world_.readSnapshot();
@@ -99,7 +109,7 @@ void HapticEngine::update(float dt) {
 
 
     // Virtual Coupling
-    const double K_track = 2000.0; // [N/m]
+    const double K_track = 200.0; // [N/m]
     const double D_track = 0.7 * 2.0 * std::sqrt(K_track * 0.2); // critical ish damping
 
     const glm::dvec3 proxyVel = (proxyPose.p - proxyPosePrev_.p) * (1.0 / dt);

@@ -2,6 +2,8 @@
 #include "world/DoubleBuffer.h"
 #include "physics/PhysicsCommands.h"
 
+/// @ingroup physics
+/// @brief Physics buffers: double buffer for commands from haptics to physics
 struct PhysicsBuffers {
-    DoubleBuffer<PhysicsCommands> cmdBuf; // written by haptics, read by physics
+    DoubleBuffer<PhysicsCommands> cmdBuf; ///< commands from haptics to physics
 };
