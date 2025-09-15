@@ -3,6 +3,11 @@
 #include "physics/PhysicsBuffers.h"
 #include <glm/glm.hpp>
 
+/// @defgroup physics Physics engine and physics buffers
+/// @brief Real-time physics simulation and command interface
+
+/// @ingroup physics
+/// @brief Simple physics engine: applies forces and integrates dynamics
 class PhysicsEngine {
 public:
     explicit PhysicsEngine(World& world, PhysicsBuffers& pbufs);

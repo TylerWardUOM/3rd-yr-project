@@ -37,6 +37,16 @@ static std::unique_ptr<EnvInterface> makeSphereEnv(Pose T_ws, double radius) {
 
 }
 
+/**
+ * @details 
+ * The update function performs the following steps:
+ * - Read inputs: current tool pose from device, world snapshot
+ * - Environment collision detection: for each surface in the world, compute signed distance to tool position
+ * - Proxy projection: if tool is penetrating, project proxy to contact point; else set proxy to tool position
+ * - Virtual coupling: compute force based on spring-damper between tool and proxy
+ * - Write outputs: force command to physics engine, haptics snapshot and tool output for rendering
+ * - The current implementation supports plane and sphere surfaces. The tool is assumed to be a point (no radius).
+ */
 void HapticEngine::update(float dt) {
     // 1) Inputs
     WorldSnapshot snap = world_.readSnapshot();
