@@ -10,11 +10,13 @@ uniform mat4 uView;
 uniform mat4 uProj;
 uniform mat3 uNormalMatrix;
 uniform vec3 uColour;
+uniform float uUseGrid;
 
 // ---------- Varyings to fragment ----------
 out vec3 vWorldPos;
 out vec3 vNormal;
 out vec3 vColour;
+out float vUseGrid;
 
 void main()
 {
@@ -28,6 +30,8 @@ void main()
     vNormal = normalize(uNormalMatrix * aNormal);
 
     vColour = uColour;
+
+    vUseGrid = uUseGrid;
 
     gl_Position = uProj * uView * worldPos4;
 }

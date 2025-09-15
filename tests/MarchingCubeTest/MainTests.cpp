@@ -41,7 +41,7 @@ int main() {
     Scene scene(win, world, renderer, camera, haptic); // Scene Object
 
 	EntityId planeId = scene.addPlane({ {0,0,0}, {1.0,0,0,0} }, { 0.8f, 0.8f, 0.8f }); // Add a plane at origin
-	EntityId sphereId = scene.addSphere({ {0,1.0,0}, {1.0,0,0,0} }, 0.2f, { 0.9f, 0.9f, 0.9f }); // Add a sphere above the plane
+	EntityId sphereId = scene.addSphere({ {0.5,0.0,0}, {1.0,0,0,0} }, 1.0f, { 0.9f, 0.9f, 0.9f }); // Add a sphere above the plane
     //EntityId sphereId2 = scene.addSphere({ {0,0,0}, {1.0,0,0,0} }, 0.5f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
     // EntityId sphereId2 = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.8f, 0.1f, 0.1f }); // Add a sphere above the plane
     // std::cout << "Plane ID: " << planeId << ", Sphere ID: " << sphereId << ", Sphere2 ID: " << sphereId2 << std::endl;
