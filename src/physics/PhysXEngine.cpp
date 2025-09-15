@@ -224,3 +224,47 @@ PxFilterFlags PhysicsEnginePhysX::defaultFilterShader(
     pairFlags = PxPairFlag::eCONTACT_DEFAULT;
     return PxFilterFlag::eDEFAULT;
 }
+
+
+// ---------- physics props ----------
+void PhysicsEnginePhysX::setDensity(World::EntityId id, double density) {
+    auto& p = physicsProps_[id]; // creates default if not exist
+    p.density = density;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setDynamic(World::EntityId id, bool dynamic) {
+    auto& p = physicsProps_[id];
+    p.dynamic = dynamic;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setLinDamping(World::EntityId id, double linDamping) {
+    auto& p = physicsProps_[id];
+    p.linDamping = linDamping;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setAngDamping(World::EntityId id, double angDamping) {
+    auto& p = physicsProps_[id];
+    p.angDamping = angDamping;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setStaticFriction(World::EntityId id, double staticFriction) {
+    auto& p = physicsProps_[id];
+    p.staticFriction = staticFriction;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setDynamicFriction(World::EntityId id, double dynamicFriction) {
+    auto& p = physicsProps_[id];
+    p.dynamicFriction = dynamicFriction;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setRestitution(World::EntityId id, double restitution) {
+    auto& p = physicsProps_[id];
+    p.restitution = restitution;
+    world_.setDirtyDebug(true);
+}

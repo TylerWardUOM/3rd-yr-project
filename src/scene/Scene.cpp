@@ -7,7 +7,7 @@
  * The Scene constructor initializes the scene with references to the window, world, renderer, camera, and haptic engine. It sets up the UI, viewport controller, and camera defaults. The initial viewport size is obtained from the window's framebuffer size, and the camera's aspect ratio is set accordingly. The camera's position, orientation, and field of view are also initialized.
  * 
  */
-Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/):
+Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/, PhysicsEnginePhysX& physics):
     win_(win),
     world_(world),
     renderer_(renderer),
@@ -15,7 +15,8 @@ Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, H
     imgui_(win),
     ui_(),
     vpCtrl_(win, haptic),
-    haptic_(haptic) // temp for mouse pos
+    haptic_(haptic), // temp for mouse pos
+    physics_(physics)
 {
     init_Ui();
 
@@ -130,6 +131,9 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
     // Keep the UI state in sync with app selection
     bodyState_.selectedEntityId = selected_;   // std::optional<uint32_t>
 
+    bodyState_.physicsProps=physics_.getPhysicsProps(selected_);
+
+
 
 
     // -- temp Mouse position (for haptics) temp ---
@@ -210,6 +214,34 @@ void Scene::init_Ui(){
 
     cmds.setSelectedEntity = [&](EntityId entityId) {
         selected_ = entityId;
+    };
+
+    cmds.setBodyDensity = [&](float density) {
+        physics_.setDensity(selected_, density);
+    };
+
+    cmds.setBodyDynamic = [&](bool dynamic) {
+        physics_.setDynamic(selected_, dynamic);
+    };
+
+    cmds.setBodyLinDamping = [&](float linDamping) {
+        physics_.setLinDamping(selected_, linDamping);
+    };
+
+    cmds.setBodyAngDamping = [&](float angDamping) {
+        physics_.setAngDamping(selected_, angDamping);
+    };
+
+    cmds.setBodyStaticFriction = [&](float staticFriction) {
+        physics_.setStaticFriction(selected_, staticFriction);
+    };
+
+    cmds.setBodyDynamicFriction = [&](float dynamicFriction) {
+        physics_.setDynamicFriction(selected_, dynamicFriction);
+    };
+
+    cmds.setBodyRestitution = [&](float restitution) {
+        physics_.setRestitution(selected_, restitution);
     };
 
     // Camera commands
