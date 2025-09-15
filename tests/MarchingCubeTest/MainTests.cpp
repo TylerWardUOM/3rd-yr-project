@@ -43,16 +43,28 @@ int main() {
 
     Scene scene(win, world, renderer, camera, haptic); // Scene Object
 
+    //Ground Plane
 	EntityId planeId = scene.addPlane({ {0,0,0}, {1.0,0,0,0} }, { 0.8f, 0.8f, 0.8f }); // Add a plane at origin
-	EntityId sphereId = scene.addSphere({ {0.5,0.0,0}, {1.0,0,0,0} }, 1.0f, { 0.9f, 0.9f, 0.9f }); // Add a sphere above the plane
-    //EntityId sphereId2 = scene.addSphere({ {0,0,0}, {1.0,0,0,0} }, 0.5f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
-    // EntityId sphereId2 = scene.addSphere({ {0,0.5,0}, {1.0,0,0,0} }, 0.1f, { 0.8f, 0.1f, 0.1f }); // Add a sphere above the plane
-    // std::cout << "Plane ID: " << planeId << ", Sphere ID: " << sphereId << ", Sphere2 ID: " << sphereId2 << std::endl;
-	scene.setSelected(planeId); // Set drag target to the sphere entity
+
+    //Wall
+    EntityId Plane2Id = scene.addPlane({ {0,0,-20}, {1.0,0,0,0} }, { 0.8f, 0.2f, 0.2f }); // Add a plane below the origin
+	glm::dquat rot = glm::angleAxis(glm::radians(90.0), glm::dvec3(1,0,0));
+    world.rotate(Plane2Id,rot); // Rotate the plane to be a wall
+    EntityId Plane3Id = scene.addPlane({ {0,0,20}, {1.0,0,0,0} }, { 0.8f, 0.2f, 0.2f }); // Add a plane below the origin
+	rot = glm::angleAxis(glm::radians(-90.0), glm::dvec3(1,0,0));
+    world.rotate(Plane3Id,rot); // Rotate the plane to be a wall
+    //Test Spheres
+    EntityId sphereId = scene.addSphere({ {3.0,2.0,0}, {1.0,0,0,0} }, 0.3f, { 0.2f, 0.9f, 0.9f }); // Add a sphere above the plane
+    EntityId sphereId2 = scene.addSphere({ {0,0,0}, {1.0,0,0,0} }, 0.3f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
+	
+    scene.setSelected(planeId); // Set drag target to the sphere entity
 	world.publishSnapshot(0.0); // Initial publish to populate snapshot
 
     PhysicsEnginePhysX physics(world, buf); // Physics Engine Object
-
+    PhysicsProps sphereprops = physics.getPhysicsProps(sphereId);
+    sphereprops.density = 600.0; // Make sphere static
+    physics.setPhysicsProps(sphereId, sphereprops); // Make sphere dynamic with some friction
+    physics.rebuildActors(); // Rebuild actors to apply new properties
 
     // High-priority "haptics" thread
     std::jthread haptics([&](std::stop_token st) {
@@ -75,7 +87,8 @@ int main() {
         const auto slack  = 200us;               // sleep until (next - slack), then spin
         auto last = clock::now();
         auto next = last + period;
-
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        last = clock::now();
         while (!st.stop_requested()) {
             // --- sleep-then-spin until the scheduled tick ---
             auto wake = next - slack;
