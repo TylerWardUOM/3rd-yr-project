@@ -13,55 +13,86 @@
 #include "world/world.h"
 #include "haptics/HapticEngine.h" //temp for mouse pos
 
+/// @defgroup scene Scene management and rendering
+/// @brief Manages the main application loop, scene objects, and rendering
+
+/// @ingroup scene
+/// @brief Main scene class: manages the application loop, scene objects, and rendering
 class Scene {
 public:
+    /// @brief Construct a scene with window, world, renderer, camera, and haptic engine references.
+    /// @param win Window reference
+    /// @param world Shared world reference
+    /// @param renderer Scene renderer reference
+    /// @param cam Camera reference
+    /// @param haptic Haptic engine reference (temp for mouse pos)
     explicit Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/);
+    
+    /// @brief Destructor
     ~Scene();
+
+    /// @brief Main application loop (call on render thread)
+    /// @details Runs until the window is closed.
     void run();
 
-    //temp mouse position outputs for haptic loop
+    /// @brief Get current mouse position in window coordinates
+    /// @param x Output x position
+    /// @param y Output y position
     void getMousePos(double& x, double& y) const { win_.getCursorPos(x,y); }
 
+    /// @brief Set the currently selected entity by ID
+    /// @param id Entity ID to select
     void setSelected(EntityId id) { selected_ = id; }
 
     // --- scene management ---
+    /// @brief Add a plane to the scene
+    /// @param pose Plane pose
+    /// @param colour Plane colour
     EntityId addPlane(Pose pose, glm::vec3 colour);
+
+    /// @brief Add a sphere to the scene
+    /// @param pose Sphere pose
+    /// @param radius Sphere radius
+    /// @param colour Sphere colour
     EntityId addSphere(Pose pose, float radius, glm::vec3 colour);
 
-    // Load scene from file (future additon?)
+    /// @brief Load a scene from a file (not implemented)
     bool loadFromFile(const std::string& filepath);
 
-    World& world_; // shared state with haptics/physics thread
+    World& world_; ///< Shared world reference
 
 private:
     // --- core loop functions ---
-    // Render the scene
+    /// @brief Render the scene
     void render();
-    // Update scene
+    
+    /// @brief Update scene state by one timestep
+    /// @param dt Timestep in seconds
+    /// @param uiCapturing True if UI is capturing input
     void update(float dt, bool uiCapturing);
 
-    EntityId selected_{0}; // currently selected entity
+    EntityId selected_{0}; ///< Currently selected entity ID
 
     // --- external references ---
-    Window&          win_;
-    ISceneRenderer&  renderer_;
-    Camera&           cam_;
-    HapticEngine&    haptic_; // temp for mouse pos
+    Window&          win_; ///< Window reference
+    ISceneRenderer&  renderer_; ///< Scene renderer reference
+    Camera&           cam_; ///< Camera reference
+    HapticEngine&    haptic_; ///< Haptic engine reference (temp for mouse pos)
 
     // --- owned resources ---
-    ImGuiLayer       imgui_;
-    UI               ui_;
-    ViewportController vpCtrl_;
+    ImGuiLayer       imgui_; ///< ImGui layer
+    UI               ui_; ///< UI manager
+    ViewportController vpCtrl_; ///< Viewport controller
 
     // --- UI state snapshots ---
-    UITransformState bodyState_{};
-    UICameraState    camState_{};
-    UISceneStats     stats_{};
-    UIPanelConfig    cfg_{};
-    UIControllerState ctrlState_{};
+    UITransformState bodyState_{}; ///< Body panel state
+    UICameraState    camState_{}; ///< Camera panel state
+    UISceneStats     stats_{}; ///< Scene stats
+    UIPanelConfig    cfg_{}; ///< UI panel config
+    UIControllerState ctrlState_{}; ///< Controller panel state
 
     // --- helper functions ---
-    void init_Ui();
+    void init_Ui(); ///< Initialize UI and bind commands
 };;
 
 #endif

@@ -2,6 +2,11 @@
 #include <vector>
 #include <iostream>
 
+/**
+ * @details
+ * The Scene constructor initializes the scene with references to the window, world, renderer, camera, and haptic engine. It sets up the UI, viewport controller, and camera defaults. The initial viewport size is obtained from the window's framebuffer size, and the camera's aspect ratio is set accordingly. The camera's position, orientation, and field of view are also initialized.
+ * 
+ */
 Scene::Scene(Window& win, World& world, ISceneRenderer& renderer, Camera& cam, HapticEngine& haptic/*temp for mouse pos*/):
     win_(win),
     world_(world),
@@ -41,6 +46,15 @@ Scene::~Scene() {
     imgui_.shutdown();
 }
 
+/**
+ * @details
+ * - The run method implements the main application loop, which continues until the window is closed. 
+ * - It handles timing, input capture for UI interactions, scene updates, rendering, and event polling. 
+ * - The loop calculates the time delta between frames to ensure smooth updates. 
+ * - It checks if the UI is capturing mouse or keyboard input to prevent conflicts with scene controls. 
+ * - The update method is called to process scene logic, followed by the render method to draw the current state. 
+ * - Finally, the window's buffers are swapped and events are polled, and a new world snapshot is published for synchronization.
+ */
 void Scene::run() {
     double last = 0.0;
     while (win_.isOpen()) {
@@ -61,6 +75,15 @@ void Scene::run() {
     }
 }
 
+/**
+ * @details
+ * The update method performs several key functions to maintain the scene's state:
+ * - It synchronizes the camera's aspect ratio and viewport size with the window's framebuffer dimensions.
+ * - It updates the viewport controller based on user input, including handling mouse scroll events.
+ * - It refreshes UI elements with the latest statistics, camera state, and controller settings.
+ * - It reads the current world snapshot to update the state of the selected entity, including its position and color.
+ * - It rebuilds the list of entity options for the UI, ensuring that the selection state is consistent with the application's current state.
+ */
 void Scene::update(float /*dt*/, bool uiCapturing) {
 
     // Keep camera aspect + viewport in sync
@@ -116,6 +139,13 @@ void Scene::update(float /*dt*/, bool uiCapturing) {
 
 }
 
+/**
+ * @details
+ * The render method is responsible for drawing the current state of the scene. 
+ * - It sets the view and projection matrices in the renderer based on the camera's current view and projection. 
+ * - It then submits the latest world and haptic snapshots to the renderer for rendering.
+ * - After rendering the scene, it begins a new ImGui frame, draws various UI panels (debug, body, controller, camera), and ends the ImGui frame.
+ */
 void Scene::render() {
     renderer_.setViewProj(cam_.view(), cam_.proj());
     renderer_.submit(world_.readSnapshot(), haptic_.readSnapshot());
@@ -130,15 +160,26 @@ void Scene::render() {
 }
 
 
-
+/**
+ * @details
+ * The addPlane method adds a plane surface to the scene by calling the world's addPlane method with the specified pose and color. It returns the entity ID of the newly added plane.
+ */
 EntityId Scene::addPlane(Pose pose, glm::vec3 colour){
     return world_.addPlane(pose, colour);
 }
 
+/**
+ * @details
+ * The addSphere method adds a sphere surface to the scene by calling the world's addSphere method with the specified pose, radius, and color. It returns the entity ID of the newly added sphere.
+ */
 EntityId Scene::addSphere(Pose pose, float radius, glm::vec3 colour){
     return world_.addSphere(pose, radius, colour);
 }
 
+/**
+ * @details
+ * Binds UI commands to their respective functions in the scene, camera, and viewport controller.
+ */
 void Scene::init_Ui(){
     // --- Bind UI commands ---
     UICommands cmds;

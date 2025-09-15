@@ -2,7 +2,7 @@
 #pragma once
 #include <vector>                
 #include <glm/glm.hpp>
-#include "env/env_interface.h"
+#include "env/EnvInterface.h"
 #include "meshing/MarchingCubes.h"
 
 class Mesher {
