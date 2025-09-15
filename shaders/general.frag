@@ -9,7 +9,7 @@ out vec4 FragColor;
 void main() {
     // Grid lines
     float gridSize = 1.0; // Size of each grid cell meters
-    float thickness = 0.02; // Thickness of grid lines in meters
+    float thickness = 0.015; // Thickness of grid lines in meters
 
     float fx = fract(vWorldPos.x / gridSize);
     float fz = fract(vWorldPos.z / gridSize);
@@ -22,17 +22,49 @@ void main() {
 
     float isLine = max(lineX, lineZ); // line if close to X or Z line
 
-    // Remap normal from [-1,1] to [0,1]
-    vec3 n01 = normalize(vNormal) * 0.5 + 0.5;
+    // sub-grid lines
+    float subGridSize = 0.5; // Size of each sub-grid cell in meters
+    float thickness2 = 0.01; // Thickness of sub-grid lines in meters
+    float sfx = fract(vWorldPos.x / subGridSize);
+    float sfz = fract(vWorldPos.z / subGridSize);
+    float sdistX = min(sfx, 1.0 - sfx);
+    float sdistZ = min(sfz, 1.0 - sfz);
+    float slineX = step(sdistX, thickness2);
+    float slineZ = step(sdistZ, thickness2);
+    float isSubLine = max(slineX, slineZ); // line if close to X or Z line
 
-    // Tint normal-based color with vertex color
-    vec3 rgb = vColour * n01;
+    // sub-sub-grid lines
+    float subSubGridSize = 0.1; // Size of each sub-sub-grid cell in meters
+    float thickness3 = 0.08; // Thickness of sub-sub-grid lines in meters
+    float ssfx = fract(vWorldPos.x / subSubGridSize);
+    float ssfz = fract(vWorldPos.z / subSubGridSize);
+    float ssdistX = min(ssfx, 1.0 - ssfx);
+    float ssdistZ = min(ssfz, 1.0 - ssfz);
+    float sslineX = step(ssdistX, thickness3);
+    float sslineZ = step(ssdistZ, thickness3);
+    float isSubSubLine = max(sslineX, sslineZ); // line if close to X or Z line
 
-    vec3 lineColor = vec3(0.0, 0.0, 0.0); // Black color for grid lines
+    // Simple diffuse lighting with fixed light direction
+    vec3 norm = normalize(vNormal);
+    vec3 lightDir = normalize(vec3(1.0, 1.0, 1.0)); // simple directional light
+    float diff = max(dot(norm, lightDir), 0.0);
 
-    // Mix grid line color (black) with the base color
-    if (vUseGrid > 0.5){
-        rgb = mix(rgb, lineColor, isLine);
+    vec3 baseColor = vColour;   // per-vertex or uniform color
+    vec3 rgb = baseColor * diff;
+
+    vec3 lineColor = vec3(0.1, 0.1, 0.1); //  color for grid lines
+
+
+    if (vUseGrid > 0.5) {
+        if (isLine > 0.5) {
+            rgb = mix(rgb,lineColor, isLine); // main line
+        } 
+        else if (isSubLine > 0.5) {
+            rgb = mix(rgb, lineColor, isSubLine*0.7); // medium strength
+        } 
+        else if (isSubSubLine > 0.5) {
+            rgb = mix(rgb, lineColor, isSubSubLine*0.4); // faint
+        }
     }
     FragColor = vec4(rgb, 1.0);
 }
