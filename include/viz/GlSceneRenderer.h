@@ -40,6 +40,7 @@ class GlSceneRenderer : public ISceneRenderer {
 
         MeshGPU unitSphere_;
         MeshGPU unitPlane_;
+        MeshGPU unitCone_;
 
         std::unordered_map<MeshId, MeshGPU> triMeshes_; // custom meshes
 
@@ -52,10 +53,16 @@ class GlSceneRenderer : public ISceneRenderer {
         static glm::mat4 compose(const Pose& T);
         static void createUnitSphere(MeshGPU& out); // icosphere
         static void createUnitPlane(MeshGPU& out);  // quad on XZ at y=0
+        static void createUnitCone(MeshGPU& out);
 
         void drawMeshRenderable(const MeshGPU& m, const glm::mat4& M, const glm::vec3& colour);
         void drawPlaneRenderable(const glm::mat4& M, const glm::vec2& halfExtents, const glm::vec3& colour);
         void drawSphereRenderable(const glm::mat4& M, double radius, const glm::vec3& colour);
+
+        void drawForceArrow(const glm::dvec3& p_ws,
+                            const glm::dvec3& F_ws,
+                            float metersPerNewton,
+                            const glm::vec3& colour);
 
         void drawOverlays();
 

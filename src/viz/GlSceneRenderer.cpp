@@ -92,6 +92,7 @@ void GlSceneRenderer::drawOverlays() {
     drawSphereRenderable(compose(haptic_.devicePose_ws), 0.02f, {0.1f,1.0f,0.1f}); // device 
     drawSphereRenderable(compose(haptic_.refPose_ws),    0.018f, {1.0f,0.1f,0.1f}); // ref   
     drawSphereRenderable(compose(haptic_.proxyPose_ws),  0.022f, {0.1f,0.1f,1.0f}); // proxy 
+    drawForceArrow(haptic_.proxyPose_ws.p, haptic_.force_ws, 0.02f, {1.0f,1.0f,0.1f});
 }
 
 // ========== helpers: draw ==========
@@ -180,4 +181,113 @@ void GlSceneRenderer::createUnitSphere(MeshGPU& out) {
     std::vector<float> PN; makeInterleavedPN(P,N,PN);
     out = MeshGPU();
     out.upload(PN, I);
+}
+
+
+void GlSceneRenderer::createUnitCone(MeshGPU& out) {
+    const int slices = 24;
+    std::vector<glm::vec3> P;
+    std::vector<glm::vec3> N;
+    std::vector<uint32_t>  I;
+
+    // Tip at z=+1, base circle at z=0, radius=0.5
+    const glm::vec3 tip(0,0,1);
+    for (int j=0; j<=slices; ++j) {
+        float u = float(j) / slices;
+        float th = u * glm::two_pi<float>();
+        float c = std::cos(th), s = std::sin(th);
+        P.emplace_back(0.5f*c, 0.5f*s, 0.0f);      // base ring
+        // approximate cone side normals (not perfect, fine for viz)
+        glm::vec3 side = glm::normalize(glm::vec3(c, s, 0.5f));
+        N.push_back(side);
+    }
+    const int baseStart = 0;
+    const int ringCount = slices+1;
+
+    // Side triangles: tip + ring
+    int tipIndex = (int)P.size();
+    P.push_back(tip);
+    N.push_back(glm::normalize(glm::vec3(0,0,1)));
+
+    for (int j=0; j<slices; ++j) {
+        uint32_t a = baseStart + j;
+        uint32_t b = baseStart + j + 1;
+        uint32_t t = tipIndex;
+        I.insert(I.end(), { a, b, t });
+    }
+
+    // Base cap (optional)
+    int baseCenter = (int)P.size();
+    P.emplace_back(0,0,0);
+    N.emplace_back(0,0,-1);
+    for (int j=0; j<slices; ++j) {
+        uint32_t a = baseStart + j + 1;
+        uint32_t b = baseStart + j;
+        uint32_t c = baseCenter;
+        I.insert(I.end(), { a, b, c });
+    }
+
+    std::vector<float> PN; makeInterleavedPN(P, N, PN);
+    out = MeshGPU();
+    out.upload(PN, I);
+}
+
+
+static glm::mat4 orientFromDirZ(const glm::vec3& dir) {
+    glm::vec3 z = glm::normalize(dir);
+    glm::vec3 up = (std::abs(z.z) < 0.999f) ? glm::vec3(0,0,1) : glm::vec3(0,1,0);
+    glm::vec3 x = glm::normalize(glm::cross(up, z));
+    glm::vec3 y = glm::normalize(glm::cross(z, x));
+    glm::mat4 R(1.f);
+    R[0] = glm::vec4(x, 0);
+    R[1] = glm::vec4(y, 0);
+    R[2] = glm::vec4(z, 0);
+    return R;
+}
+
+
+void GlSceneRenderer::drawForceArrow(const glm::dvec3& p_ws,
+                                     const glm::dvec3& F_ws,
+                                     float metersPerNewton,
+                                     const glm::vec3& colour)
+{
+    const glm::vec3 p = glm::vec3(p_ws);
+    const glm::vec3 F = glm::vec3(F_ws);
+    const float Fmag = glm::length(F);
+    if (Fmag < 1e-6f) return;
+
+    const float L = Fmag * metersPerNewton;           // total arrow length in world units
+    const float headL = glm::max(0.02f, 0.25f * L);   // head is 25% of total (min 2 cm)
+    const float shaftL = glm::max(0.0f, L - headL);
+    const float shaftW = glm::max(0.003f, 0.08f * headL); // width ~8% of head length
+    const float headR  = 0.5f * headL;               // cone radius
+
+    const glm::vec3 dir = F / Fmag;
+
+    // --- shaft: draw a thin rectangle using unitPlane_ stretched along +Z ---
+    {
+        glm::mat4 R = orientFromDirZ(dir);
+        glm::vec3 center = p + 0.5f * shaftL * dir;                     // center of shaft
+        glm::mat4 T = glm::translate(glm::mat4(1.f), center);
+        glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3(shaftW, 1.f, shaftL)); // plane is XZ
+        Renderable r;
+        r.mesh = &unitPlane_;
+        r.shader = &shader_;
+        r.colour = colour;
+        r.render(camera_, T * R * S);
+    }
+
+    // --- head: cone at the end ---
+    {
+        glm::mat4 R = orientFromDirZ(dir);
+        glm::vec3 base = p + shaftL * dir;                                 // base of the cone
+        glm::mat4 T = glm::translate(glm::mat4(1.f), base);
+        // unit cone base radius = 0.5, height = 1 → scale XY by (2*headR), Z by headL
+        glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3(2.f*headR, 2.f*headR, headL));
+        Renderable r;
+        r.mesh = &unitCone_;
+        r.shader = &shader_;
+        r.colour = colour;
+        r.render(camera_, T * R * S);
+    }
 }
