@@ -99,7 +99,7 @@ void HapticEngine::update(float dt) {
 
 
     // Virtual Coupling
-    const double K_track = 2000.0; // [N/m]
+    const double K_track = 200.0; // [N/m]
     const double D_track = 0.7 * 2.0 * std::sqrt(K_track * 0.2); // critical ish damping
 
     const glm::dvec3 proxyVel = (proxyPose.p - proxyPosePrev_.p) * (1.0 / dt);
