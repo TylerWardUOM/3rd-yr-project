@@ -1,20 +1,24 @@
 #pragma once
-#include "env/env_interface.h"  
+#include "env/EnvInterface.h"  
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 
+/// @ingroup env
+/// @brief Plane implicit surface in 3D
 class PlaneEnv : public EnvInterface {
 public:
-    // Construct plane in LOCAL coordinates: unit normal n_in, offset b_in
+    /// @brief Construct plane in WORLD coordinates: normal n_in (unit), offset b_in
+    /// @param n_in normal vector in WORLD coordinates (must be unit length)
+    /// @param b_in offset (plane equation: dot(n, x) = b)
     PlaneEnv(const glm::dvec3& n_in, double b_in);
 
     // Signed distance in WORLD coordinates
     double phi(const glm::dvec3& x_world) const override;
 
-    // Gradient of phi in WORLD coordinates (unit normal)
+    /// @brief Gradient of phi in WORLD coordinates (unit normal)
     glm::dvec3 grad(const glm::dvec3& /*x_world*/) const override;
 
     // Orthogonal projection of a WORLD point onto the plane
@@ -25,12 +29,13 @@ public:
 
 private:
     // LOCAL-space definition
-    glm::dvec3 n_local; // unit normal in local space
-    double     b_local; // offset (plane eq: dot(n_local, x_local) = b_local)
+
+    glm::dvec3 n_local; ///< unit normal in local space
+    double     b_local; ///< offset (plane eq: dot(n_local, x_local) = b_local)
 
     // WORLD-space cached values (after update)
-    glm::dvec3 n_world; // unit normal in world space
-    double     b_world; // offset (plane eq: dot(n_world, x_world) = b_world)
 
-    glm::mat4 M{};        // local -> world transform (cached)
+    glm::dvec3 n_world; ///< unit normal in world space
+    double     b_world; ///< offset (plane eq: dot(n_world, x_world) = b_world)
+    glm::mat4 M{}; ///< local -> world transform (cached)
 };

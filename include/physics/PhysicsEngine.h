@@ -3,6 +3,11 @@
 #include "physics/PhysicsBuffers.h"
 #include <glm/glm.hpp>
 
+/// @defgroup physics Physics engine and physics buffers
+/// @brief Real-time physics simulation and command interface
+
+/// @ingroup physics
+/// @brief Simple physics engine: applies forces and integrates dynamics
 class PhysicsEngine {
 public:
     explicit PhysicsEngine(World& world, PhysicsBuffers& pbufs);
@@ -20,7 +25,7 @@ private:
 
 
     // Simple hack parameters (position-only “physics”)
-    double linMobility_ = 1e-3;  // [m / (N·s)]  -> tune to taste
+    double linMobility_ = 1e-2;  // [m / (N·s)]  -> tune to taste
     double maxStep_     = 0.05;  // [m] per step clamp
 
     // Backend hooks you will implement/wrap

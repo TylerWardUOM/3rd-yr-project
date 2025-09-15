@@ -17,7 +17,7 @@ glm::mat4 GlSceneRenderer::compose(const Pose& T) {
 // ========== ctor/dtor ==========
 GlSceneRenderer::GlSceneRenderer(Camera& cam)
     : camera_(cam),
-    shader_("shaders/general.vert", "shaders/basic.frag")
+    shader_("shaders/general.vert", "shaders/general.frag")
 {
     ensurePrimitiveTemplates();
 }
@@ -109,6 +109,7 @@ void GlSceneRenderer::drawPlaneRenderable(const glm::mat4& M, const glm::vec2& h
     r.mesh = &unitPlane_;  
     r.shader = &shader_;
     r.colour = colour;
+    r.useGridLines = 1.0; // show grid lines for planes
     r.render(camera_, M * S);
 }
 
@@ -165,7 +166,7 @@ void GlSceneRenderer::createUnitSphere(MeshGPU& out) {
             glm::vec3 n = { std::sin(phi)*std::cos(th),
                             std::cos(phi),
                             std::sin(phi)*std::sin(th) };
-            P.push_back(n * 0.5f); // radius = 0.5
+            P.push_back(n); // radius = 1
             N.push_back(glm::normalize(n));
         }
     }

@@ -19,3 +19,6 @@ Debug/
 Release/
 x64/
 *.log
+/docs/.html
+/docs/latex
+/Doxyfile

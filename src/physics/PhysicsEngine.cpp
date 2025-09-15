@@ -27,7 +27,15 @@ void PhysicsEngine::applyForceAtPoint(World::EntityId id,
                                       const glm::dvec3& F_ws,
                                       const glm::dvec3& /*p_ws*/,
                                       double duration_s)
-{
+{   
+    WorldSnapshot snap = world_.readSnapshot();
+    int surfIndx = World::findSurfaceIndexById(snap, id);
+    if (snap.surfaces[surfIndx].type == SurfaceType::Plane) {
+        //std::cout << "Ignoring force on static plane " << id << std::endl;
+        return; // ignore forces on static planes
+    }
+
+    //std::cout << "PhysicsEngine: applying force (" << F_ws.x << ", " << F_ws.y << ", " << F_ws.z << ") to entity " << id << " for " << duration_s << " s\n";
     // Convert force into a small displacement in its direction.
     // dp = mobility * F * duration
     glm::dvec3 dp = linMobility_ * F_ws * duration_s;
@@ -40,6 +48,8 @@ void PhysicsEngine::applyForceAtPoint(World::EntityId id,
     }
 
     // Nudge the entity’s pose in the world
+    // (assumes World::translate(id, dp) moves the T_ws.p by dp)
+
     //std::cout << "PhysicsEngine: moving entity " << id << " by (" << dp.x << ", " << dp.y << ", " << dp.z << ")\n";
     world_.translate(id, dp);
 }
