@@ -142,6 +142,11 @@ void PhysicsEnginePhysX::buildActorsFromWorld() {
 void PhysicsEnginePhysX::step(double dt) {
 
     // add a rebuildactors with an if statement for if the physics props have changed via debug movement
+    if (world_.getDirtyDebug()) {
+        //std::cout << "Rebuilding actors from world due to debug change..." << std::endl;
+        buildActorsFromWorld();
+        world_.setDirtyDebug(false);
+    }
 
     // 1) consume commands once per external tick
     consumeCommands_Once();

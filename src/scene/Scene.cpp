@@ -194,6 +194,7 @@ void Scene::init_Ui(){
 
         // --- Update world debug use only ---
         world_.setPose(selected_, {(glm::dvec3({x,y,z})),selectedPose.q});
+        world_.setDirtyDebug(true);
         world_.publishSnapshot(12.0);
 
     };

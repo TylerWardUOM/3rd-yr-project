@@ -32,7 +32,12 @@ public:
     bool setPose(EntityId id, const Pose& T_ws);
     bool setColour(EntityId id, const Colour& colour);
     bool translate(EntityId id, const glm::dvec3& dp);   
-    bool rotate(EntityId id, const glm::dquat& dq);     
+    bool rotate(EntityId id, const glm::dquat& dq);   
+    bool setDirtyDebug(bool dirty) { 
+        dirtyDebug_ = dirty; 
+        return dirtyDebug_;
+    };
+    bool getDirtyDebug() const { return dirtyDebug_; }
 
     static int findSurfaceIndexById(const WorldSnapshot& snap, World::EntityId id) {
         for (uint32_t i = 0; i < snap.numSurfaces; ++i) {
@@ -45,6 +50,6 @@ private:
     std::vector<EntityId> entities_;
     std::vector<SurfaceDef> surfaces_;
 
-
+    bool dirtyDebug_ = false; // for debugging
     DoubleBuffer<WorldSnapshot> snapBuf_;
 };
