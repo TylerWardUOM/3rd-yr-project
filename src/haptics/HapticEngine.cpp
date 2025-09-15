@@ -33,7 +33,7 @@ static std::unique_ptr<EnvInterface> makePlaneEnv(Pose T_ws) {
 
 static std::unique_ptr<EnvInterface> makeSphereEnv(Pose T_ws, double radius) {
     glm::vec3 center = T_ws.p;
-    return std::make_unique<SphereEnv>(center, radius/2); 
+    return std::make_unique<SphereEnv>(center, radius); 
 
 }
 
