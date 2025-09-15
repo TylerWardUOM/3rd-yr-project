@@ -12,7 +12,9 @@
 #include "env/primitives/PlaneEnv.h"
 #include "haptics/HapticEngine.h"
 #include "physics/PhysicsEngine.h"
+#include "physics/PhysXEngine.h"
 #include "physics/PhysicsBuffers.h"
+#include <physx/PxPhysicsAPI.h>
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -32,11 +34,12 @@ int main() {
 	World world; // World Object
 
 	GlSceneRenderer renderer(camera); // Renderer Object
-	PhysicsBuffers buf; // Physics Buffers Object
 
-	PhysicsEngine physics(world,buf); // Physics Engine Object
+    PhysicsBuffers buf; // Physics Buffers Object
 
-	HapticEngine haptic(world, buf); // Haptic Engine Object
+
+    HapticEngine haptic(world, buf); // Haptic Engine Object
+
 
     Scene scene(win, world, renderer, camera, haptic); // Scene Object
 
@@ -47,6 +50,9 @@ int main() {
     // std::cout << "Plane ID: " << planeId << ", Sphere ID: " << sphereId << ", Sphere2 ID: " << sphereId2 << std::endl;
 	scene.setSelected(planeId); // Set drag target to the sphere entity
 	world.publishSnapshot(0.0); // Initial publish to populate snapshot
+
+    PhysicsEnginePhysX physics(world, buf); // Physics Engine Object
+
 
     // High-priority "haptics" thread
     std::jthread haptics([&](std::stop_token st) {
