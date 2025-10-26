@@ -17,5 +17,5 @@ public:
     bool sendRaw(const void* data, size_t nBytes);
 
 private:
-    int fd_; // File descriptor or handle
+    void* hSerial;  ///< Windows HANDLE stored as void* for portability
 };
