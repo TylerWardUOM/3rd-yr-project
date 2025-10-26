@@ -20,9 +20,9 @@
 #include <iostream>
 #ifdef _WIN32
 #include <Windows.h>
-#include <mmsystem.h>          // NEW: for timeBeginPeriod/timeEndPeriod
+#include <mmsystem.h>          
 #pragma comment(lib, "winmm.lib")
-#include <immintrin.h>         // NEW: for _mm_pause (optional spin)
+#include <immintrin.h>        
 #endif
 #include <iostream>
 
@@ -58,7 +58,7 @@ int main() {
     EntityId sphereId = scene.addSphere({ {3.0,2.0,0}, {1.0,0,0,0} }, 0.3f, { 0.2f, 0.9f, 0.9f }); // Add a sphere above the plane
     EntityId sphereId2 = scene.addSphere({ {0,0,0}, {1.0,0,0,0} }, 0.3f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
 	
-    scene.setSelected(planeId); // Set drag target to the sphere entity
+    scene.setSelected(planeId); 
 	world.publishSnapshot(0.0); // Initial publish to populate snapshot
 
     PhysicsProps sphereprops = physics.getPhysicsProps(sphereId);
@@ -95,7 +95,7 @@ int main() {
             if (wake > clock::now())
                 std::this_thread::sleep_until(wake);
             while (clock::now() < next) {
-                std::this_thread::yield();       // or _mm_pause() on x86 for less jitter
+                std::this_thread::yield();      
             }
 
             // --- run step with measured dt ---
