@@ -63,8 +63,7 @@ void PhysicsEnginePhysX::buildActorsFromWorld() {
 
     for (const auto& s : world_.surfaces()) {
         // 1) Fetch physics props (or defaults)
-        const PhysicsProps* pp = getPhysicsProps(s.id);
-        PhysicsProps p = pp ? *pp : PhysicsProps{};  // dynamic=true, etc.
+        PhysicsProps p = getPhysicsProps(s.id);
 
         const PxTransform X = toPx(s.T_ws); // world pose
 
@@ -78,7 +77,9 @@ void PhysicsEnginePhysX::buildActorsFromWorld() {
             case SurfaceType::Plane: {
                 // Planes must be static in PhysX
                 auto* a = physics_->createRigidStatic(X);
-                PxShape* sh = PxRigidActorExt::createExclusiveShape(*a, PxPlaneGeometry(), *mat); // infinite plane
+                PxBoxGeometry geom(PxReal(1000), PxReal(0.01), PxReal(1000));
+                PxShape* sh = PxRigidActorExt::createExclusiveShape(*a, geom, *mat);
+                //PxShape* sh = PxRigidActorExt::createExclusiveShape(*a, PxPlaneGeometry(), *mat); // infinite plane
                 sh->setContactOffset(0.02f);
                 sh->setRestOffset(0.0f);
                 sh->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
@@ -139,6 +140,14 @@ void PhysicsEnginePhysX::buildActorsFromWorld() {
 
 // ---------- step ----------
 void PhysicsEnginePhysX::step(double dt) {
+
+    // add a rebuildactors with an if statement for if the physics props have changed via debug movement
+    if (world_.getDirtyDebug()) {
+        //std::cout << "Rebuilding actors from world due to debug change..." << std::endl;
+        buildActorsFromWorld();
+        world_.setDirtyDebug(false);
+    }
+
     // 1) consume commands once per external tick
     consumeCommands_Once();
 
@@ -189,7 +198,7 @@ void PhysicsEnginePhysX::writeBackPosesToWorld_() {
 void PhysicsEnginePhysX::applyForceAtPoint(World::EntityId id,
                                            const glm::dvec3& F_ws,
                                            const glm::dvec3& p_ws,
-                                           double /*duration_s*/)
+                                           double duration_s)
 {
     auto it = actors_.find(id);
     if (it == actors_.end()) return;
@@ -197,12 +206,12 @@ void PhysicsEnginePhysX::applyForceAtPoint(World::EntityId id,
         // This extension computes the equivalent torque and applies both
         PxRigidBodyExt::addForceAtPos(
             *body,
-            toPx(F_ws),
+            toPx(F_ws*duration_s), // impulse
             toPx(p_ws),
-            PxForceMode::eFORCE,
+            PxForceMode::eIMPULSE,
             true  // autowake
         );
-        std::cout << "Applied force " << F_ws.x << ", " << F_ws.y << ", " << F_ws.z << " to entity " << id << std::endl;
+        //std::cout << "Applied force " << F_ws.x << ", " << F_ws.y << ", " << F_ws.z << " to entity " << id << std::endl;
     }
 }
 
@@ -214,4 +223,48 @@ PxFilterFlags PhysicsEnginePhysX::defaultFilterShader(
 {
     pairFlags = PxPairFlag::eCONTACT_DEFAULT;
     return PxFilterFlag::eDEFAULT;
+}
+
+
+// ---------- physics props ----------
+void PhysicsEnginePhysX::setDensity(World::EntityId id, double density) {
+    auto& p = physicsProps_[id]; // creates default if not exist
+    p.density = density;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setDynamic(World::EntityId id, bool dynamic) {
+    auto& p = physicsProps_[id];
+    p.dynamic = dynamic;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setLinDamping(World::EntityId id, double linDamping) {
+    auto& p = physicsProps_[id];
+    p.linDamping = linDamping;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setAngDamping(World::EntityId id, double angDamping) {
+    auto& p = physicsProps_[id];
+    p.angDamping = angDamping;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setStaticFriction(World::EntityId id, double staticFriction) {
+    auto& p = physicsProps_[id];
+    p.staticFriction = staticFriction;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setDynamicFriction(World::EntityId id, double dynamicFriction) {
+    auto& p = physicsProps_[id];
+    p.dynamicFriction = dynamicFriction;
+    world_.setDirtyDebug(true);
+}
+
+void PhysicsEnginePhysX::setRestitution(World::EntityId id, double restitution) {
+    auto& p = physicsProps_[id];
+    p.restitution = restitution;
+    world_.setDirtyDebug(true);
 }

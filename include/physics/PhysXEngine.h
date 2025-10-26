@@ -13,11 +13,25 @@ public:
 
     // Advance physics by dt seconds (accumulates & substeps internally)
     void step(double dt);
+
     void setPhysicsProps(World::EntityId id, const PhysicsProps& p) { physicsProps_[id] = p; }
-    const PhysicsProps* getPhysicsProps(World::EntityId id) const {
-        auto it = physicsProps_.find(id); return (it==physicsProps_.end()? nullptr : &it->second);
+    PhysicsProps getPhysicsProps(World::EntityId id) const {
+        auto it = physicsProps_.find(id);
+        if (it != physicsProps_.end()) return it->second;
+        return PhysicsProps(); // default
     }
 
+    //Physic Property setters
+    void setDynamic(World::EntityId id, bool dynamic);
+    void setDensity(World::EntityId id, double density);
+    void setLinDamping(World::EntityId id, double linDamping);
+    void setAngDamping(World::EntityId id, double angDamping);
+    void setStaticFriction(World::EntityId id, double staticFriction);
+    void setDynamicFriction(World::EntityId id, double dynamicFriction);
+    void setRestitution(World::EntityId id, double restitution);
+
+
+    void rebuildActors() { buildActorsFromWorld(); } // recreate actors from current World surfaces
 
 private:
     // -- External state

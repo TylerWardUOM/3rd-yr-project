@@ -3,6 +3,7 @@
 #include <string>
 #include <glm/vec3.hpp>
 #include <optional>
+#include "physics/PhysicsProps.h"
 
 using EntityId = uint32_t;
 
@@ -11,6 +12,7 @@ struct UITransformState {
     glm::vec3 colour{0.8f, 0.8f, 0.8f};
     std::vector<EntityId> entityOptions;     // built from WorldSnapshot each frame
     std::optional<uint32_t>     selectedEntityId;  // currently selected entity
+    PhysicsProps physicsProps{}; 
 };
 
 
@@ -40,6 +42,13 @@ struct UICommands {
     // Body
     std::function<void(float x, float y, float z)> setBodyPosition = {};
     std::function<void(float r, float g, float b)> setBodyColour = {};
+    std::function<void(float density)> setBodyDensity = {};
+    std::function<void(bool dynamic)> setBodyDynamic = {};
+    std::function<void(float linDamping)> setBodyLinDamping = {};
+    std::function<void(float angDamping)> setBodyAngDamping = {};
+    std::function<void(float staticFriction)> setBodyStaticFriction = {};
+    std::function<void(float dynamicFriction)> setBodyDynamicFriction = {};
+    std::function<void(float restitution)> setBodyRestitution = {};
     
     std::function<void(EntityId entityId)> setSelectedEntity = {};
 

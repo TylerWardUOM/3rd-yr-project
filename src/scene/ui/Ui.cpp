@@ -65,6 +65,41 @@ void UI::drawBodyPanel(const UITransformState& bodyState) {
         cmds_.setBodyColour(c[0], c[1], c[2]);
     }
 
+    float density = bodyState.physicsProps.density;
+    if (ImGui::DragFloat("Density (kg/m^3)", &density, 1.0, 0.1, 10000.0) && cmds_.setBodyDensity) {
+        cmds_.setBodyDensity(density);
+    }
+
+    bool dynamic = bodyState.physicsProps.dynamic;
+    if (ImGui::Checkbox("Dynamic", &dynamic) && cmds_.setBodyDynamic) {
+        cmds_.setBodyDynamic(dynamic);
+    }
+
+    float linDamping = bodyState.physicsProps.linDamping;
+    if (ImGui::DragFloat("Linear damping", &linDamping, 0.01f, 0.0f, 10.0f) && cmds_.setBodyLinDamping) {
+        cmds_.setBodyLinDamping(linDamping);
+    }
+
+    float angDamping = bodyState.physicsProps.angDamping;
+    if (ImGui::DragFloat("Angular damping", &angDamping, 0.01f, 0.0f, 10.0f) && cmds_.setBodyAngDamping) {
+        cmds_.setBodyAngDamping(angDamping);
+    }
+
+    float staticFriction = bodyState.physicsProps.staticFriction;
+    if (ImGui::DragFloat("Static friction", &staticFriction, 0.01f, 0.0f, 10.0f) && cmds_.setBodyStaticFriction) {
+        cmds_.setBodyStaticFriction(staticFriction);
+    }
+
+    float dynamicFriction = bodyState.physicsProps.dynamicFriction;
+    if (ImGui::DragFloat("Dynamic friction", &dynamicFriction, 0.01f, 0.0f, 10.0f) && cmds_.setBodyDynamicFriction) {
+        cmds_.setBodyDynamicFriction(dynamicFriction);
+    }
+
+    float restitution = bodyState.physicsProps.restitution;
+    if (ImGui::DragFloat("Restitution", &restitution, 0.01f, 0.0f, 1.0f) && cmds_.setBodyRestitution) {
+        cmds_.setBodyRestitution(restitution);
+    }
+
     ImGui::End();
 }
 
