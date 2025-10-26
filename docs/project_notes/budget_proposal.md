@@ -181,9 +181,10 @@ Encoders: 2× AS5048A (2× £20 = £40) (or MT6701 £15–20 ea)
 
 Other: PSU (24 V/5 A) + wiring + frame (£80–£120)
 
-| Pros | Cons |
-| ---- | ---- |
-| Solid 2‑DOF with smoother torque & higher resolution;  | More tuning/time; two power stages; MCU handles all encoder I/O |
+| Pros                                                  | Cons                                                            |
+| ----------------------------------------------------- | --------------------------------------------------------------- |
+| Solid 2‑DOF with smoother torque & higher resolution; | More tuning/time; two power stages; MCU handles all encoder I/O |
+|                                                       |                                                                 |
 
 ### Option C — Polished Dual‑Axis 2‑DOF (ODrive S1) ~£390–£510
 
