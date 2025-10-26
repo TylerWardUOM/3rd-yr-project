@@ -14,6 +14,7 @@ public:
 
     bool sendBytes(const std::vector<uint8_t>& data);
     bool readBytes(std::vector<uint8_t>& buffer, size_t nBytes);
+    size_t readAvailable(std::vector<uint8_t>& buffer, size_t maxBytes = 128);
     bool sendRaw(const void* data, size_t nBytes);
 
 private:

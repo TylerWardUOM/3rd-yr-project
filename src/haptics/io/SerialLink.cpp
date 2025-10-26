@@ -116,3 +116,36 @@ bool SerialLink::sendRaw(const void* data, size_t nBytes) {
     }
     return true;
 }
+
+size_t SerialLink::readAvailable(std::vector<uint8_t>& buffer, size_t maxBytes) {
+    if (!isConnected()) return 0;
+
+    COMSTAT status;
+    DWORD errors;
+    ClearCommError(static_cast<HANDLE>(hSerial), &errors, &status);
+
+    DWORD waiting = status.cbInQue;
+    if (waiting == 0) {
+        buffer.clear();
+        return 0; // nothing to read
+    }
+
+    DWORD toRead = (waiting > maxBytes) ? (DWORD)maxBytes : waiting;
+    buffer.resize(toRead);
+
+    DWORD bytesRead = 0;
+    if (!ReadFile(static_cast<HANDLE>(hSerial),
+                  buffer.data(),
+                  toRead,
+                  &bytesRead,
+                  nullptr))
+    {
+        std::cerr << "[SerialLink] ReadFile error\n";
+        buffer.clear();
+        return 0;
+    }
+
+    // Trim buffer to actual bytes read
+    buffer.resize(bytesRead);
+    return bytesRead;
+}
