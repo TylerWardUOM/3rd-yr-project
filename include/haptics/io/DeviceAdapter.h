@@ -1,5 +1,5 @@
 #pragma once
-#include "SerialLink.h"
+#include "haptics/io/SerialLink.h"
 #include "world/DoubleBuffer.h"
 #include "haptics/ToolState.h"
 #include "haptics/HapticBuffers.h"
@@ -7,10 +7,6 @@
 #include "world/Pose.h"
 #include <vector>
 
-//Output command structure to device firmware
-struct ForceCommand {
-    float torque_cmd[2];  // torque per joint
-};
 
 
 /// DeviceAdapter connects firmware I/O to the simulation’s haptic buffers
