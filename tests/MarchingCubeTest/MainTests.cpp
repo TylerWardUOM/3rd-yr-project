@@ -66,6 +66,9 @@ int main() {
     physics.setPhysicsProps(sphereId, sphereprops); // Make sphere dynamic with some friction
     physics.rebuildActors(); // Rebuild actors to apply new properties
 
+
+
+
     // High-priority "haptics" thread
     std::jthread haptics([&](std::stop_token st) {
 #ifdef _WIN32
@@ -73,24 +76,28 @@ int main() {
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 #endif
         using clock = std::chrono::steady_clock;
-        constexpr auto period = std::chrono::microseconds(1000); // NEW: 1 kHz
-        constexpr auto slack = std::chrono::microseconds(200);  // NEW: coarse sleep margin
-        auto next = clock::now() + period;                       // NEW
+        constexpr auto period = std::chrono::microseconds(1000); 
+        constexpr auto slack = std::chrono::microseconds(200);  
+        auto next = clock::now() + period;                       
+		haptic.connectDevice("COM4", 115200); // Connect to device
+		// Maybe have haptics create a thread internally for device I/O?
         haptic.run(); // Start the haptic engine
         });
 
+
+
+	// Physics thread
     std::jthread physThread([&] (std::stop_token st) {
         using clock = std::chrono::steady_clock;
         using namespace std::chrono;
 
-        const auto period = 4ms;                 // target: 1 kHz
+        const auto period = 4ms;                 
         const auto slack  = 200us;               // sleep until (next - slack), then spin
         auto last = clock::now();
         auto next = last + period;
         std::this_thread::sleep_for(std::chrono::seconds(2));
         last = clock::now();
         while (!st.stop_requested()) {
-            // --- sleep-then-spin until the scheduled tick ---
             auto wake = next - slack;
             if (wake > clock::now())
                 std::this_thread::sleep_until(wake);
@@ -114,7 +121,8 @@ int main() {
         }
     });
 
-
+	// Run the main Render/UI loop
 	scene.run();
+
 	return 0;
 }

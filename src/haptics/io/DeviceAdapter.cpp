@@ -1,4 +1,4 @@
-#include "DeviceAdapter.h"
+#include "haptics/io/DeviceAdapter.h"
 #include <iostream>
 #include <chrono>
 
@@ -11,7 +11,6 @@ static uint16_t computeChecksum(const void* data, size_t len)
         sum += bytes[i];
     return sum;
 }
-
 
 
 DeviceAdapter::DeviceAdapter(HapticsBuffers& bufs)
@@ -63,12 +62,16 @@ void DeviceAdapter::update(double timeNow) {
     std::vector<uint8_t> chunk;
     size_t n = link_.readAvailable(chunk);
     if (n>0){
+        //std::cout << "[DeviceAdapter] Received " << n << " bytes from device." << std::endl;
         DeviceStatePacket pkt;
         while (parseIncoming(chunk, pkt)) {
             // Read joint angles (radians)
             latestAngles_[0] = pkt.joint_angle[0];
             latestAngles_[1] = pkt.joint_angle[1];
+            chunk.clear();
+            //std::cout << "[DeviceAdapter] Joint angles: " << latestAngles_[0] << ", " << latestAngles_[1] << std::endl;
         }
+        //std::cout << "[DeviceAdapter] Remaining buffer size: " << incomingBuffer_.size() << " bytes." << std::endl;
         // Compute Pose using forward kinematics
         Pose devicePose_ws = anglesToPose(latestAngles_);
         // Update ToolIn if new data
@@ -85,18 +88,25 @@ void DeviceAdapter::update(double timeNow) {
 
     // Read From Haptics Buffers send to Firmware
     ToolOut out = bufs_.outBuf.read();
-    if (out.t_sec > lastOut_.t_sec) { // new command
+    //if (out.t_sec > lastOut_.t_sec) { // new command
+    if (true){
+        std::cout << "[DeviceAdapter] Sending force command: "
+                  << out.force_dev.x << ", " << out.force_dev.y << std::endl;
         // Prepare command
-        ForceCommand cmd;
-        cmd.torque_cmd[0] = (float)out.force_dev.x;
-        cmd.torque_cmd[1] = (float)out.force_dev.y;
-
+        TorqueCommandPacket pkt_out;
+        pkt_out.joint_torque[0] = (float)out.force_dev.x;
+        pkt_out.joint_torque[1] = (float)out.force_dev.y;
+        pkt_out.checksum = computeChecksum(&pkt_out, sizeof(TorqueCommandPacket) - 2);
+        
+        link_.sendRaw(reinterpret_cast<uint8_t*>(&pkt_out), sizeof(TorqueCommandPacket));
+        
         // Serialize and send command to device
         
         lastOut_ = out;
     }
 }
 
+// Helper: Forward Kinematics for 2DOF planar arm
 Pose DeviceAdapter::anglesToPose(const float jointAngles[2]){
     double L1 = 0.15;
     double L2 = 0.15;
