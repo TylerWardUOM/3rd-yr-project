@@ -95,16 +95,29 @@ inline glm::dvec3 getTranslation(const glm::mat4& M) {
 }
 
 void GlSceneRenderer::drawOverlays() {
+    //Maybe change to use the angles sent from the haptic device instead of FK
+    
     // pick small radii for ghosts
     drawSphereRenderable(compose(haptic_.devicePose_ws), 0.02f, {0.1f,1.0f,0.1f}); // device 
     drawSphereRenderable(compose(haptic_.refPose_ws),    0.018f, {1.0f,0.1f,0.1f}); // ref   
     drawSphereRenderable(compose(haptic_.proxyPose_ws),  0.022f, {0.1f,0.1f,1.0f}); // proxy 
-    basicRobot robot = {1.0, 1.0};
+    basicRobot robot = {0.15, 0.15};
     glm::dvec3 angles;
     RobotState state = inverseKinematics(robot, glm::vec3(haptic_.proxyPose_ws.p), angles);
 
     glm::dvec3 p0(0,0,0); // base at origin
     auto Ts = forwardExplicitAll(robot.link1, robot.link2, angles);
+
+    // static int printCounter = 0;
+    // printCounter++;
+
+    // if (printCounter % 30 == 0) {   // print every 30 frames
+    //     std::cout << "Joint Angles (rad): "
+    //             << "Shoulder=" << angles.x << ", "
+    //             << "Elbow="    << angles.y <<
+    //             "final=" << angles.z << std::endl;
+    // }
+
 
     // Extract positions (x,y,z are in the last column):
     glm::dvec3 p_base     = glm::dvec3(Ts[0][3]);
