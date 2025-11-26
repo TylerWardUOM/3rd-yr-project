@@ -20,9 +20,9 @@
 #include <iostream>
 #ifdef _WIN32
 #include <Windows.h>
-#include <mmsystem.h>          // NEW: for timeBeginPeriod/timeEndPeriod
+#include <mmsystem.h>          
 #pragma comment(lib, "winmm.lib")
-#include <immintrin.h>         // NEW: for _mm_pause (optional spin)
+#include <immintrin.h>        
 #endif
 #include <iostream>
 
@@ -58,13 +58,16 @@ int main() {
     EntityId sphereId = scene.addSphere({ {3.0,2.0,0}, {1.0,0,0,0} }, 0.3f, { 0.2f, 0.9f, 0.9f }); // Add a sphere above the plane
     EntityId sphereId2 = scene.addSphere({ {0,0,0}, {1.0,0,0,0} }, 0.3f, { 0.1f, 0.9f, 0.1f }); // Add a sphere above the plane
 	
-    scene.setSelected(planeId); // Set drag target to the sphere entity
+    scene.setSelected(planeId); 
 	world.publishSnapshot(0.0); // Initial publish to populate snapshot
 
     PhysicsProps sphereprops = physics.getPhysicsProps(sphereId);
     sphereprops.restitution = 0.9; 
     physics.setPhysicsProps(sphereId, sphereprops); // Make sphere dynamic with some friction
     physics.rebuildActors(); // Rebuild actors to apply new properties
+
+
+
 
     // High-priority "haptics" thread
     std::jthread haptics([&](std::stop_token st) {
@@ -73,29 +76,33 @@ int main() {
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 #endif
         using clock = std::chrono::steady_clock;
-        constexpr auto period = std::chrono::microseconds(1000); // NEW: 1 kHz
-        constexpr auto slack = std::chrono::microseconds(200);  // NEW: coarse sleep margin
-        auto next = clock::now() + period;                       // NEW
+        constexpr auto period = std::chrono::microseconds(1000); 
+        constexpr auto slack = std::chrono::microseconds(200);  
+        auto next = clock::now() + period;                       
+		haptic.connectDevice("COM4", 115200); // Connect to device
+		// Maybe have haptics create a thread internally for device I/O?
         haptic.run(); // Start the haptic engine
         });
 
+
+
+	// Physics thread
     std::jthread physThread([&] (std::stop_token st) {
         using clock = std::chrono::steady_clock;
         using namespace std::chrono;
 
-        const auto period = 4ms;                 // target: 1 kHz
+        const auto period = 4ms;                 
         const auto slack  = 200us;               // sleep until (next - slack), then spin
         auto last = clock::now();
         auto next = last + period;
         std::this_thread::sleep_for(std::chrono::seconds(2));
         last = clock::now();
         while (!st.stop_requested()) {
-            // --- sleep-then-spin until the scheduled tick ---
             auto wake = next - slack;
             if (wake > clock::now())
                 std::this_thread::sleep_until(wake);
             while (clock::now() < next) {
-                std::this_thread::yield();       // or _mm_pause() on x86 for less jitter
+                std::this_thread::yield();      
             }
 
             // --- run step with measured dt ---
@@ -114,7 +121,8 @@ int main() {
         }
     });
 
-
+	// Run the main Render/UI loop
 	scene.run();
+
 	return 0;
 }
