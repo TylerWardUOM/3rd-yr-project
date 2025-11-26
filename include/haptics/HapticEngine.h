@@ -2,6 +2,7 @@
 #include "haptics/HapticBuffers.h"
 #include "physics/PhysicsBuffers.h"
 #include "world/World.h"
+#include "haptics/io/DeviceAdapter.h"
 /// @defgroup haptics Haptics engine and haptic buffers
 /// @brief Real-time haptics simulation and device interface
 
@@ -37,6 +38,10 @@ class HapticEngine {
             bufs_.inBuf.write(in);
         }
 
+        bool connectDevice(const std::string& port, int baud = 115200) {
+            return deviceAdapter_.connect(port, baud);
+        }
+
 
     private:
         World& world_; ///< Shared world reference
@@ -44,6 +49,7 @@ class HapticEngine {
         HapticsBuffers bufs_; ///< Haptics buffers
         Pose proxyPosePrev_{}; ///< Previous proxy pose (for velocity)
         PhysicsBuffers* physBufs_ = nullptr; ///< Shared physics buffers (for applying forces)
+        DeviceAdapter deviceAdapter_; ///< Reference to device adapter for I/O
 
 
         // --- core loop functions ---

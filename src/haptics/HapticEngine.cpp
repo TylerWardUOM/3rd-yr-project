@@ -8,7 +8,7 @@
 #include <iostream>
 
 HapticEngine::HapticEngine(World& world, PhysicsBuffers& phys)
-    : world_(world), physBufs_(&phys){}
+    : world_(world), physBufs_(&phys), bufs_(), deviceAdapter_(bufs_){}
 
 HapticEngine::~HapticEngine() = default;
 
@@ -51,6 +51,8 @@ void HapticEngine::update(float dt) {
     // 1) Inputs
     WorldSnapshot snap = world_.readSnapshot();
     ToolIn toolIn = bufs_.inBuf.read();
+
+    deviceAdapter_.update(0.0); // update device I/O
 
     Pose toolPose = toolIn.devicePose_ws;
     //std::cout << "Tool position: " << toolPose.p.x << ", " << toolPose.p.y << ", " << toolPose.p.z << std::endl;
@@ -140,6 +142,7 @@ void HapticEngine::update(float dt) {
     // Outputs for viz/device
     ToolOut toolOut{};
     toolOut.proxyPose_ws = proxyPose;
+    toolOut.force_dev    = F_env_on_tool; // assume device frame == world frame for now
 
     HapticSnapshot hs{};
     hs.devicePose_ws = toolPose;
@@ -150,4 +153,6 @@ void HapticEngine::update(float dt) {
     bufs_.snapBuf.write(hs);
 
     proxyPosePrev_ = proxyPose;
+
+
 }
