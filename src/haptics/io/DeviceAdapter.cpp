@@ -69,7 +69,7 @@ void DeviceAdapter::update(double timeNow) {
             latestAngles_[0] = pkt.joint_angle[0];
             latestAngles_[1] = pkt.joint_angle[1];
             chunk.clear();
-            //std::cout << "[DeviceAdapter] Joint angles: " << latestAngles_[0] << ", " << latestAngles_[1] << std::endl;
+            std::cout << "[DeviceAdapter] Joint angles: " << latestAngles_[0] << ", " << latestAngles_[1] << std::endl;
         }
         //std::cout << "[DeviceAdapter] Remaining buffer size: " << incomingBuffer_.size() << " bytes." << std::endl;
         // Compute Pose using forward kinematics
@@ -90,8 +90,8 @@ void DeviceAdapter::update(double timeNow) {
     ToolOut out = bufs_.outBuf.read();
     //if (out.t_sec > lastOut_.t_sec) { // new command
     if (true){
-        std::cout << "[DeviceAdapter] Sending force command: "
-                  << out.force_dev.x << ", " << out.force_dev.y << std::endl;
+        //std::cout << "[DeviceAdapter] Sending force command: "
+          //        << out.force_dev.x << ", " << out.force_dev.y << std::endl;
         // Prepare command
         TorqueCommandPacket pkt_out;
         pkt_out.joint_torque[0] = (float)out.force_dev.x;
