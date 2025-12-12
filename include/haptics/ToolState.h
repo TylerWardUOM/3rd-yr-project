@@ -8,6 +8,7 @@
 struct ToolIn {
     Pose devicePose_ws;  ///< device pose in world frame
     Pose refPose_ws;     ///< reference pose in world frame (from UI)
+    float latestAngles[2]; ///< latest joint angles from device (radians)
     double t_sec = 0.0;
 };
 
@@ -24,6 +25,7 @@ struct ToolOut {
 /// @brief Haptics snapshot (for rendering and logging)
 struct HapticSnapshot {
     Pose devicePose_ws; ///< device pose in world frame
+    float latestAngles[2]; ///< latest joint angles from device (radians)
     Pose refPose_ws;   ///< reference pose in world frame (from UI)
     Pose proxyPose_ws; ///< proxy pose in world frame
     glm::dvec3 force_ws;  ///< force applied to device in world frame

@@ -146,6 +146,8 @@ void HapticEngine::update(float dt) {
 
     HapticSnapshot hs{};
     hs.devicePose_ws = toolPose;
+    hs.latestAngles[0] = toolIn.latestAngles[0];
+    hs.latestAngles[1] = toolIn.latestAngles[1];
     hs.proxyPose_ws  = proxyPose;
     hs.force_ws      = F_env_on_tool;   // for HUD plotting
 

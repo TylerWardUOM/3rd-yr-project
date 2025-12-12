@@ -38,6 +38,16 @@ class HapticEngine {
             bufs_.inBuf.write(in);
         }
 
+        /// @brief Submit a new ref pose (from ui) for processing.
+        /// @param R_ws ref pose in world space
+        /// @param t_sec Timestamp in seconds (for logging)
+        void submitRefPose(const Pose& T_ws, double t_sec) {
+            ToolIn in = bufs_.inBuf.read();
+            in.refPose_ws = T_ws;
+            in.t_sec = t_sec;
+            bufs_.inBuf.write(in);
+        }
+
         bool connectDevice(const std::string& port, int baud = 115200) {
             return deviceAdapter_.connect(port, baud);
         }

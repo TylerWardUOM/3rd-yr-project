@@ -101,69 +101,32 @@ void GlSceneRenderer::drawOverlays() {
     drawSphereRenderable(compose(haptic_.devicePose_ws), 0.02f, {0.1f,1.0f,0.1f}); // device 
     drawSphereRenderable(compose(haptic_.refPose_ws),    0.018f, {1.0f,0.1f,0.1f}); // ref   
     drawSphereRenderable(compose(haptic_.proxyPose_ws),  0.022f, {0.1f,0.1f,1.0f}); // proxy 
+
     basicRobot robot = {0.15, 0.15};
-    glm::dvec3 angles;
-    RobotState state = inverseKinematics(robot, glm::vec3(haptic_.proxyPose_ws.p), angles);
+    float jointAngles[2];
+    jointAngles[0] = haptic_.latestAngles[0];
+    jointAngles[1] = haptic_.latestAngles[1];
 
-    glm::dvec3 p0(0,0,0); // base at origin
-    auto Ts = forwardExplicitAll(robot.link1, robot.link2, angles);
+    glm::dvec3 p0(0,0,0); // shoulder at origin
+    glm::dvec3 p1; // elbow position
+    glm::dvec3 p2; // end-effector position
 
-    // static int printCounter = 0;
-    // printCounter++;
-
-    // if (printCounter % 30 == 0) {   // print every 30 frames
-    //     std::cout << "Joint Angles (rad): "
-    //             << "Shoulder=" << angles.x << ", "
-    //             << "Elbow="    << angles.y <<
-    //             "final=" << angles.z << std::endl;
-    // }
-
-
-    // Extract positions (x,y,z are in the last column):
-    glm::dvec3 p_base     = glm::dvec3(Ts[0][3]);
-    glm::dvec3 p_shoulder = glm::dvec3(Ts[1][3]); // same as base position in this simple chain
-    glm::dvec3 p_elbow    = glm::dvec3(Ts[2][3]);
-    glm::dvec3 p_ee       = glm::dvec3(Ts[3][3]);
-
-    // Rotations as 3x3:
-    glm::dmat3 R_base     = rotationOf(Ts[0]);
-    glm::dmat3 R_shoulder = rotationOf(Ts[1]);
-    glm::dmat3 R_elbow    = rotationOf(Ts[2]);
-    glm::dmat3 R_ee       = rotationOf(Ts[3]);
+    auto Ts = forwardExplicitAll(robot.link1, robot.link2, glm::dvec3(0.0, jointAngles[0], jointAngles[1]));
+    p1 = getTranslation(Ts[2]); // elbow
+    p2 = getTranslation(Ts[3]); // end-effector
+    // draw links
+    Pose p_l1 = linkPoseBetween(p0, p1);
+    Pose p_l2 = linkPoseBetween(p1, p2);
+    drawCylinderRenderable(compose(p_l1), 0.01, glm::length(p1 - p0), {0.8f,0.8f,0.8f}); // link 1
+    drawCylinderRenderable(compose(p_l2), 0.01, glm::length(p2 - p1), {0.8f,0.8f,0.8f}); // link 2
 
 
-    drawSphereRenderable(compose(Pose{p_base, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // base
-    drawSphereRenderable(compose(Pose{p_shoulder, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // joint 1
-    drawSphereRenderable(compose(Pose{p_elbow, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // joint 2
-    drawSphereRenderable(compose(Pose{p_ee, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // end effector
-
-    // Link 1: shoulder → elbow
-    {
-        Pose P = linkPoseBetween(p_shoulder, p_elbow);
-        double L = glm::length(p_elbow - p_shoulder);
-        drawCylinderRenderable(compose(P), 0.015, L, {1.0f,1.0f,0.1f});
-    }
-
-    // Link 2: elbow → end-effector
-    {
-        Pose P = linkPoseBetween(p_elbow, p_ee);
-        double L = glm::length(p_ee - p_elbow);
-        drawCylinderRenderable(compose(P), 0.015, L, {1.0f,1.0f,0.1f});
-    }
-
-    // Optional base post: base origin → shoulder origin (often same point; skip if zero)
-    {
-        double L = glm::length(p_shoulder - p_base);
-        if (L > 1e-6) {
-            Pose P = linkPoseBetween(p_base, p_shoulder);
-            drawCylinderRenderable(compose(P), 0.015, L, {1.0f,1.0f,0.1f});
-        }
-    }
-
-    // std::cout << "Proxy pos: " << glm::to_string(haptic_.proxyPose_ws.p) << std::endl;
-    // std::cout << "FK pos: " << glm::to_string(p_ee) << std::endl;
-
+    drawSphereRenderable(compose(Pose{p0, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // joint 0
+    drawSphereRenderable(compose(Pose{p1, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // joint 1
+    drawSphereRenderable(compose(Pose{p2, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // end effector
 }
+
+
 
 // ========== helpers: draw ==========
 void GlSceneRenderer::drawMeshRenderable(const MeshGPU& m, const glm::mat4& M, const glm::vec3& colour) {

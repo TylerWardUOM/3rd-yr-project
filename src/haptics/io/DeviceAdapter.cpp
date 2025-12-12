@@ -76,6 +76,8 @@ void DeviceAdapter::update(double timeNow) {
         Pose devicePose_ws = anglesToPose(latestAngles_);
         // Update ToolIn if new data
         currentIn_.devicePose_ws = devicePose_ws;
+        currentIn_.latestAngles[0] = latestAngles_[0];
+        currentIn_.latestAngles[1] = latestAngles_[1];
         currentIn_.t_sec = timeNow;
     }
 
