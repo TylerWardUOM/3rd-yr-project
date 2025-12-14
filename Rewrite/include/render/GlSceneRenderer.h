@@ -13,12 +13,16 @@
 #include "render/Camera.h"
 #include "geometry/GeometryDatabase.h"
 #include "render/RenderMeshRegistry.h"
+#include "render/UI/ViewportController.h"
+#include "platform/Window.h"
+#include "render/UI/ImGuiLayer.h"
+#include "render/UI/UI.h"
 
 
 class GlSceneRenderer : public ISceneRenderer {
     public:
 
-        GlSceneRenderer(Camera& cam, const GeometryDatabase& geomDb, RenderMeshRegistry& meshRegistry);
+        GlSceneRenderer(Window& window, const GeometryDatabase& geomDb, RenderMeshRegistry& meshRegistry);
         ~GlSceneRenderer() override;
 
         // --- ISceneRenderer interface ---
@@ -32,7 +36,11 @@ class GlSceneRenderer : public ISceneRenderer {
         void render(const WorldSnapshot& snapshot) override; // render submitted scene
 
     private:
-        Camera& camera_;
+        Window& window_;
+        Camera camera_;
+        ImGuiLayer imguiLayer_;
+        UI ui_;
+        ViewportController viewportCtrl_;
         const GeometryDatabase& geometryDb_;
         RenderMeshRegistry& meshRegistry_;
 
@@ -48,6 +56,16 @@ class GlSceneRenderer : public ISceneRenderer {
         // MeshGPU unitCylinder_;
 
         // std::unordered_map<MeshId, MeshGPU> triMeshes_; // custom meshes
+
+        
+        // --- UI state (view models) ---
+        void buildUIState(const WorldSnapshot& snapshot);
+        UITransformState  bodyState_;
+        UICameraState     camState_;
+        UIControllerState ctrlState_;
+        UISceneStats      stats_;
+        UIPanelConfig     cfg_;
+
 
         // --- per-frame state
         glm::mat4 V_{1.0f}, P_{1.0f}; // view/proj matrices

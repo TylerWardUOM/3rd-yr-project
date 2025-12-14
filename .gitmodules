@@ -1,3 +1,9 @@
 [submodule "firmware"]
 	path = firmware
 	url = https://github.com/TylerWardUOM/haptic-firmware.git
+[submodule "Rewrite/third_party/imgui"]
+	path = Rewrite/third_party/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "Rewrite/third_party/glm"]
+	path = Rewrite/third_party/glm
+	url = https://github.com/g-truc/glm.git
