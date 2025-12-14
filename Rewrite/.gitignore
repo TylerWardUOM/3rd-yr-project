@@ -2,3 +2,5 @@
 /build
 /CMakeLists.txt
 /third_party
+/docs
+/Doxyfile

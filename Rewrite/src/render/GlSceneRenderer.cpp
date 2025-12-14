@@ -16,16 +16,37 @@ glm::mat4 GlSceneRenderer::compose(const Pose& T) {
 }
 
 // ========== ctor/dtor ==========
-GlSceneRenderer::GlSceneRenderer(Camera& cam, const GeometryDatabase& geomDb, RenderMeshRegistry& meshRegistry)
-    : camera_(cam), 
+GlSceneRenderer::GlSceneRenderer(Window& window, const GeometryDatabase& geomDb, RenderMeshRegistry& meshRegistry)
+    : window_(window), 
     shader_("shaders/general.vert", "shaders/general.frag"),
     geometryDb_(geomDb),
-    meshRegistry_(meshRegistry)
+    meshRegistry_(meshRegistry),
+    camera_(),
+    viewportCtrl_(window, camera_),
+    imguiLayer_(window_, "#version 330"),
+    ui_()
+
 {
     ensurePrimitiveTemplates();
+    camera_.eye    = {0.0f, 1.0f, 1.0f};
+    camera_.up     = {0.0f, 1.0f, 0.0f};
+    camera_.fovDeg = 60.f;
+    camera_.yawDeg   = 0.f;
+    camera_.pitchDeg = -45.f;
+    camera_.updateVectors();
+
+
+         // Initial viewport size
+    int fbw=0, fbh=0; 
+    window_.getFramebufferSize(fbw, fbh);
+    if (fbw>0 && fbh>0) {
+        camera_.aspect = float(fbw)/float(fbh); 
+    }
 }
 
-GlSceneRenderer::~GlSceneRenderer() {}
+GlSceneRenderer::~GlSceneRenderer() {
+    imguiLayer_.shutdown();
+}
 
 // ========== ISceneRenderer impl ==========
 void GlSceneRenderer::ensurePrimitiveTemplates() {
@@ -85,6 +106,21 @@ void GlSceneRenderer::render(const WorldSnapshot& snapshot) {
         // --- Render ---
         r.render(camera_, compose(obj.T_ws));
     }
+
+    viewportCtrl_.update(0.0f, false); // no dt, no UI capture
+
+;
+    imguiLayer_.begin();
+    buildUIState(snapshot);
+    // ui_.drawBodyPanel(bodyState_);
+    imguiLayer_.getFps(stats_.fps);
+    ui_.drawDebugPanel(stats_);
+    ui_.drawCameraPanel(camState_);
+    ui_.drawControllerPanel(ctrlState_);
+    imguiLayer_.end();
+    window_.swap();
+    window_.poll();
+    
     // ---- draw surfaces/links with basic shader ----
 
 
@@ -309,4 +345,47 @@ void GlSceneRenderer::createUnitCylinder(MeshGPU& out, int slices = 32) {
     std::vector<float> PN; makeInterleavedPN(P,N,PN);
     out = MeshGPU();
     out.upload(PN, I);
+}
+
+void GlSceneRenderer::buildUIState(const WorldSnapshot& snapshot) {
+    // ---------- Scene stats ----------
+
+    // ---------- Camera ----------
+    camState_.position = camera_.eye;
+    camState_.yawDeg   = camera_.yawDeg;
+    camState_.pitchDeg = camera_.pitchDeg;
+    camState_.fovDeg   = camera_.fovDeg;
+    camState_.znear    = camera_.znear;
+    camState_.zfar     = camera_.zfar;
+
+    // ---------- Controller ----------
+    ctrlState_.moveSpeed        = viewportCtrl_.moveSpeed();
+    ctrlState_.mouseSensitivity = viewportCtrl_.mouseSensitivity();
+    ctrlState_.scrollZoomSpeed  = viewportCtrl_.scrollZoomSpeed();
+    ctrlState_.invertY          = viewportCtrl_.invertY();
+    ctrlState_.rmbToLook        = viewportCtrl_.rmbToLook();
+
+    // // ---------- Object list ----------
+    // bodyState_.entityOptions.clear();
+    // for (const auto& obj : snapshot.objects) {
+    //     bodyState_.entityOptions.push_back(obj.id);
+    // }
+
+    // bodyState_.selectedEntityId =
+    //     (selected_ != 0) ? std::optional<ObjectID>{selected_} : std::nullopt;
+
+    // // ---------- Selected object ----------
+    // if (selected_) {
+    //     auto it = std::find_if(
+    //         snapshot.objects.begin(),
+    //         snapshot.objects.end(),
+    //         [&](const ObjectState& o) { return o.id == selected_; }
+    //     );
+
+    //     if (it != snapshot.objects.end()) {
+    //         bodyState_.position = it->T_ws.p;
+    //         bodyState_.colour   = it->colourOverride;
+    //         bodyState_.physicsProps = {/* fill if available */};
+    //     }
+    // }
 }

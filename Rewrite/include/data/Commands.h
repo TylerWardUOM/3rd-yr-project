@@ -3,6 +3,8 @@
 #include "core/Ids.h"
 #include "core/Math.h"
 #include <variant>
+#include "data/WorldSnapshot.h" // for Role enum
+
 
 struct ForceCommand {
     ObjectID id{};
@@ -29,9 +31,17 @@ struct EditObjectCommand {
     bool     teleport{true}; // if false, you might set kinematic target instead
 };
 
+struct SetToolPoseCommand {
+    ObjectID toolId{};     // ObjectID of the tool / proxy being controlled
+    Pose     pose_ws{};    // Desired tool pose in world space
+    double   t_sec{0.0};   // Timestamp (for sync / interpolation)
+};
+
+
 using PhysicsCommand = std::variant<
     ForceCommand,
     CreateObjectCommand,
     RemoveObjectCommand,
-    EditObjectCommand
+    EditObjectCommand,
+    SetToolPoseCommand
 >;
