@@ -4,12 +4,15 @@
 #include <glm/vec3.hpp>
 #include <vector>
 #include <optional>
+#include "data/core/Math.h"
 // #include "physics/PhysicsProps.h"
 
 using EntityId = uint32_t;
 
 struct UITransformState {
     glm::vec3 position{0.f, 0.f, 0.f};
+    Quat orientation{1.f, 0.f, 0.f, 0.f};
+    double scale{1.0};
     glm::vec3 colour{0.8f, 0.8f, 0.8f};
     std::vector<EntityId> entityOptions;     // built from WorldSnapshot each frame
     std::optional<uint32_t>     selectedEntityId;  // currently selected entity

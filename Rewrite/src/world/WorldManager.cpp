@@ -1,14 +1,18 @@
 #include "world/WorldManager.h"
 #include <variant>
+#include <iostream>
 
 WorldManager::WorldManager(const GeometryDatabase& geomDb,
-                           GeometryFactory& geomFactory)
+                           GeometryFactory& geomFactory,
+                            msg::Channel<WorldCommand>& worldCmds
+                               )
     : geomDb_(geomDb),
-      geomFactory_(geomFactory) {}
+      geomFactory_(geomFactory),
+      worldCmds_(worldCmds) {}
 
 
 
-void WorldManager::apply(const PhysicsCommand& cmd) {
+void WorldManager::apply(const WorldCommand& cmd) {
     std::visit([this](auto&& c) {
         using T = std::decay_t<decltype(c)>;
         if constexpr (std::is_same_v<T, CreateObjectCommand>) {
@@ -24,6 +28,14 @@ void WorldManager::apply(const PhysicsCommand& cmd) {
 }
 
 void WorldManager::step(double dt) {
+    //Maybe move commands to be in phsyics step
+    std::vector<WorldCommand> cmds;
+    worldCmds_.drain(cmds);
+    //std::cout << "WorldManager: Processing " << cmds.size() << " commands in step.\n";
+
+    for (const auto& cmd : cmds)
+        apply(cmd);
+
     simTime_ += dt;
 }
 
@@ -67,4 +79,6 @@ void WorldManager::applyEdit(const EditObjectCommand& c) {
     if (it == objects_.end()) return;
 
     it->second.pose = c.newPose;
+    it->second.colour = c.newColour;
+    //std::cout << "WorldManager: Edited object " << c.id << " to new pose." << std::endl;
 }

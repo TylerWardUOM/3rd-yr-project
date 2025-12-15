@@ -10,4 +10,5 @@ using Colour = glm::vec3;
 struct Pose {
     Vec3 p{0.0,0.0,0.0};
     Quat q{1.0,0.0,0.0,0.0};
+    double s = 1.0;   // uniform scale
 };

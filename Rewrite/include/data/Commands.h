@@ -28,6 +28,7 @@ struct RemoveObjectCommand {
 struct EditObjectCommand {
     ObjectID id{};
     Pose     newPose{};
+    Colour   newColour{};
     bool     teleport{true}; // if false, you might set kinematic target instead
 };
 
@@ -38,10 +39,11 @@ struct SetToolPoseCommand {
 };
 
 
-using PhysicsCommand = std::variant<
-    ForceCommand,
+using WorldCommand = std::variant<
     CreateObjectCommand,
     RemoveObjectCommand,
-    EditObjectCommand,
-    SetToolPoseCommand
+    EditObjectCommand
 >;
+
+using ForceCommandMsg = ForceCommand;
+using ToolCommandMsg  = SetToolPoseCommand;

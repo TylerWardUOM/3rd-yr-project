@@ -92,31 +92,34 @@ static MeshGPU makePlaneMesh() {
 
 static MeshGPU makeSphereMesh() {
     MeshGPU mesh;
-
-    // Octahedron-based sphere (simple & cheap)
-    std::vector<glm::vec3> P = {
-        { 0, 1, 0},
-        { 1, 0, 0},
-        { 0, 0, 1},
-        {-1, 0, 0},
-        { 0, 0,-1},
-        { 0,-1, 0}
-    };
-
+// quick-and-dirty icosphere (or latitude-longitude); here’s a tiny lat-long sphere
+    const int stacks = 16, slices = 24;
+    std::vector<glm::vec3> P;
     std::vector<glm::vec3> N;
-    N.reserve(P.size());
-    for (const auto& p : P) {
-        N.push_back(glm::normalize(p));
+    std::vector<uint32_t>  I;
+
+    for (int i=0;i<=stacks;i++){
+        float v  = float(i)/stacks;
+        float phi = v*glm::pi<float>();
+        for (int j=0;j<=slices;j++){
+            float u  = float(j)/slices;
+            float th = u*glm::two_pi<float>();
+            glm::vec3 n = { std::sin(phi)*std::cos(th),
+                            std::cos(phi),
+                            std::sin(phi)*std::sin(th) };
+            P.push_back(n); // radius = 1
+            N.push_back(glm::normalize(n));
+        }
+    }
+    auto idx = [slices](int i,int j){ return i*(slices+1)+j; };
+    for (int i=0;i<stacks;i++){
+        for (int j=0;j<slices;j++){
+            uint32_t a=idx(i,j), b=idx(i+1,j), c=idx(i+1,j+1), d=idx(i,j+1);
+            I.insert(I.end(), {a,b,c, a,c,d});
+        }
     }
 
-    std::vector<uint32_t> I = {
-        0,1,2, 0,2,3, 0,3,4, 0,4,1,
-        5,2,1, 5,3,2, 5,4,3, 5,1,4
-    };
-
-    std::vector<float> PN;
-    makeInterleavedPN(P, N, PN);
-
+    std::vector<float> PN; makeInterleavedPN(P,N,PN);
     mesh.upload(PN, I);
     return mesh;
 }

@@ -17,12 +17,22 @@
 #include "platform/Window.h"
 #include "render/UI/ImGuiLayer.h"
 #include "render/UI/UI.h"
-
+#include "data/WorldSnapshot.h"
+#include "data/HapticMessages.h"
+#include "messaging/Channel.h"
+#include "data/Commands.h"
 
 class GlSceneRenderer : public ISceneRenderer {
     public:
 
-        GlSceneRenderer(Window& window, const GeometryDatabase& geomDb, RenderMeshRegistry& meshRegistry);
+        GlSceneRenderer(
+            Window& window,
+            const GeometryDatabase& geomDb,
+            RenderMeshRegistry& meshRegistry,
+            msg::Channel<WorldCommand>& worldCmds,
+            msg::Channel<ToolStateMsg>& toolState,
+            msg::Channel<HapticSnapshotMsg>& hapticSnaps
+        );
         ~GlSceneRenderer() override;
 
         // --- ISceneRenderer interface ---
@@ -45,11 +55,25 @@ class GlSceneRenderer : public ISceneRenderer {
         RenderMeshRegistry& meshRegistry_;
 
         // --- cached last-submitted state
-        WorldSnapshot    world_{};
+        // ------------------------------------------------------------
+        // Messaging inputs
+        // ------------------------------------------------------------
+        msg::Channel<WorldCommand>&       worldCmds_;
+        msg::Channel<ToolStateMsg>&       toolState_;
+        msg::Channel<HapticSnapshotMsg>&  hapticSnaps_;
+
+        // ------------------------------------------------------------
+        // Cached latest state (drained each frame)
+        // ------------------------------------------------------------
+        WorldSnapshot        world_{};
+        ToolStateMsg         latestTool_{};
+        HapticSnapshotMsg    latestHaptics_{};
         // HapticSnapshot  haptic_{};
 
         // --- GPU resources
         Shader shader_;   // generic lit shader (pos+norm)
+
+        ObjectID selectedObject_{0};
 
         // MeshGPU unitSphere_;
         // MeshGPU unitPlane_;
@@ -66,6 +90,7 @@ class GlSceneRenderer : public ISceneRenderer {
         UISceneStats      stats_;
         UIPanelConfig     cfg_;
 
+        void initUICommands();
 
         // --- per-frame state
         glm::mat4 V_{1.0f}, P_{1.0f}; // view/proj matrices

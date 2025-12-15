@@ -24,9 +24,14 @@ All direct HapticEngine access in this file MUST be removed before final submiss
 
 
 
-ViewportController::ViewportController(Window& window, Camera& camera)
+ViewportController::ViewportController(Window& window, Camera& camera,            
+        msg::Channel<ToolStateMsg>& toolState,
+        msg::Channel<HapticSnapshotMsg>& hapticSnaps)
     : win_(&window),
-      cam_(&camera)
+      cam_(&camera),
+        toolState_(toolState),
+        hapticSnaps_(hapticSnaps)
+      
 {
 }
 
@@ -39,6 +44,17 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
 
     // Get framebuffer size
     win_->getFramebufferSize(width, height);
+
+    HapticSnapshotMsg hs;
+    while (hapticSnaps_.tryConsume(hs)) {
+        latestHaptics_ = std::move(hs);
+    }
+
+    ToolStateMsg ts;
+    while (toolState_.tryConsume(ts)) {
+        latestTool_ = std::move(ts);
+    }
+
 
     // ---------------------------------------------------------------------
     // Keyboard navigation (cam_era movement only)
@@ -96,8 +112,7 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
             // TEMPORARY: using haptic snapshot to define drag target
             // FINAL DESIGN: drag target should come from selected ObjectID
             // HapticSnapshot snap = haptic_.readSnapshot();
-            // glm::dvec3 spherePos = snap.devicePose_ws.p;
-            glm::dvec3 spherePos = glm::dvec3(0.0, 0.0, 0.0); // TEMPORARY
+            glm::dvec3 spherePos = glm::dvec3(latestHaptics_.proxyPose_ws.p);
             // Convert ray to double precision
             glm::dvec3 rayOrigin = glm::dvec3(ray.o);
             glm::dvec3 rayDir    = glm::normalize(glm::dvec3(ray.d));
@@ -170,10 +185,11 @@ void ViewportController::update(float /*dt*/, bool uiCapturing) {
 
                 glm::vec3 pos = ray.o + dragDepth_ * ray.d;
 
-                // TEMPORARY direct haptic submission
-                // HapticSnapshot snap = haptic_.readSnapshot();
-                // Pose spherePose = snap.devicePose_ws;
-                // haptic_.submitToolPose({glm::dvec3(pos), spherePose.q}, snap.t_sec);
+                ToolStateMsg msg = latestTool_;
+                msg.toolPose_ws.p = {pos.x, pos.y, pos.z};
+                msg.t_sec = 0.0f;
+
+                toolState_.publish(msg);
             }
         }
     }
@@ -217,12 +233,9 @@ void ViewportController::handleMouseDrag(double x, double y) {
     Ray ray = makeRayAtCursor(x, y, width, height, *cam_);
     glm::vec3 pos = ray.o + dragDepth_ * ray.d;
 
-    // TEMPORARY direct device manipulation
-    // HapticSnapshot snap = haptic_.readSnapshot();
-    // Pose spherePose = snap.devicePose_ws;
-    // SetToolPoseCommand cmd;
-    // cmd.toolId = toolObjectId;
-    // cmd.pose_ws = pose;
-    // cmd.t_sec = now;
-    // commandQueue.push(cmd);
+    ToolStateMsg msg = latestTool_;
+    msg.toolPose_ws.p = {pos.x, pos.y, pos.z};
+    msg.t_sec = 0.0f; // your timing util
+
+    toolState_.publish(msg);
 }
