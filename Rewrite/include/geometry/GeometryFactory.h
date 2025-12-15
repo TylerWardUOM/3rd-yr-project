@@ -9,7 +9,7 @@ public:
     explicit GeometryFactory(GeometryDatabase& db, RenderMeshRegistry& meshRegistry);
 
     GeometryID getPlane();                 // infinite plane
-    GeometryID getSphere(double radius);   // sphere of given radius
+    GeometryID getSphere();   // sphere of given radius
 
 private:
     GeometryDatabase& db_;
@@ -19,8 +19,8 @@ private:
 
     // Cache so geometry is only created once
     std::optional<GeometryID> planeId_;
-    std::unordered_map<double, GeometryID> sphereIds_;
+    std::optional<GeometryID>  sphereId_;
 
     GeometryID registerPlane();
-    GeometryID registerSphere(double radius);
+    GeometryID registerSphere();
 };

@@ -5,14 +5,17 @@
 #include "data/Commands.h"
 #include "geometry/GeometryFactory.h"
 #include <unordered_map>
+#include "messaging/Channel.h"
 
 class WorldManager {
 public:
     WorldManager(const GeometryDatabase& geomDb,
-                 GeometryFactory& geomFactory);
+                 GeometryFactory& geomFactory,
+                 msg::Channel<WorldCommand>& worldCmds
+                    );
 
     // Apply a single world mutation command
-    void apply(const PhysicsCommand& cmd);
+    void apply(const WorldCommand& cmd);
 
     // Advance simulation time (no physics yet)
     void step(double dt);
@@ -41,5 +44,7 @@ private:
     std::unordered_map<ObjectID, WorldObject> objects_;
     const GeometryDatabase& geomDb_;
     GeometryFactory& geomFactory_;
+
+    msg::Channel<WorldCommand>& worldCmds_;
 
 };

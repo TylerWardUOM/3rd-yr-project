@@ -3,11 +3,15 @@
 
 #include "platform/Window.h"
 #include "render/Camera.h"
+#include "data/HapticMessages.h"
+#include "messaging/Channel.h"
 
 class ViewportController {
 public:
     // RenderingEngine owns Window and Camera
-    ViewportController(Window& w, Camera& c);
+    ViewportController(Window& w, Camera& c,             
+            msg::Channel<ToolStateMsg>& toolState,
+            msg::Channel<HapticSnapshotMsg>& hapticSnaps);
 
     ViewportController(const ViewportController&) = delete;
     ViewportController& operator=(const ViewportController&) = delete;
@@ -60,4 +64,12 @@ private:
     float scrollZoomSpeed_  = 1.50f;
     bool  invertY_          = false;
     bool  rmbToLook_        = true;
+
+    msg::Channel<ToolStateMsg>&      toolState_;
+    msg::Channel<HapticSnapshotMsg>& hapticSnaps_;
+
+    HapticSnapshotMsg latestHaptics_{};
+    ToolStateMsg      latestTool_{};    
+
+
 };

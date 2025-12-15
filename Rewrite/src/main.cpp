@@ -7,42 +7,88 @@
 #include "render/ISceneRenderer.h"
 #include "render/GlSceneRenderer.h"
 #include "render/RenderMeshRegistry.h"
+#include "data/Commands.h"
+#include "messaging/Channel.h"
+#include "messaging/MessageBus.h"
+#include "engines/HapticEngine.h"
 
-
-
+#include <thread>
 
 int main() {
+    // ------------------------------------------------------------
+    // Core shared systems
+    // ------------------------------------------------------------
     GeometryDatabase geomDb;
     RenderMeshRegistry meshRegistry;
     GeometryFactory geomFactory(geomDb, meshRegistry);
-    WorldManager wm(geomDb, geomFactory);
+
+    msg::MessageBus bus;
+
+    // ------------------------------------------------------------
+    // Channels
+    // ------------------------------------------------------------
+    auto& worldCmds   = bus.channel<WorldCommand>("world.commands");
+
+    auto& worldSnaps  = bus.channel<WorldSnapshot>("world.snapshots");
+    auto& toolIn      = bus.channel<ToolStateMsg>("haptics.tool_in");
+    auto& hapticOut   = bus.channel<HapticSnapshotMsg>("haptics.snapshots");
+    auto& wrenchOut   = bus.channel<HapticWrenchCmd>("haptics.wrenches");
+
+    // ------------------------------------------------------------
+    // Engines
+    // ------------------------------------------------------------
+    WorldManager wm(geomDb, geomFactory, worldCmds);
+
     Window win({});
-    GlSceneRenderer renderer(win, geomDb, meshRegistry);
+    GlSceneRenderer renderer(win, geomDb, meshRegistry, worldCmds, toolIn, hapticOut);
+
+    HapticEngine haptics(
+        geomDb,
+        worldSnaps,
+        toolIn,
+        hapticOut,
+        wrenchOut
+    );
+
+    // Optional: connect to real device (safe even if dummy)
+    // haptics.connectDevice("COM3", 115200);
+
+    // Start haptics thread (1 kHz loop)
+    std::thread hapticsThread(&HapticEngine::run, &haptics);
+
+    // ------------------------------------------------------------
+    // Create initial objects
+    // ------------------------------------------------------------
+    GeometryID plane  = geomFactory.getPlane();
+    GeometryID sphere = geomFactory.getSphere();
+
+    wm.apply(WorldCommand{CreateObjectCommand{plane}});
+    wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,0.5,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
 
 
-    GeometryID plane = geomFactory.getPlane();
-    GeometryID sphere = geomFactory.getSphere(0.25);
+    // ------------------------------------------------------------
+    // Main loop (render + world)
+    // ------------------------------------------------------------
+    while (win.isOpen()) {
 
-    CreateObjectCommand c1{ plane };
-    CreateObjectCommand c2{ sphere };
+        const double dt = 1.0 / 60.0;
 
-    wm.apply(PhysicsCommand{c1});
-    wm.apply(PhysicsCommand{c2});
-
-    WorldSnapshot s = wm.buildSnapshot();
-    assert(s.objects.size() == 2);
-    assert(s.objects[0].geom == plane || s.objects[1].geom == plane);
-
-    while (true)
-    {
-        if (!win.isOpen()) break;
-
-        double dt = 1.0/60.0; // fixed timestep for now
-        wm.step(dt);
+        // Build + publish world snapshot
         WorldSnapshot snapshot = wm.buildSnapshot();
-        renderer.render(snapshot);
-    
+        worldSnaps.publish(snapshot);
 
+        // Render (still direct, no messaging needed yet)
+        renderer.render(snapshot);
+
+        // Apply world commands
+        wm.step(dt);
+
+        
     }
-    
-};
+
+    // ------------------------------------------------------------
+    // Shutdown
+    // ------------------------------------------------------------
+    hapticsThread.detach(); // or implement a clean stop flag
+    return 0;
+}

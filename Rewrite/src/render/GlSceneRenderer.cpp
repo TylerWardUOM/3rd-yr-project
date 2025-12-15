@@ -5,43 +5,69 @@
 #include "render/shader/MVPUniforms.h"
 #include <glm/gtc/matrix_access.hpp>
 #include "geometry/GeometryDatabase.h"
+#include <iostream>
 
 // --- utils ---
 // build model matrix from Pose
 glm::mat4 GlSceneRenderer::compose(const Pose& T) {
+    // Rotation
     glm::mat4 R = glm::mat4_cast(glm::normalize(glm::quat(T.q)));
-    glm::mat4 M = R;
+
+    // Uniform scale
+    glm::mat4 S = glm::scale(glm::mat4(1.0f),
+                             glm::vec3(static_cast<float>(T.s)));
+
+    // Translation
+    glm::mat4 M = R * S;
     M[3] = glm::vec4(glm::vec3(T.p), 1.0f);
+
     return M;
 }
 
-// ========== ctor/dtor ==========
-GlSceneRenderer::GlSceneRenderer(Window& window, const GeometryDatabase& geomDb, RenderMeshRegistry& meshRegistry)
-    : window_(window), 
-    shader_("shaders/general.vert", "shaders/general.frag"),
-    geometryDb_(geomDb),
-    meshRegistry_(meshRegistry),
-    camera_(),
-    viewportCtrl_(window, camera_),
-    imguiLayer_(window_, "#version 330"),
-    ui_()
 
+// ========== ctor/dtor ==========
+GlSceneRenderer::GlSceneRenderer(
+    Window& window,
+    const GeometryDatabase& geomDb,
+    RenderMeshRegistry& meshRegistry,
+    msg::Channel<WorldCommand>& worldCmds,
+    msg::Channel<ToolStateMsg>& toolState,
+    msg::Channel<HapticSnapshotMsg>& hapticSnaps
+)
+    : window_(window)
+    , camera_()
+    , imguiLayer_(window_, "#version 330")
+    , ui_()
+    , viewportCtrl_(window_, camera_, toolState, hapticSnaps)
+    , geometryDb_(geomDb)
+    , meshRegistry_(meshRegistry)
+    , worldCmds_(worldCmds)
+    , toolState_(toolState)
+    , hapticSnaps_(hapticSnaps)
+    , shader_("shaders/general.vert", "shaders/general.frag")
 {
     ensurePrimitiveTemplates();
-    camera_.eye    = {0.0f, 1.0f, 1.0f};
-    camera_.up     = {0.0f, 1.0f, 0.0f};
-    camera_.fovDeg = 60.f;
+
+    // ---- Camera defaults ----
+    camera_.eye      = {0.0f, 1.0f, 1.0f};
+    camera_.up       = {0.0f, 1.0f, 0.0f};
+    camera_.fovDeg   = 60.f;
     camera_.yawDeg   = 0.f;
     camera_.pitchDeg = -45.f;
+    camera_.znear    = 0.01f;
+    camera_.zfar     = 100.0f;
     camera_.updateVectors();
 
-
-         // Initial viewport size
-    int fbw=0, fbh=0; 
+    // ---- Initial framebuffer size ----
+    int fbw = 0, fbh = 0;
     window_.getFramebufferSize(fbw, fbh);
-    if (fbw>0 && fbh>0) {
-        camera_.aspect = float(fbw)/float(fbh); 
+    if (fbw > 0 && fbh > 0) {
+        camera_.aspect = float(fbw) / float(fbh);
+        fbw_ = fbw;
+        fbh_ = fbh;
     }
+
+    initUICommands();
 }
 
 GlSceneRenderer::~GlSceneRenderer() {
@@ -107,7 +133,39 @@ void GlSceneRenderer::render(const WorldSnapshot& snapshot) {
         r.render(camera_, compose(obj.T_ws));
     }
 
-    viewportCtrl_.update(0.0f, false); // no dt, no UI capture
+    HapticSnapshotMsg hs;
+    while (hapticSnaps_.tryConsume(hs)) {
+        latestHaptics_ = std::move(hs);
+    }
+
+    // Need to Clean this COde Up Later
+
+    Pose proxyPose = latestHaptics_.proxyPose_ws;
+
+    const GeometryEntry* geom = &geometryDb_.get(2);
+    const MeshGPU* mesh = meshRegistry_.get(geom->renderMesh);
+    glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3((float)0.02));
+
+    Renderable r;
+    r.mesh   = mesh;
+    r.shader = &shader_;
+    r.colour = {0.8f, 0.2f, 0.2f};
+    // --- Render ---
+    r.render(camera_, compose(proxyPose) * S);
+
+    Pose devicePose = latestHaptics_.devicePose_ws;
+    r.mesh   = mesh;
+    r.shader = &shader_;
+    r.colour = {0.2f, 0.8f, 0.2f};
+    // --- Render ---
+    r.render(camera_, compose(devicePose) * S);
+
+    // End of bad chunk
+    bool uiCapturing = imguiLayer_.wantCaptureMouse() || imguiLayer_.wantCaptureKeyboard();
+
+    viewportCtrl_.update(0.0f, uiCapturing); // no dt, no UI capture
+    double sy = window_.popScrollY();
+    if (sy != 0.0) viewportCtrl_.onScroll(sy);
 
 ;
     imguiLayer_.begin();
@@ -117,6 +175,7 @@ void GlSceneRenderer::render(const WorldSnapshot& snapshot) {
     ui_.drawDebugPanel(stats_);
     ui_.drawCameraPanel(camState_);
     ui_.drawControllerPanel(ctrlState_);
+    ui_.drawBodyPanel(bodyState_);
     imguiLayer_.end();
     window_.swap();
     window_.poll();
@@ -224,6 +283,65 @@ void GlSceneRenderer::drawMeshRenderable(const MeshGPU& m, const glm::mat4& M, c
 //     r.render(camera_, M * S);
 // }
 
+
+
+void GlSceneRenderer::initUICommands() {
+    UICommands cmds;
+
+    cmds.setSelectedEntity = [&](EntityId entityId) {
+        selectedObject_ = entityId;
+    };
+
+    cmds.setBodyPosition =
+        [this](float x, float y, float z) {
+            ObjectID id = selectedObject_; 
+            EditObjectCommand cmd;
+            cmd.id      = id;
+            cmd.newPose = Pose{ {x,y,z}, bodyState_.orientation, bodyState_.scale };
+            cmd.newColour = Colour{ bodyState_.colour.r, bodyState_.colour.g, bodyState_.colour.b };
+            cmd.teleport = true;
+
+            worldCmds_.publish(WorldCommand{cmd});
+            //std::cout << "UI: set body position to (" << x << "," << y << "," << z << ")\n";
+        };
+
+    cmds.setBodyColour = 
+        [this](float r, float g, float b) {
+        ObjectID id = selectedObject_; 
+        EditObjectCommand cmd;
+        cmd.id      = id;
+        cmd.newPose = Pose{ bodyState_.position, bodyState_.orientation, bodyState_.scale };
+        cmd.newColour = Colour{ r,g,b };
+        cmd.teleport = true;
+        worldCmds_.publish(WorldCommand{cmd});
+        
+    };
+
+        // Camera commands
+        cmds.setCameraFov = [&](float fov) { camera_.fovDeg = fov; };
+        cmds.setCameraNear = [&](float n) { camera_.znear = n; };
+        cmds.setCameraFar  = [&](float f) { camera_.zfar = f; };
+        cmds.setCameraAngles = [&](float yaw, float pitch) {
+            camera_.yawDeg = yaw;
+            camera_.pitchDeg = pitch;
+            camera_.clampPitch();
+            camera_.updateVectors();
+        };
+
+        // ViewportController commands
+        cmds.setMoveSpeed        = [&](float v) { viewportCtrl_.setMoveSpeed(v); };
+        cmds.setMouseSensitivity = [&](float v) { viewportCtrl_.setMouseSensitivity(v); };
+        cmds.setScrollZoomSpeed  = [&](float v) { viewportCtrl_.setScrollZoomSpeed(v); };
+        cmds.setInvertY          = [&](bool v)  { viewportCtrl_.setInvertY(v); };
+        cmds.setRmbToLook        = [&](bool v)  { viewportCtrl_.setRmbToLook(v); };
+
+
+
+    ui_.setCommands(cmds);
+}
+
+    
+
 // ========== helpers: primitive builders ==========
 static void makeInterleavedPN(const std::vector<glm::vec3>& pos,
                               const std::vector<glm::vec3>& nrm,
@@ -233,54 +351,6 @@ static void makeInterleavedPN(const std::vector<glm::vec3>& pos,
         outPN[i*6+0]=pos[i].x; outPN[i*6+1]=pos[i].y; outPN[i*6+2]=pos[i].z;
         outPN[i*6+3]=nrm[i].x; outPN[i*6+4]=nrm[i].y; outPN[i*6+5]=nrm[i].z;
     }
-}
-
-void GlSceneRenderer::createUnitPlane(MeshGPU& out) {
-    // XZ quad at y=0, size 1x1, centered on origin
-    std::vector<glm::vec3> P = {
-        {-0.5f, 0.f, -0.5f}, { 0.5f, 0.f, -0.5f},
-        { 0.5f, 0.f,  0.5f}, {-0.5f, 0.f,  0.5f}
-    };
-    std::vector<glm::vec3> N(4, {0.f,1.f,0.f});
-    std::vector<uint32_t>   I = {0,1,2, 0,2,3};
-
-    std::vector<float> PN; makeInterleavedPN(P,N,PN);
-    out = MeshGPU();
-    out.upload(PN, I);
-
-}
-
-void GlSceneRenderer::createUnitSphere(MeshGPU& out) {
-    // quick-and-dirty icosphere (or latitude-longitude); here’s a tiny lat-long sphere
-    const int stacks = 16, slices = 24;
-    std::vector<glm::vec3> P;
-    std::vector<glm::vec3> N;
-    std::vector<uint32_t>  I;
-
-    for (int i=0;i<=stacks;i++){
-        float v  = float(i)/stacks;
-        float phi = v*glm::pi<float>();
-        for (int j=0;j<=slices;j++){
-            float u  = float(j)/slices;
-            float th = u*glm::two_pi<float>();
-            glm::vec3 n = { std::sin(phi)*std::cos(th),
-                            std::cos(phi),
-                            std::sin(phi)*std::sin(th) };
-            P.push_back(n); // radius = 1
-            N.push_back(glm::normalize(n));
-        }
-    }
-    auto idx = [slices](int i,int j){ return i*(slices+1)+j; };
-    for (int i=0;i<stacks;i++){
-        for (int j=0;j<slices;j++){
-            uint32_t a=idx(i,j), b=idx(i+1,j), c=idx(i+1,j+1), d=idx(i,j+1);
-            I.insert(I.end(), {a,b,c, a,c,d});
-        }
-    }
-
-    std::vector<float> PN; makeInterleavedPN(P,N,PN);
-    out = MeshGPU();
-    out.upload(PN, I);
 }
 
 void GlSceneRenderer::createUnitCylinder(MeshGPU& out, int slices = 32) {
@@ -365,27 +435,32 @@ void GlSceneRenderer::buildUIState(const WorldSnapshot& snapshot) {
     ctrlState_.invertY          = viewportCtrl_.invertY();
     ctrlState_.rmbToLook        = viewportCtrl_.rmbToLook();
 
-    // // ---------- Object list ----------
-    // bodyState_.entityOptions.clear();
-    // for (const auto& obj : snapshot.objects) {
-    //     bodyState_.entityOptions.push_back(obj.id);
-    // }
 
-    // bodyState_.selectedEntityId =
-    //     (selected_ != 0) ? std::optional<ObjectID>{selected_} : std::nullopt;
 
-    // // ---------- Selected object ----------
-    // if (selected_) {
-    //     auto it = std::find_if(
-    //         snapshot.objects.begin(),
-    //         snapshot.objects.end(),
-    //         [&](const ObjectState& o) { return o.id == selected_; }
-    //     );
 
-    //     if (it != snapshot.objects.end()) {
-    //         bodyState_.position = it->T_ws.p;
-    //         bodyState_.colour   = it->colourOverride;
-    //         bodyState_.physicsProps = {/* fill if available */};
-    //     }
-    // }
+    // ---------- Object list ----------
+    bodyState_.entityOptions.clear();
+    for (const auto& obj : snapshot.objects) {
+        bodyState_.entityOptions.push_back(obj.id);
+    }
+
+    bodyState_.selectedEntityId =
+        (selectedObject_ != 0) ? std::optional<ObjectID>{selectedObject_} : std::nullopt;
+
+    // ---------- Selected object ----------
+    if (selectedObject_) {
+        auto it = std::find_if(
+            snapshot.objects.begin(),
+            snapshot.objects.end(),
+            [&](const ObjectState& o) { return o.id == selectedObject_; }
+        );
+
+        if (it != snapshot.objects.end()) {
+            bodyState_.position = it->T_ws.p;
+            bodyState_.orientation = it->T_ws.q;
+            bodyState_.scale    = it->T_ws.s;
+            bodyState_.colour   = it->colourOverride;
+            //bodyState_.physicsProps = {/* fill if available */};
+        }
+    }
 }
