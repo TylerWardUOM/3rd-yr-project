@@ -15,17 +15,19 @@
 #include "engines/PhysicsEnginePhysX.h"
 
 #include <thread>
+#include <atomic>
 
 
 void simulationLoop(
     WorldManager& wm,
     PhysicsEnginePhysX& physics,
-    msg::SnapshotChannel<WorldSnapshot>& worldSnaps
+    msg::SnapshotChannel<WorldSnapshot>& worldSnaps,
+    std::atomic<bool>& running
 ) {
     const double maxDt = 1.0 / 30.0;
     auto prev = std::chrono::steady_clock::now();
 
-    while (true) {
+    while (running.load(std::memory_order_relaxed)) {
         auto now = std::chrono::steady_clock::now();
         double dt = std::chrono::duration<double>(now - prev).count();
         prev = now;
@@ -95,6 +97,8 @@ int main() {
     wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,5.0,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
 
 
+    std::atomic<bool> simRunning{true};
+
     // ------------------------------------------------------------
     // Threads
     // ------------------------------------------------------------
@@ -102,7 +106,9 @@ int main() {
         simulationLoop,
         std::ref(wm),
         std::ref(physics),
-        std::ref(worldSnaps)
+        std::ref(worldSnaps),
+        std::ref(simRunning)
+
     );
 
     std::thread hapticsThread(&HapticEngine::run, &haptics);
@@ -117,6 +123,7 @@ int main() {
         renderer.render();
     }
 
+    simRunning.store(false, std::memory_order_relaxed);
     simThread.join();
     hapticsThread.detach();
 }
