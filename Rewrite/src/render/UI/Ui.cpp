@@ -134,7 +134,7 @@ void UI::drawControllerPanel(const UIControllerState& s)
 {
     if (ImGui::Begin("Controller")) {
         float move = s.moveSpeed;
-        if (ImGui::SliderFloat("Move speed", &move, 0.00001f, 0.001f, "%.5f")) {
+        if (ImGui::SliderFloat("Move speed", &move, 0.0001f, 0.01f, "%.5f")) {
             if (cmds_.setMoveSpeed) cmds_.setMoveSpeed(move);
         }
 
