@@ -37,7 +37,6 @@ void ImGuiLayer::end() {
 }
 
 void ImGuiLayer::shutdown() {
-    std::cout << "ImGui shutdown, inited=" << inited_ << "\n";
     if (!inited_) return;
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
