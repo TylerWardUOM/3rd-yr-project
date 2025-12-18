@@ -1,4 +1,3 @@
-// messaging/MessageBus.h
 #pragma once
 
 #include <unordered_map>
@@ -7,6 +6,8 @@
 #include <stdexcept>
 
 #include "Channel.h"
+#include "SnapshotChannel.h"
+#include "ChannelBase.h"
 
 namespace msg {
 
@@ -15,19 +16,39 @@ public:
     MessageBus() = default;
     ~MessageBus() = default;
 
-    // Create or retrieve a channel by name and type
+    // -----------------------------
+    // Queue channel (commands)
+    // -----------------------------
     template<typename T>
     Channel<T>& channel(const std::string& name) {
+        return getOrCreate<Channel<T>>(name, ChannelKind::Queue);
+    }
+
+    // -----------------------------
+    // Snapshot channel (SPMC)
+    // -----------------------------
+    template<typename T>
+    SnapshotChannel<T>& snapshot(const std::string& name) {
+        return getOrCreate<SnapshotChannel<T>>(name, ChannelKind::Snapshot);
+    }
+
+private:
+    template<typename ChannelT>
+    ChannelT& getOrCreate(const std::string& name, ChannelKind expected) {
         auto it = channels_.find(name);
         if (it != channels_.end()) {
-            auto* typed = dynamic_cast<Channel<T>*>(it->second.get());
+            if (it->second->kind() != expected)
+                throw std::runtime_error("Channel kind mismatch: " + name);
+
+            auto* typed = dynamic_cast<ChannelT*>(it->second.get());
             if (!typed)
                 throw std::runtime_error("Channel type mismatch: " + name);
+
             return *typed;
         }
 
-        auto ch = std::make_unique<Channel<T>>();
-        Channel<T>* raw = ch.get();
+        auto ch = std::make_unique<ChannelT>();
+        ChannelT* raw = ch.get();
         channels_[name] = std::move(ch);
         return *raw;
     }

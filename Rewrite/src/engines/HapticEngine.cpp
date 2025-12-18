@@ -75,7 +75,7 @@ static inline Vec3 dirToWorld(const Pose& T_ws, const Vec3& v_ls) {
 // Constructor / public API
 // ------------------------------------------------------------
 HapticEngine::HapticEngine(const GeometryDatabase& geomDb,
-                           msg::Channel<WorldSnapshot>& worldSnaps,
+                           msg::SnapshotChannel<WorldSnapshot>& worldSnaps,
                            msg::Channel<ToolStateMsg>& toolIn,
                            msg::Channel<HapticSnapshotMsg>& hapticOut,
                            msg::Channel<HapticWrenchCmd>& wrenchOut)
@@ -115,10 +115,7 @@ void HapticEngine::update(float dt)
     // --------------------------------------------------------
     // Drain latest world snapshot
     // --------------------------------------------------------
-    WorldSnapshot ws;
-    while (worldSnaps_.tryConsume(ws)) {
-        latestWorld_ = std::move(ws);
-    }
+    worldSnaps_.tryRead(latestWorld_, worldSnapVersion_);
 
     // --------------------------------------------------------
     // Drain latest tool state

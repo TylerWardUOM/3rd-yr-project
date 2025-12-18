@@ -13,6 +13,9 @@ namespace msg {
 template<typename T>
 class Channel final : public ChannelBase {
 public:
+    ChannelKind kind() const override {
+        return ChannelKind::Queue;
+    }
     Channel() = default;
 
     // Publish a message (copy)
