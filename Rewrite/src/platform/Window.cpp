@@ -68,6 +68,7 @@ void Window::createWindow(const Config& cfg) {
     if (!win_) throw std::runtime_error("glfwCreateWindow failed");
     glfwMakeContextCurrent(win_);
     glfwSetWindowUserPointer(win_, this);
+    glfwSwapInterval(1); // 60Hz vsync
 }
 
 void Window::initGLAD()

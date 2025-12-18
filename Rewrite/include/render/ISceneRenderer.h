@@ -40,5 +40,5 @@ public:
     // virtual void submit(const WorldSnapshot& world, const HapticSnapshot& haptic) = 0; // submit for rendering
 
     /// @brief Render the submitted scene
-    virtual void render(const WorldSnapshot& snapshot) = 0; // render submitted scene
+    virtual void render() = 0; // render submitted scene
 };

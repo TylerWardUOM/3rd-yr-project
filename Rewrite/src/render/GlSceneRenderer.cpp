@@ -32,7 +32,8 @@ GlSceneRenderer::GlSceneRenderer(
     RenderMeshRegistry& meshRegistry,
     msg::Channel<WorldCommand>& worldCmds,
     msg::Channel<ToolStateMsg>& toolState,
-    msg::Channel<HapticSnapshotMsg>& hapticSnaps
+    msg::Channel<HapticSnapshotMsg>& hapticSnaps,
+    msg::SnapshotChannel<WorldSnapshot>& worldSnaps
 )
     : window_(window)
     , camera_()
@@ -44,6 +45,7 @@ GlSceneRenderer::GlSceneRenderer(
     , worldCmds_(worldCmds)
     , toolState_(toolState)
     , hapticSnaps_(hapticSnaps)
+    , worldSnaps_(worldSnaps)
     , shader_("shaders/general.vert", "shaders/general.frag")
 {
     ensurePrimitiveTemplates();
@@ -67,6 +69,7 @@ GlSceneRenderer::GlSceneRenderer(
         fbh_ = fbh;
     }
 
+    
     initUICommands();
 }
 
@@ -105,7 +108,10 @@ void GlSceneRenderer::setViewProj(const glm::mat4& V, const glm::mat4& P) {
 // }
 
 
-void GlSceneRenderer::render(const WorldSnapshot& snapshot) {
+void GlSceneRenderer::render() {
+    // ---- Drain latest world snapshot ----
+    worldSnaps_.tryRead(latestWorld_, worldSnapVersion_);
+
     // basic Gl state
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -113,7 +119,7 @@ void GlSceneRenderer::render(const WorldSnapshot& snapshot) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
 
-    for (const ObjectState& obj : snapshot.objects) {
+    for (const ObjectState& obj : latestWorld_.objects) {
 
         // --- Geometry lookup ---
         const GeometryEntry* geom = &geometryDb_.get(obj.geom);
@@ -169,7 +175,7 @@ void GlSceneRenderer::render(const WorldSnapshot& snapshot) {
 
 ;
     imguiLayer_.begin();
-    buildUIState(snapshot);
+    buildUIState(latestWorld_);
     // ui_.drawBodyPanel(bodyState_);
     imguiLayer_.getFps(stats_.fps);
     ui_.drawDebugPanel(stats_);
@@ -180,31 +186,6 @@ void GlSceneRenderer::render(const WorldSnapshot& snapshot) {
     window_.swap();
     window_.poll();
     
-    // ---- draw surfaces/links with basic shader ----
-
-
-    // // draw surfaces
-    // for (uint32_t i=0; i<world_.numSurfaces; ++i) {
-    //     const auto& s = world_.surfaces[i];
-    //     glm::mat4 M = compose(s.T_ws);
-
-    //     switch (s.type) {
-    //     case SurfaceType::Plane: {
-    //         glm::vec2 half = {25.f,25.f};
-    //         drawPlaneRenderable(M, half, s.colour);
-    //     } break;
-
-    //     case SurfaceType::Sphere:
-    //         drawSphereRenderable(M, s.sphere.radius, s.colour);
-    //         break;
-
-    //     case SurfaceType::TriMesh: {
-    //         auto it = triMeshes_.find(s.mesh);
-    //         if (it != triMeshes_.end()) drawMeshRenderable(it->second, M, s.colour);
-    //     } break;
-    //     }
-    // }
-    // drawOverlays();
 }
 
 inline glm::dvec3 getTranslation(const glm::mat4& M) {

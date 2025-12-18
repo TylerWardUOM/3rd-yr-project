@@ -9,15 +9,44 @@
 #include "render/RenderMeshRegistry.h"
 #include "data/Commands.h"
 #include "messaging/Channel.h"
+#include "messaging/SnapshotChannel.h"
 #include "messaging/MessageBus.h"
 #include "engines/HapticEngine.h"
 #include "engines/PhysicsEnginePhysX.h"
 
 #include <thread>
 
+
+void simulationLoop(
+    WorldManager& wm,
+    PhysicsEnginePhysX& physics,
+    msg::SnapshotChannel<WorldSnapshot>& worldSnaps
+) {
+    const double maxDt = 1.0 / 30.0;
+    auto prev = std::chrono::steady_clock::now();
+
+    while (true) {
+        auto now = std::chrono::steady_clock::now();
+        double dt = std::chrono::duration<double>(now - prev).count();
+        prev = now;
+
+        dt = std::min(dt, maxDt);
+
+        wm.step(dt);
+        physics.step(dt);
+
+        WorldSnapshot snapshot = wm.buildSnapshot();
+        worldSnaps.publish(snapshot);
+
+        // Optional: avoid busy-spin
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+
 int main() {
     // ------------------------------------------------------------
-    // Core shared systems
+    // Core systems
     // ------------------------------------------------------------
     GeometryDatabase geomDb;
     RenderMeshRegistry meshRegistry;
@@ -25,22 +54,16 @@ int main() {
 
     msg::MessageBus bus;
 
-    // ------------------------------------------------------------
-    // Channels
-    // ------------------------------------------------------------
-    auto& worldCmds   = bus.channel<WorldCommand>("world.commands");
-    auto& worldSnaps  = bus.channel<WorldSnapshot>("world.snapshots");
-    auto& toolIn      = bus.channel<ToolStateMsg>("haptics.tool_in");
-    auto& hapticOut   = bus.channel<HapticSnapshotMsg>("haptics.snapshots");
-    auto& wrenchOut   = bus.channel<HapticWrenchCmd>("haptics.wrenches");
+    auto& worldCmds  = bus.channel<WorldCommand>("world.commands");
+    auto& worldSnaps = bus.snapshot<WorldSnapshot>("world.snapshots");
+    auto& toolIn     = bus.channel<ToolStateMsg>("haptics.tool_in");
+    auto& hapticOut  = bus.channel<HapticSnapshotMsg>("haptics.snapshots");
+    auto& wrenchOut  = bus.channel<HapticWrenchCmd>("haptics.wrenches");
 
-    // ------------------------------------------------------------
-    // Engines
-    // ------------------------------------------------------------
     WorldManager wm(geomDb, geomFactory, worldCmds);
 
     Window win({});
-    GlSceneRenderer renderer(win, geomDb, meshRegistry, worldCmds, toolIn, hapticOut);
+    GlSceneRenderer renderer(win, geomDb, meshRegistry, worldCmds, toolIn, hapticOut, worldSnaps);
 
     HapticEngine haptics(
         geomDb,
@@ -57,14 +80,9 @@ int main() {
         toolIn,
         bus.channel<HapticWrenchCmd>("physics.haptics_wrenches")
     );
+    physics.setFixedDt(1.0 / 240.0);
 
-    // Optional: connect to real device (safe even if dummy)
-    // haptics.connectDevice("COM3", 115200);
-
-    // Start haptics thread (1 kHz loop)
-    std::thread hapticsThread(&HapticEngine::run, &haptics);
-
-    // ------------------------------------------------------------
+       // ------------------------------------------------------------
     // Create initial objects
     // ------------------------------------------------------------
     GeometryID plane  = geomFactory.getPlane();
@@ -77,33 +95,27 @@ int main() {
 
 
     // ------------------------------------------------------------
-    // Main loop (render + world)
+    // Threads
     // ------------------------------------------------------------
+    std::thread simThread(
+        simulationLoop,
+        std::ref(wm),
+        std::ref(physics),
+        std::ref(worldSnaps)
+    );
 
-    const double dt = 1.0 / 60.0;
-    physics.setFixedDt(1.0 / 240.0); // 240 Hz physics
-    auto prev = std::chrono::steady_clock::now();
+    std::thread hapticsThread(&HapticEngine::run, &haptics);
+
+    // ------------------------------------------------------------
+    // Render loop (main thread)
+    // ------------------------------------------------------------
+    WorldSnapshot latest;
 
     while (win.isOpen()) {
-        auto now = std::chrono::steady_clock::now();
-        double dt = std::chrono::duration<double>(now - prev).count();
-        prev = now;
-
-        // clamp to avoid huge jumps (debugger pauses etc.)
-        dt = std::min(dt, 1.0/30.0);
-
-        wm.step(dt);
-        physics.step(dt);
-
-        WorldSnapshot snapshot = wm.buildSnapshot();
-        worldSnaps.publish(snapshot);
-        renderer.render(snapshot);
+        // Non-blocking read
+        renderer.render();
     }
 
-
-    // ------------------------------------------------------------
-    // Shutdown
-    // ------------------------------------------------------------
-    hapticsThread.detach(); // or implement a clean stop flag
-    return 0;
+    simThread.join();
+    hapticsThread.detach();
 }

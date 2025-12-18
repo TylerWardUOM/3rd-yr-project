@@ -20,6 +20,8 @@
 #include "data/WorldSnapshot.h"
 #include "data/HapticMessages.h"
 #include "messaging/Channel.h"
+#include "messaging/MessageBus.h"
+#include "messaging/SnapshotChannel.h"
 #include "data/Commands.h"
 
 class GlSceneRenderer : public ISceneRenderer {
@@ -31,7 +33,8 @@ class GlSceneRenderer : public ISceneRenderer {
             RenderMeshRegistry& meshRegistry,
             msg::Channel<WorldCommand>& worldCmds,
             msg::Channel<ToolStateMsg>& toolState,
-            msg::Channel<HapticSnapshotMsg>& hapticSnaps
+            msg::Channel<HapticSnapshotMsg>& hapticSnaps,
+            msg::SnapshotChannel<WorldSnapshot>& worldSnaps
         );
         ~GlSceneRenderer() override;
 
@@ -43,7 +46,7 @@ class GlSceneRenderer : public ISceneRenderer {
         void onResize(int width, int height) override;
         void setViewProj(const glm::mat4& V, const glm::mat4& P) override;
         // void submit(const WorldSnapshot& world, const HapticSnapshot& haptic) override; // submit for rendering
-        void render(const WorldSnapshot& snapshot) override; // render submitted scene
+        void render() override; // render submitted scene
 
     private:
         Window& window_;
@@ -61,11 +64,13 @@ class GlSceneRenderer : public ISceneRenderer {
         msg::Channel<WorldCommand>&       worldCmds_;
         msg::Channel<ToolStateMsg>&       toolState_;
         msg::Channel<HapticSnapshotMsg>&  hapticSnaps_;
+        msg::SnapshotChannel<WorldSnapshot>&      worldSnaps_;
 
         // ------------------------------------------------------------
         // Cached latest state (drained each frame)
         // ------------------------------------------------------------
-        WorldSnapshot        world_{};
+        uint64_t worldSnapVersion_ = 0;
+        WorldSnapshot        latestWorld_{};
         ToolStateMsg         latestTool_{};
         HapticSnapshotMsg    latestHaptics_{};
         // HapticSnapshot  haptic_{};

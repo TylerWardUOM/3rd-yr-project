@@ -4,6 +4,7 @@
 #include "data/WorldSnapshot.h"
 #include "data/HapticMessages.h"
 #include "geometry/GeometryDatabase.h"
+#include "messaging/SnapshotChannel.h"
 // #include "haptics/io/DeviceAdapter.h"
 
 // Dummy DeviceAdapter for illustration purposes
@@ -29,7 +30,7 @@ public:
 class HapticEngine {
 public:
     HapticEngine(const GeometryDatabase& geomDb,
-                msg::Channel<WorldSnapshot>& worldSnaps,
+                msg::SnapshotChannel<WorldSnapshot>& worldSnaps,
                  msg::Channel<ToolStateMsg>& toolIn,
                  msg::Channel<HapticSnapshotMsg>& hapticOut,
                  msg::Channel<HapticWrenchCmd>& wrenchOut);
@@ -40,7 +41,7 @@ public:
     bool connectDevice(const std::string& port, int baud = 115200);
 
 private:
-    msg::Channel<WorldSnapshot>&      worldSnaps_;
+    msg::SnapshotChannel<WorldSnapshot>&      worldSnaps_;
     msg::Channel<ToolStateMsg>&       toolIn_;
     msg::Channel<HapticSnapshotMsg>&  hapticOut_;
     msg::Channel<HapticWrenchCmd>&    wrenchOut_;
@@ -49,6 +50,7 @@ private:
     const GeometryDatabase& geometryDb_;
 
     // cached latest inputs (so update() is deterministic)
+    uint64_t worldSnapVersion_ = 0;
     WorldSnapshot latestWorld_{};
     ToolStateMsg  latestTool_{};
 
