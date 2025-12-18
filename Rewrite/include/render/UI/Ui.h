@@ -5,7 +5,7 @@
 #include <vector>
 #include <optional>
 #include "data/core/Math.h"
-// #include "physics/PhysicsProps.h"
+#include "data/PhysicsProps.h"
 
 using EntityId = uint32_t;
 
@@ -16,7 +16,7 @@ struct UITransformState {
     glm::vec3 colour{0.8f, 0.8f, 0.8f};
     std::vector<EntityId> entityOptions;     // built from WorldSnapshot each frame
     std::optional<uint32_t>     selectedEntityId;  // currently selected entity
-    // PhysicsProps physicsProps{}; 
+    PhysicsProps physicsProps{}; 
 };
 
 

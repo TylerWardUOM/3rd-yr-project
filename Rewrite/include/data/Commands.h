@@ -4,6 +4,7 @@
 #include "core/Math.h"
 #include <variant>
 #include "data/WorldSnapshot.h" // for Role enum
+#include "data/PhysicsProps.h"
 
 
 struct ForceCommand {
@@ -32,6 +33,16 @@ struct EditObjectCommand {
     bool     teleport{true}; // if false, you might set kinematic target instead
 };
 
+struct SetPhysicsPropsCommand {
+    ObjectID id{};
+    PhysicsProps props{};
+};
+
+struct PatchPhysicsPropsCommand {
+    ObjectID id{};
+    PhysicsPropsPatch patch{};
+};
+
 struct SetToolPoseCommand {
     ObjectID toolId{};     // ObjectID of the tool / proxy being controlled
     Pose     pose_ws{};    // Desired tool pose in world space
@@ -42,7 +53,9 @@ struct SetToolPoseCommand {
 using WorldCommand = std::variant<
     CreateObjectCommand,
     RemoveObjectCommand,
-    EditObjectCommand
+    EditObjectCommand,
+    SetPhysicsPropsCommand,
+    PatchPhysicsPropsCommand
 >;
 
 using ForceCommandMsg = ForceCommand;

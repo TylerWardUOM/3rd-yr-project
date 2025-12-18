@@ -317,23 +317,87 @@ void GlSceneRenderer::initUICommands() {
         
     };
 
-        // Camera commands
-        cmds.setCameraFov = [&](float fov) { camera_.fovDeg = fov; };
-        cmds.setCameraNear = [&](float n) { camera_.znear = n; };
-        cmds.setCameraFar  = [&](float f) { camera_.zfar = f; };
-        cmds.setCameraAngles = [&](float yaw, float pitch) {
-            camera_.yawDeg = yaw;
-            camera_.pitchDeg = pitch;
-            camera_.clampPitch();
-            camera_.updateVectors();
-        };
+    //Physics property commands
+    cmds.setBodyDensity = 
+        [this](float density) {
+        ObjectID id = selectedObject_; 
+        PatchPhysicsPropsCommand cmd;
+        cmd.id = id;
+        cmd.patch.density = density;
+        worldCmds_.publish(WorldCommand{cmd});
+    };
 
-        // ViewportController commands
-        cmds.setMoveSpeed        = [&](float v) { viewportCtrl_.setMoveSpeed(v); };
-        cmds.setMouseSensitivity = [&](float v) { viewportCtrl_.setMouseSensitivity(v); };
-        cmds.setScrollZoomSpeed  = [&](float v) { viewportCtrl_.setScrollZoomSpeed(v); };
-        cmds.setInvertY          = [&](bool v)  { viewportCtrl_.setInvertY(v); };
-        cmds.setRmbToLook        = [&](bool v)  { viewportCtrl_.setRmbToLook(v); };
+    cmds.setBodyDynamic = 
+        [this](bool dynamic) {
+        ObjectID id = selectedObject_; 
+        PatchPhysicsPropsCommand cmd;
+        cmd.id = id;
+        cmd.patch.dynamic = dynamic;
+        worldCmds_.publish(WorldCommand{cmd});
+    };
+
+    cmds.setBodyLinDamping = 
+        [this](float linDamping) {
+        ObjectID id = selectedObject_; 
+        PatchPhysicsPropsCommand cmd;
+        cmd.id = id;
+        cmd.patch.linDamping = linDamping;
+        worldCmds_.publish(WorldCommand{cmd});
+    };
+
+    cmds.setBodyAngDamping = 
+        [this](float angDamping) {
+        ObjectID id = selectedObject_; 
+        PatchPhysicsPropsCommand cmd;
+        cmd.id = id;
+        cmd.patch.angDamping = angDamping;
+        worldCmds_.publish(WorldCommand{cmd});
+    };
+
+    cmds.setBodyStaticFriction = 
+        [this](float staticFriction) {
+        ObjectID id = selectedObject_; 
+        PatchPhysicsPropsCommand cmd;
+        cmd.id = id;
+        cmd.patch.staticFriction = staticFriction;
+        worldCmds_.publish(WorldCommand{cmd});
+    };
+
+    cmds.setBodyDynamicFriction = 
+        [this](float dynamicFriction) {
+        ObjectID id = selectedObject_; 
+        PatchPhysicsPropsCommand cmd;
+        cmd.id = id;
+        cmd.patch.dynamicFriction = dynamicFriction;
+        worldCmds_.publish(WorldCommand{cmd});
+    };
+
+    cmds.setBodyRestitution = 
+        [this](float restitution) {
+        ObjectID id = selectedObject_; 
+        PatchPhysicsPropsCommand cmd;
+        cmd.id = id;
+        cmd.patch.restitution = restitution;
+        worldCmds_.publish(WorldCommand{cmd});
+    };
+
+    // Camera commands
+    cmds.setCameraFov = [&](float fov) { camera_.fovDeg = fov; };
+    cmds.setCameraNear = [&](float n) { camera_.znear = n; };
+    cmds.setCameraFar  = [&](float f) { camera_.zfar = f; };
+    cmds.setCameraAngles = [&](float yaw, float pitch) {
+        camera_.yawDeg = yaw;
+        camera_.pitchDeg = pitch;
+        camera_.clampPitch();
+        camera_.updateVectors();
+    };
+
+    // ViewportController commands
+    cmds.setMoveSpeed        = [&](float v) { viewportCtrl_.setMoveSpeed(v); };
+    cmds.setMouseSensitivity = [&](float v) { viewportCtrl_.setMouseSensitivity(v); };
+    cmds.setScrollZoomSpeed  = [&](float v) { viewportCtrl_.setScrollZoomSpeed(v); };
+    cmds.setInvertY          = [&](bool v)  { viewportCtrl_.setInvertY(v); };
+    cmds.setRmbToLook        = [&](bool v)  { viewportCtrl_.setRmbToLook(v); };
 
 
 
@@ -460,7 +524,7 @@ void GlSceneRenderer::buildUIState(const WorldSnapshot& snapshot) {
             bodyState_.orientation = it->T_ws.q;
             bodyState_.scale    = it->T_ws.s;
             bodyState_.colour   = it->colourOverride;
-            //bodyState_.physicsProps = {/* fill if available */};
+            bodyState_.physicsProps = it->physics;
         }
     }
 }

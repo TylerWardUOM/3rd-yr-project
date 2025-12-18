@@ -216,7 +216,7 @@ void HapticEngine::update(float dt)
     if (contactId != 0) {
         HapticWrenchCmd w;
         w.targetId   = contactId;
-        w.force_ws   = F;
+        w.force_ws   = -F; // apply equal & opposite force to contact object
         w.torque_ws  = {0,0,0};
         w.point_ws   = contactPoint_ws;
         w.duration_s = dt;
