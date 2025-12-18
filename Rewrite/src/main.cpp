@@ -90,6 +90,7 @@ int main() {
 
     CreateObjectCommand cmd{plane};
     //cmd.dynamic = false;
+    cmd.initialPose.s = 25.0f;
     wm.apply(WorldCommand{cmd});
     wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,5.0,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
 
