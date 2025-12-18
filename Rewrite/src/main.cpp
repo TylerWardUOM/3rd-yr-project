@@ -11,6 +11,7 @@
 #include "messaging/Channel.h"
 #include "messaging/MessageBus.h"
 #include "engines/HapticEngine.h"
+#include "engines/PhysicsEnginePhysX.h"
 
 #include <thread>
 
@@ -28,7 +29,6 @@ int main() {
     // Channels
     // ------------------------------------------------------------
     auto& worldCmds   = bus.channel<WorldCommand>("world.commands");
-
     auto& worldSnaps  = bus.channel<WorldSnapshot>("world.snapshots");
     auto& toolIn      = bus.channel<ToolStateMsg>("haptics.tool_in");
     auto& hapticOut   = bus.channel<HapticSnapshotMsg>("haptics.snapshots");
@@ -50,6 +50,14 @@ int main() {
         wrenchOut
     );
 
+    PhysicsEnginePhysX physics(
+        wm,
+        geomDb,
+        wrenchOut,
+        toolIn,
+        bus.channel<HapticWrenchCmd>("physics.haptics_wrenches")
+    );
+
     // Optional: connect to real device (safe even if dummy)
     // haptics.connectDevice("COM3", 115200);
 
@@ -62,29 +70,36 @@ int main() {
     GeometryID plane  = geomFactory.getPlane();
     GeometryID sphere = geomFactory.getSphere();
 
-    wm.apply(WorldCommand{CreateObjectCommand{plane}});
-    wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,0.5,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
+    CreateObjectCommand cmd{plane};
+    //cmd.dynamic = false;
+    wm.apply(WorldCommand{cmd});
+    wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,5.0,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
 
 
     // ------------------------------------------------------------
     // Main loop (render + world)
     // ------------------------------------------------------------
+
+    const double dt = 1.0 / 60.0;
+    physics.setFixedDt(1.0 / 240.0); // 240 Hz physics
+    auto prev = std::chrono::steady_clock::now();
+
     while (win.isOpen()) {
+        auto now = std::chrono::steady_clock::now();
+        double dt = std::chrono::duration<double>(now - prev).count();
+        prev = now;
 
-        const double dt = 1.0 / 60.0;
+        // clamp to avoid huge jumps (debugger pauses etc.)
+        dt = std::min(dt, 1.0/30.0);
 
-        // Build + publish world snapshot
+        wm.step(dt);
+        physics.step(dt);
+
         WorldSnapshot snapshot = wm.buildSnapshot();
         worldSnaps.publish(snapshot);
-
-        // Render (still direct, no messaging needed yet)
         renderer.render(snapshot);
-
-        // Apply world commands
-        wm.step(dt);
-
-        
     }
+
 
     // ------------------------------------------------------------
     // Shutdown

@@ -4,6 +4,7 @@
 #include "core/Math.h"
 #include <vector>
 #include <cstdint>
+#include "data/PhysicsProps.h"
 
 enum class Role : uint8_t { None=0, Tool=1, Proxy=2, Reference=3 };
 
@@ -15,6 +16,7 @@ struct ObjectState {
     Vec3       w_ws{0,0,0};
     Colour     colourOverride{0.8f,0.8f,0.8f};
     Role       role{Role::None};
+    PhysicsProps physics{};
 };
 
 struct WorldSnapshot {
