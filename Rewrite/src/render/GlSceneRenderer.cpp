@@ -134,6 +134,9 @@ void GlSceneRenderer::render() {
         r.mesh   = mesh;
         r.shader = &shader_;
         r.colour = obj.colourOverride;
+        if (geom->type == SurfaceType::Plane) {
+            r.useGridLines = 1.0;
+        }
 
         // --- Render ---
         r.render(camera_, compose(obj.T_ws));
