@@ -45,6 +45,7 @@ struct UISceneStats {
 struct UICommands {
     // Body
     std::function<void(float x, float y, float z)> setBodyPosition = {};
+    std::function<void(float scale)> setBodyScale = {};
     std::function<void(float r, float g, float b)> setBodyColour = {};
     std::function<void(float density)> setBodyDensity = {};
     std::function<void(bool dynamic)> setBodyDynamic = {};
@@ -55,6 +56,9 @@ struct UICommands {
     std::function<void(float restitution)> setBodyRestitution = {};
     
     std::function<void(EntityId entityId)> setSelectedEntity = {};
+
+    //New Body
+    std::function<void()> createSphere = {};
 
     // Camera
     std::function<void(float fovDeg)> setCameraFov = {};

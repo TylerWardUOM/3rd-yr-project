@@ -57,6 +57,8 @@ void UI::drawBodyPanel(const UITransformState& bodyState) {
         cmds_.setBodyPosition(p[0], p[1], p[2]);
     }
 
+    float scale = bodyState.scale; if (ImGui::DragFloat("Scale", &scale, 0.01f, 0.01f, 100.0f) && cmds_.setBodyScale) { cmds_.setBodyScale(scale); }
+
     float c[3] = { bodyState.colour.r, bodyState.colour.g, bodyState.colour.b };
     if (ImGui::SliderFloat3("Colour", c, 0.0, 1.0) && cmds_.setBodyColour) {
         cmds_.setBodyColour(c[0], c[1], c[2]);
@@ -96,6 +98,9 @@ void UI::drawBodyPanel(const UITransformState& bodyState) {
     if (ImGui::DragFloat("Restitution", &restitution, 0.01f, 0.0f, 1.0f) && cmds_.setBodyRestitution) {
         cmds_.setBodyRestitution(restitution);
     }
+
+    // New Sphere Button
+    if (ImGui::Button("Create new sphere")) { if (cmds_.createSphere) cmds_.createSphere(); }
 
     ImGui::End();
 }
