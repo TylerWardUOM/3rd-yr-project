@@ -14,6 +14,10 @@ public:
 
     bool contains(GeometryID id) const;
 
+    GeometryID getByType(SurfaceType type) const;   
+
 private:
     std::unordered_map<GeometryID, GeometryEntry> entries_;
+    std::unordered_map<SurfaceType, GeometryID> typeIndex_;
+
 };

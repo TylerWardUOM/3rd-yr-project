@@ -12,6 +12,7 @@
 #include "render/Renderable.h"
 #include "render/Camera.h"
 #include "geometry/GeometryDatabase.h"
+#include "geometry/GeometryEntry.h"
 #include "render/RenderMeshRegistry.h"
 #include "render/UI/ViewportController.h"
 #include "platform/Window.h"

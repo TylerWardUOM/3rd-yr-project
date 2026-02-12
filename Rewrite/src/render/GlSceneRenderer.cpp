@@ -109,6 +109,15 @@ void GlSceneRenderer::setViewProj(const glm::mat4& V, const glm::mat4& P) {
 
 
 void GlSceneRenderer::render() {
+    // -- Handle resize --
+    int fbw = 0, fbh = 0;
+    window_.getFramebufferSize(fbw, fbh);
+    if (fbw > 0 && fbh > 0) {
+        camera_.aspect = float(fbw) / float(fbh);
+        fbw_ = fbw;
+        fbh_ = fbh;
+    }
+
     // ---- Drain latest world snapshot ----
     worldSnaps_.tryRead(latestWorld_, worldSnapVersion_);
 
@@ -365,6 +374,21 @@ void GlSceneRenderer::initUICommands() {
         worldCmds_.publish(WorldCommand{cmd});
     };
 
+    cmds.setBodyScale = 
+        [this](float scale) { 
+        ObjectID id = selectedObject_;
+        EditObjectCommand cmd; cmd.id = id;
+        cmd.newPose = Pose{ bodyState_.position, bodyState_.orientation, scale };
+        cmd.newColour = Colour{ bodyState_.colour.r, bodyState_.colour.g, bodyState_.colour.b };
+        cmd.teleport = true;
+        worldCmds_.publish(WorldCommand{cmd}); };
+
+
+        
+    // New SphereS
+    cmds.createSphere = [&]() {     
+    GeometryID sphere = geometryDb_.getByType(SurfaceType::Sphere);
+    worldCmds_.publish(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,5.0,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});};
     // Camera commands
     cmds.setCameraFov = [&](float fov) { camera_.fovDeg = fov; };
     cmds.setCameraNear = [&](float n) { camera_.znear = n; };
