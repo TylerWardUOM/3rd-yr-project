@@ -158,7 +158,7 @@ void HapticEngine::update(float dt)
 
             if (phi_ws < 0.0) {
                 contactId = obj.id;
-
+                std::cout << "Contact with object " << contactId << " at phi = " << phi_ws << "\n";
                 Vec3 grad_ls = q.grad;
                 double g2 = dot(grad_ls, grad_ls);
 

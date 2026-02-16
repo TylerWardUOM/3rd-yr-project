@@ -1,6 +1,7 @@
 #include "geometry/GeometryFactory.h"
 #include "geometry/sdf/PlaneSDF.h"
 #include "geometry/sdf/UnitSphereSDF.h"
+#include "geometry/sdf/UnitCubeSDF.h"
 #include <memory>
 
 // ---- public API ----
@@ -22,6 +23,13 @@ GeometryID GeometryFactory::getSphere() {
         sphereId_ = registerSphere();
     }
     return *sphereId_;
+}
+
+GeometryID GeometryFactory::getCube() { 
+    if (!cubeId_) { 
+        cubeId_ = registerCube(); 
+    } 
+    return *cubeId_; 
 }
 
 // ---- private helpers ----
@@ -51,11 +59,18 @@ GeometryID GeometryFactory::registerSphere() {
     e.sdf = std::make_shared<UnitSphereSDF>();
     e.renderMesh = meshRegistry_.getOrCreate(MeshKind::Sphere);
 
-    // Later:
-    // e.sdf = std::make_shared<SphereSDF>(radius);
-    // e.physicsShape = ...
-    // e.renderMesh = ...
+
 
     db_.registerGeometry(e);
     return e.id;
+}
+
+GeometryID GeometryFactory::registerCube() { 
+    GeometryEntry e; 
+    e.id = nextId_++;
+    e.type = SurfaceType::Cube;  
+    e.sdf = std::make_shared<UnitCubeSDF>(); 
+    e.renderMesh = meshRegistry_.getOrCreate(MeshKind::Cube);
+    db_.registerGeometry(e); 
+    return e.id; 
 }

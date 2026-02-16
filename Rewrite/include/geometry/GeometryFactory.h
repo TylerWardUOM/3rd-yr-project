@@ -10,6 +10,7 @@ public:
 
     GeometryID getPlane();                 // infinite plane
     GeometryID getSphere();   // sphere of given radius
+    GeometryID getCube(); // cube of given side length
 
 private:
     GeometryDatabase& db_;
@@ -20,7 +21,9 @@ private:
     // Cache so geometry is only created once
     std::optional<GeometryID> planeId_;
     std::optional<GeometryID>  sphereId_;
+    std::optional<GeometryID> cubeId_;
 
     GeometryID registerPlane();
     GeometryID registerSphere();
+    GeometryID registerCube(); 
 };

@@ -6,6 +6,7 @@ enum class SurfaceType : uint8_t {
     None,
     Plane,
     Sphere,
+    Cube,
     TriMesh
 };
 
