@@ -9,6 +9,7 @@ using RenderMeshHandle = uint32_t;
 enum class MeshKind : uint8_t {
     Plane,
     Sphere,
+    Cube,
     TriMesh
 };
 

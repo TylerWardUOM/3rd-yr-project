@@ -230,6 +230,50 @@ void PhysicsEnginePhysX::buildActorsFromWorld_() {
             }
         }
 
+        else if (ge.type == SurfaceType::Cube){
+            const PxReal half = PxReal(0.5 * obj.T_ws.s);   // half-extents
+            PxBoxGeometry boxGeom(half, half, half);
+            PxMaterial* mat = materialFor_(id, p);
+
+            if (p.dynamic) {
+                auto* a = physics_->createRigidDynamic(X);
+                PxShape* sh = PxRigidActorExt::createExclusiveShape(*a, boxGeom, *mat);
+
+                a->setLinearDamping((PxReal)p.linDamping);
+                a->setAngularDamping((PxReal)p.angDamping);
+
+                if (p.kinematic) {
+                    a->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+                } else {
+                    a->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false);
+                }
+
+                // Mass/inertia
+                if (p.mass.has_value()) {
+                    PxRigidBodyExt::setMassAndUpdateInertia(*a, (PxReal)(*p.mass));
+                } else {
+                    PxRigidBodyExt::updateMassAndInertia(*a, (PxReal)p.density);
+                }
+
+                // Contact tuning
+                sh->setContactOffset(0.02f);
+                sh->setRestOffset(0.0f);
+
+                // CCD + solver
+                a->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
+                a->setSolverIterationCounts(/*posIters=*/8, /*velIters=*/2);
+
+                scene_->addActor(*a);
+                actor = a;
+            } else {
+                auto* a = physics_->createRigidStatic(X);
+                PxShape* sh = PxRigidActorExt::createExclusiveShape(*a, boxGeom, *mat);
+                sh->setContactOffset(0.02f);
+                sh->setRestOffset(0.0f);
+                scene_->addActor(*a);
+                actor = a;
+            }
+        }
         // TODO: TriMesh -> cook/create PxTriangleMeshGeometry and create static/ dynamic as needed.
 
         if (actor) {

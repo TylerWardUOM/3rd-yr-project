@@ -8,6 +8,7 @@
 // --- Forward mesh builders ---
 static MeshGPU makePlaneMesh();
 static MeshGPU makeSphereMesh();
+static MeshGPU makeCubeMesh();
 
 RenderMeshHandle RenderMeshRegistry::getOrCreate(MeshKind kind) {
     auto it = kindToHandle_.find(kind);
@@ -34,6 +35,9 @@ RenderMeshHandle RenderMeshRegistry::createMesh(MeshKind kind) {
         break;
     case MeshKind::Sphere:
         mesh = makeSphereMesh();
+        break;
+    case MeshKind::Cube:
+        mesh = makeCubeMesh(); 
         break;
     default:
         return 0;
@@ -120,6 +124,61 @@ static MeshGPU makeSphereMesh() {
     }
 
     std::vector<float> PN; makeInterleavedPN(P,N,PN);
+    mesh.upload(PN, I);
+    return mesh;
+}
+
+static MeshGPU makeCubeMesh() {
+    MeshGPU mesh;
+
+    std::vector<glm::vec3> P;
+    std::vector<glm::vec3> N;
+    std::vector<uint32_t>  I;
+
+    // Unit cube centered at origin: [-0.5, 0.5]^3
+    const float h = 0.5f;
+
+    // Helper to append one face (quad) as 4 verts + 2 tris
+    auto addFace = [&](glm::vec3 n,
+                       glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+    {
+        uint32_t base = static_cast<uint32_t>(P.size());
+        P.push_back(p0); N.push_back(n);
+        P.push_back(p1); N.push_back(n);
+        P.push_back(p2); N.push_back(n);
+        P.push_back(p3); N.push_back(n);
+
+        // Winding CCW when looking from outside the cube along normal n
+        I.insert(I.end(), { base + 0, base + 1, base + 2,
+                            base + 0, base + 2, base + 3 });
+    };
+
+    // +X face
+    addFace({+1,0,0},
+            {+h,-h,-h}, {+h,-h,+h}, {+h,+h,+h}, {+h,+h,-h});
+
+    // -X face
+    addFace({-1,0,0},
+            {-h,-h,+h}, {-h,-h,-h}, {-h,+h,-h}, {-h,+h,+h});
+
+    // +Y face
+    addFace({0,+1,0},
+            {-h,+h,-h}, {+h,+h,-h}, {+h,+h,+h}, {-h,+h,+h});
+
+    // -Y face
+    addFace({0,-1,0},
+            {-h,-h,+h}, {+h,-h,+h}, {+h,-h,-h}, {-h,-h,-h});
+
+    // +Z face
+    addFace({0,0,+1},
+            {-h,-h,+h}, {-h,+h,+h}, {+h,+h,+h}, {+h,-h,+h});
+
+    // -Z face
+    addFace({0,0,-1},
+            {+h,-h,-h}, {+h,+h,-h}, {-h,+h,-h}, {-h,-h,-h});
+
+    std::vector<float> PN;
+    makeInterleavedPN(P, N, PN);
     mesh.upload(PN, I);
     return mesh;
 }

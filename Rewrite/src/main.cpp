@@ -89,12 +89,14 @@ int main() {
     // ------------------------------------------------------------
     GeometryID plane  = geomFactory.getPlane();
     GeometryID sphere = geomFactory.getSphere();
+    GeometryID cube = geomFactory.getCube();
 
     CreateObjectCommand cmd{plane};
     //cmd.dynamic = false;
     cmd.initialPose.s = 25.0f;
     wm.apply(WorldCommand{cmd});
     wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,5.0,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
+    wm.apply(WorldCommand{CreateObjectCommand{cube, Pose{{-1.0,1.0,0.0},{0,0,0,1}, 1.0f}, {0.8f,0.2f,0.2f}}});
 
 
     std::atomic<bool> simRunning{true};
