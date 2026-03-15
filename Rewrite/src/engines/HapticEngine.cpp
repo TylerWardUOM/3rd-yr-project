@@ -78,22 +78,24 @@ HapticEngine::HapticEngine(const GeometryDatabase& geomDb,
                            msg::SnapshotChannel<WorldSnapshot>& worldSnaps,
                            msg::Channel<ToolStateMsg>& toolIn,
                            msg::Channel<HapticSnapshotMsg>& hapticOut,
-                           msg::Channel<HapticWrenchCmd>& wrenchOut)
+                           msg::Channel<HapticWrenchCmd>& wrenchOut,
+                           msg::Channel<HapticWrenchCmd>& deviceCmdOut)
 : geometryDb_(geomDb)
 , worldSnaps_(worldSnaps)
 , toolIn_(toolIn)
 , hapticOut_(hapticOut)
 , wrenchOut_(wrenchOut)
+, deviceCmdOut_(deviceCmdOut)
 {
     latestTool_.toolPose_ws = Pose{{0,0,0},{0,0,0,1}};
     proxyPosePrev_          = latestTool_.toolPose_ws;
 }
 
-
-bool HapticEngine::connectDevice(const std::string& port, int baud)
-{
-    return deviceAdapter_.connect(port, baud);
-}
+// Device conntectoin handled globally now
+// bool HapticEngine::connectDevice(const std::string& port, int baud)
+// {
+//     return deviceAdapter_.connect(port, baud);
+// }
 
 // ------------------------------------------------------------
 // Main loop
@@ -158,7 +160,7 @@ void HapticEngine::update(float dt)
 
             if (phi_ws < 0.0) {
                 contactId = obj.id;
-                std::cout << "Contact with object " << contactId << " at phi = " << phi_ws << "\n";
+                //std::cout << "Contact with object " << contactId << " at phi = " << phi_ws << "\n";
                 Vec3 grad_ls = q.grad;
                 double g2 = dot(grad_ls, grad_ls);
 
@@ -220,7 +222,10 @@ void HapticEngine::update(float dt)
         w.t_sec      = latestTool_.t_sec;
 
         wrenchOut_.publish(w);
-        deviceAdapter_.sendWrenchCommand(w);
+        w.force_ws = F; // send positive force to device
+        //ADD: Compute joint torques for device command using Jacobian 
+        // maybe in DeviceAdapter instead? since it has direct access to joint angles and can compute Jacobian more efficiently
+        deviceCmdOut_.publish(w);
     }
 
     // --------------------------------------------------------

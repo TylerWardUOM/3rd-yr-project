@@ -5,27 +5,28 @@
 #include "data/HapticMessages.h"
 #include "geometry/GeometryDatabase.h"
 #include "messaging/SnapshotChannel.h"
-// #include "haptics/io/DeviceAdapter.h"
+#include "hardware/DeviceAdapter.h"
 
-// Dummy DeviceAdapter for illustration purposes
-class DeviceAdapter {
-public:
-    DeviceAdapter() = default;
 
-    bool connect(const std::string& port, int baud) {
-        // Simulate successful connection
-        return true;
-    }
+// // Dummy DeviceAdapter for illustration purposes
+// class DeviceAdapter {
+// public:
+//     DeviceAdapter() = default;
 
-    void sendWrenchCommand(const HapticWrenchCmd& cmd) {
-        // Simulate sending wrench command to device
-    }
+//     bool connect(const std::string& port, int baud) {
+//         // Simulate successful connection
+//         return true;
+//     }
 
-    HapticSnapshotMsg readSnapshot() {
-        // Simulate reading snapshot from device
-        return HapticSnapshotMsg{};
-    }
-};
+//     void sendWrenchCommand(const HapticWrenchCmd& cmd) {
+//         // Simulate sending wrench command to device
+//     }
+
+//     HapticSnapshotMsg readSnapshot() {
+//         // Simulate reading snapshot from device
+//         return HapticSnapshotMsg{};
+//     }
+// };
 
 class HapticEngine {
 public:
@@ -33,20 +34,19 @@ public:
                 msg::SnapshotChannel<WorldSnapshot>& worldSnaps,
                  msg::Channel<ToolStateMsg>& toolIn,
                  msg::Channel<HapticSnapshotMsg>& hapticOut,
-                 msg::Channel<HapticWrenchCmd>& wrenchOut);
+                 msg::Channel<HapticWrenchCmd>& wrenchOut,
+                 msg::Channel<HapticWrenchCmd>& deviceCmdOut);
 
     void run();        // 1 kHz loop
     void update(float dt);
 
-    bool connectDevice(const std::string& port, int baud = 115200);
-
 private:
     msg::SnapshotChannel<WorldSnapshot>&      worldSnaps_;
     msg::Channel<ToolStateMsg>&       toolIn_;
-    msg::Channel<HapticSnapshotMsg>&  hapticOut_;
-    msg::Channel<HapticWrenchCmd>&    wrenchOut_;
+    msg::Channel<HapticSnapshotMsg>&  hapticOut_; // To Render
+    msg::Channel<HapticWrenchCmd>&    wrenchOut_; // To Physics
+    msg::Channel<HapticWrenchCmd>&    deviceCmdOut_; // To DeviceAdapter
 
-    DeviceAdapter deviceAdapter_;
     const GeometryDatabase& geometryDb_;
 
     // cached latest inputs (so update() is deterministic)
