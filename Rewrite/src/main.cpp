@@ -13,6 +13,7 @@
 #include "messaging/MessageBus.h"
 #include "engines/HapticEngine.h"
 #include "engines/PhysicsEnginePhysX.h"
+#include "hardware/DeviceAdapter.h"
 
 #include <thread>
 #include <atomic>
@@ -58,9 +59,11 @@ int main() {
 
     auto& worldCmds  = bus.channel<WorldCommand>("world.commands");
     auto& worldSnaps = bus.snapshot<WorldSnapshot>("world.snapshots");
-    auto& toolIn     = bus.channel<ToolStateMsg>("haptics.tool_in");
+    auto& toolIn     = bus.channel<ToolStateMsg>("haptics.tool_in"); // From Render (ViewportController) to HapticEngine and From DeviceAdapter to HapticEngine
     auto& hapticOut  = bus.channel<HapticSnapshotMsg>("haptics.snapshots");
     auto& wrenchOut  = bus.channel<HapticWrenchCmd>("haptics.wrenches");
+    auto& deviceIn = bus.channel<ToolStateMsg>("device.tool_in"); // From DeviceAdapter to Render (ViewportController) for visualizing device pose in UI
+    auto& deviceCmdOut    = bus.channel<HapticWrenchCmd>("device.wrench_cmd");
 
     WorldManager wm(geomDb, geomFactory, worldCmds);
 
@@ -70,10 +73,13 @@ int main() {
     HapticEngine haptics(
         geomDb,
         worldSnaps,
-        toolIn,
+        deviceIn, //toolIn for mouse control, deviceIn for real device input
         hapticOut,
-        wrenchOut
+        wrenchOut,
+        deviceCmdOut
     );
+
+    DeviceAdapter deviceAdapter(deviceIn, deviceCmdOut);
 
     PhysicsEnginePhysX physics(
         wm,
@@ -115,6 +121,25 @@ int main() {
 
     std::thread hapticsThread(&HapticEngine::run, &haptics);
 
+    deviceAdapter.connect("COM4", 115200);
+    std::thread deviceThread([&deviceAdapter](){
+        const double maxDt = 1.0 / 1000.0; // 1000 Hz
+        auto prev = std::chrono::steady_clock::now();
+
+        while (true) {
+            auto now = std::chrono::steady_clock::now();
+            double dt = std::chrono::duration<double>(now - prev).count();
+            prev = now;
+
+            dt = std::min(dt, maxDt);
+
+            deviceAdapter.update(now.time_since_epoch().count() / 1e9);
+
+            // avoid busy-spin
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+    });
+
     // ------------------------------------------------------------
     // Render loop (main thread)
     // ------------------------------------------------------------
@@ -128,4 +153,5 @@ int main() {
     simRunning.store(false, std::memory_order_relaxed);
     simThread.join();
     hapticsThread.detach();
+    deviceThread.detach();
 }

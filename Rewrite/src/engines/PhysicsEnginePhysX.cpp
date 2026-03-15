@@ -330,7 +330,6 @@ void PhysicsEnginePhysX::writeBackPoses_() {
             const Pose T = toPose(X);
 
             // WorldManager is authoritative; physics writes into it.
-            // (Assumes you have this API — add if missing)
             //LATER CHANGE SO I CAN HAVE MODULAR PHSYICS
             wm_.setPose(id, T);
         }
