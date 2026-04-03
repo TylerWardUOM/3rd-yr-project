@@ -5,6 +5,7 @@
 #include "render/shader/MVPUniforms.h"
 #include <glm/gtc/matrix_access.hpp>
 #include "geometry/GeometryDatabase.h"
+#include "util/RobotUtils.h"
 #include <iostream>
 
 // --- utils ---
@@ -158,25 +159,27 @@ void GlSceneRenderer::render() {
 
     // Need to Clean this COde Up Later
 
-    Pose proxyPose = latestHaptics_.proxyPose_ws;
+    // Pose proxyPose = latestHaptics_.proxyPose_ws;
 
-    const GeometryEntry* geom = &geometryDb_.get(2);
-    const MeshGPU* mesh = meshRegistry_.get(geom->renderMesh);
-    glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3((float)0.02));
+    // const GeometryEntry* geom = &geometryDb_.get(2);
+    // const MeshGPU* mesh = meshRegistry_.get(geom->renderMesh);
+    // glm::mat4 S = glm::scale(glm::mat4(1.f), glm::vec3((float)0.02));
 
-    Renderable r;
-    r.mesh   = mesh;
-    r.shader = &shader_;
-    r.colour = {0.8f, 0.2f, 0.2f};
-    // --- Render ---
-    r.render(camera_, compose(proxyPose) * S);
+    // Renderable r;
+    // r.mesh   = mesh;
+    // r.shader = &shader_;
+    // r.colour = {0.8f, 0.2f, 0.2f};
+    // // --- Render ---
+    // r.render(camera_, compose(proxyPose) * S);
 
-    Pose devicePose = latestHaptics_.devicePose_ws;
-    r.mesh   = mesh;
-    r.shader = &shader_;
-    r.colour = {0.2f, 0.8f, 0.2f};
-    // --- Render ---
-    r.render(camera_, compose(devicePose) * S);
+    // Pose devicePose = latestHaptics_.devicePose_ws;
+    // r.mesh   = mesh;
+    // r.shader = &shader_;
+    // r.colour = {0.2f, 0.8f, 0.2f};
+    // // --- Render ---
+    // r.render(camera_, compose(devicePose) * S);
+
+    drawOverlays();
 
     // End of bad chunk
     bool uiCapturing = imguiLayer_.wantCaptureMouse() || imguiLayer_.wantCaptureKeyboard();
@@ -204,38 +207,103 @@ inline glm::dvec3 getTranslation(const glm::mat4& M) {
     return glm::vec3(M[3]); // xyz of 4th column
 }
 
-// void GlSceneRenderer::drawOverlays() {
-//     //Maybe change to use the angles sent from the haptic device instead of FK
-    
-//     // pick small radii for ghosts
-//     drawSphereRenderable(compose(haptic_.devicePose_ws), 0.02f, {0.1f,1.0f,0.1f}); // device 
-//     drawSphereRenderable(compose(haptic_.refPose_ws),    0.018f, {1.0f,0.1f,0.1f}); // ref   
-//     drawSphereRenderable(compose(haptic_.proxyPose_ws),  0.022f, {0.1f,0.1f,1.0f}); // proxy 
+void GlSceneRenderer::drawOverlays() {
+    // ------------------------------------------------------------
+    // Get debug meshes from registry
+    // ------------------------------------------------------------
+    const RenderMeshHandle sphereHandle = meshRegistry_.getOrCreate(MeshKind::Sphere);
+    const RenderMeshHandle cubeHandle   = meshRegistry_.getOrCreate(MeshKind::Cube);
 
-//     basicRobot robot = {0.15, 0.15};
-//     float jointAngles[2];
-//     jointAngles[0] = haptic_.latestAngles[0];
-//     jointAngles[1] = haptic_.latestAngles[1];
+    const MeshGPU* sphereMesh = meshRegistry_.get(sphereHandle);
+    const MeshGPU* cubeMesh   = meshRegistry_.get(cubeHandle);
 
-//     glm::dvec3 p0(0,0,0); // shoulder at origin
-//     glm::dvec3 p1; // elbow position
-//     glm::dvec3 p2; // end-effector position
+    if (!sphereMesh || !cubeMesh) return;
 
-//     auto Ts = forwardExplicitAll(robot.link1, robot.link2, glm::dvec3(0.0, jointAngles[0], jointAngles[1]));
-//     p1 = getTranslation(Ts[2]); // elbow
-//     p2 = getTranslation(Ts[3]); // end-effector
-//     // draw links
-//     Pose p_l1 = linkPoseBetween(p0, p1);
-//     Pose p_l2 = linkPoseBetween(p1, p2);
-//     drawCylinderRenderable(compose(p_l1), 0.01, glm::length(p1 - p0), {0.8f,0.8f,0.8f}); // link 1
-//     drawCylinderRenderable(compose(p_l2), 0.01, glm::length(p2 - p1), {0.8f,0.8f,0.8f}); // link 2
+    auto renderDebugMesh = [&](const MeshGPU* mesh, const glm::mat4& M, const glm::vec3& colour) {
+        Renderable r;
+        r.mesh   = mesh;
+        r.shader = &shader_;
+        r.colour = colour;
+        r.render(camera_, M);
+    };
 
+    auto sphereModel = [](const glm::dvec3& p, float radius) {
+        glm::mat4 M = glm::translate(glm::mat4(1.0f), glm::vec3(p));
+        M = M * glm::scale(glm::mat4(1.0f), glm::vec3(radius));
+        return M;
+    };
 
-//     drawSphereRenderable(compose(Pose{p0, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // joint 0
-//     drawSphereRenderable(compose(Pose{p1, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // joint 1
-//     drawSphereRenderable(compose(Pose{p2, {0,0,0,1}}), 0.03, {1.0f,1.0f,0.1f}); // end effector
-// }
+    auto poseToMat4 = [this](const Pose& pose) {
+        return compose(pose);
+    };
 
+    auto linkCubeModel = [poseToMat4](const glm::dvec3& a,
+                                    const glm::dvec3& b,
+                                    float radius) {
+        Pose linkPose = linkPoseBetween(a, b);
+        const float L = static_cast<float>(glm::length(b - a));
+
+        glm::mat4 M = poseToMat4(linkPose);
+
+        glm::mat4 S_local = glm::scale(glm::mat4(1.0f),
+                                    glm::vec3(radius, L, radius));
+
+        // shift unit cube from [-0.5,0.5] to [0,1] in local Y
+        glm::mat4 T_local = glm::translate(glm::mat4(1.0f),
+                                        glm::vec3(0.0f, 0.5f, 0.0f));
+
+        return M * S_local * T_local;
+    };
+
+    // ------------------------------------------------------------
+    // Ghost markers
+    // ------------------------------------------------------------
+    renderDebugMesh(
+        sphereMesh,
+        sphereModel(latestHaptics_.devicePose_ws.p, 0.016f),
+        {0.1f, 1.0f, 0.1f}
+    );
+
+    renderDebugMesh(
+        sphereMesh,
+        sphereModel(latestHaptics_.proxyPose_ws.p, 0.015f),
+        {0.1f, 0.1f, 1.0f}
+    );
+
+    // ------------------------------------------------------------
+    // Robot overlay from measured joint angles
+    // ------------------------------------------------------------
+    basicRobot robot = {0.15, 0.15};
+
+    glm::dvec3 angles;
+    RobotState state = inverseKinematics(robot, glm::vec3(latestHaptics_.proxyPose_ws.p), angles);
+
+    // const double q1 = latestHaptics_.latestAngles[0];
+    // const double q2 = latestHaptics_.latestAngles[1];
+
+    glm::dvec3 p0(0.0, 0.0, 0.0);
+
+    auto Ts = forwardExplicitAll(robot.link1, robot.link2, angles);
+
+    glm::dvec3 p1 = glm::dvec3(Ts[2][3]); // elbow
+    glm::dvec3 p2 = glm::dvec3(Ts[3][3]); // end effector
+
+    // ------------------------------------------------------------
+    // Links
+    // ------------------------------------------------------------
+    const glm::vec3 linkColour  = {0.85f, 0.85f, 0.85f};
+    const glm::vec3 jointColour = {1.0f, 1.0f, 0.1f};
+
+    renderDebugMesh(cubeMesh, linkCubeModel(p0, p1, 0.010f), linkColour);
+    renderDebugMesh(cubeMesh, linkCubeModel(p1, p2, 0.010f), linkColour);
+
+    // ------------------------------------------------------------
+    // Joints
+    // ------------------------------------------------------------
+    renderDebugMesh(sphereMesh, sphereModel(p0, 0.010f), jointColour);
+    renderDebugMesh(sphereMesh, sphereModel(p1, 0.010f), jointColour);
+    renderDebugMesh(sphereMesh, sphereModel(p2, 0.010f), jointColour);
+}
 
 
 // ========== helpers: draw ==========
