@@ -20,7 +20,7 @@ public:
         msg::Channel<HapticWrenchCmd>& deviceCmdOut
     );
 
-    bool connect(const std::string& port, int baud = 115200);
+    bool connect(const std::string& port, int baud = 460800);
     void update(double timeNow);
 
 private:
@@ -32,6 +32,8 @@ private:
     float latestAngles_[2];
 
     bool parseIncoming(std::vector<uint8_t>& newData, DeviceStatePacket& stateOut);
+    
+    bool tryParseOnePacket(DeviceStatePacket& stateOut);
 
     Pose anglesToPose(const float jointAngles[2]);
 
