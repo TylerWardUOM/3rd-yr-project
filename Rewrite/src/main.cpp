@@ -101,7 +101,7 @@ int main() {
     //cmd.dynamic = false;
     cmd.initialPose.s = 25.0f;
     wm.apply(WorldCommand{cmd});
-    wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{0.0,5.0,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
+    wm.apply(WorldCommand{CreateObjectCommand{sphere, Pose{{2.0,5.0,0.0},{0,0,0,1}, 0.2f}, {0.2f,0.2f,0.8f}}});
     wm.apply(WorldCommand{CreateObjectCommand{cube, Pose{{-1.0,1.0,0.0},{0,0,0,1}, 1.0f}, {0.8f,0.2f,0.2f}}});
 
 
@@ -121,7 +121,7 @@ int main() {
 
     std::thread hapticsThread(&HapticEngine::run, &haptics);
 
-    deviceAdapter.connect("COM4", 115200);
+    deviceAdapter.connect("COM4");
     std::thread deviceThread([&deviceAdapter](){
         const double maxDt = 1.0 / 1000.0; // 1000 Hz
         auto prev = std::chrono::steady_clock::now();

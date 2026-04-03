@@ -191,8 +191,8 @@ void HapticEngine::update(float dt)
     // --------------------------------------------------------
     // Virtual coupling (spring–damper)
     // --------------------------------------------------------
-    constexpr double K = 2000.0;
-    constexpr double M = 0.2;
+    constexpr double K = 45.0;
+    constexpr double M = 0.02;
     const double D = 0.7 * 2.0 * std::sqrt(K * M);
 
     Vec3 proxyVel = mul(sub(proxyPose.p, proxyPosePrev_.p), 1.0 / dt);
