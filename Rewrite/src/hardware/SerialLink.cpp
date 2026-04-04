@@ -51,7 +51,7 @@ bool SerialLink::connect(const std::string& portName, int baud) {
     timeouts.ReadTotalTimeoutConstant = 5;
     timeouts.ReadTotalTimeoutMultiplier = 1;
     SetCommTimeouts(handle, &timeouts);
-
+    PurgeComm((HANDLE)hSerial, PURGE_RXCLEAR | PURGE_TXCLEAR);
     hSerial = handle;
     std::cout << "Connected to serial port " << portName << std::endl;
     return true;

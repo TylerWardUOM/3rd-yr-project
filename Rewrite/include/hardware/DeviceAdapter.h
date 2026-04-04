@@ -5,6 +5,8 @@
 #include "data/HapticMessages.h"
 #include "hardware/Packets.h"
 #include "data/HapticMessages.h" // for ToolStateMsg and HapticWrenchCmd
+#include "data/LogMessages.h" // for DeviceTimingLogMsg
+
 
 #include "data/core/Math.h"// for Pose
 
@@ -17,7 +19,8 @@ class DeviceAdapter {
 public:
     DeviceAdapter(
         msg::Channel<ToolStateMsg>& deviceIn,
-        msg::Channel<HapticWrenchCmd>& deviceCmdOut
+        msg::Channel<HapticWrenchCmd>& deviceCmdOut,
+        msg::Channel<DeviceTimingLogMsg>& timingLogOut
     );
 
     bool connect(const std::string& port, int baud = 460800);
@@ -26,6 +29,7 @@ public:
 private:
     msg::Channel<ToolStateMsg>& deviceIn_;
     msg::Channel<HapticWrenchCmd>& deviceCmdOut_;
+    msg::Channel<DeviceTimingLogMsg>& timingLogOut_;
     SerialLink link_;
 
     std::vector<uint8_t> incomingBuffer_;
