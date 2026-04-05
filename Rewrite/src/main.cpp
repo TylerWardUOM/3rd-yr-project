@@ -67,8 +67,10 @@ int main() {
     auto& deviceIn      = bus.channel<ToolStateMsg>("device.tool_in");
     auto& deviceCmdOut  = bus.channel<HapticWrenchCmd>("device.wrench_cmd");
     auto& timingLog     = bus.channel<DeviceTimingLogMsg>("logging.device_timing");
+    auto& stateLog      = bus.channel<DeviceStateLogMsg>("logging.device_state");
 
     std::vector<DeviceTimingLogMsg> timingLogs;
+    std::vector<DeviceStateLogMsg> stateLogs;
 
     WorldManager wm(geomDb, geomFactory, worldCmds);
 
@@ -84,7 +86,7 @@ int main() {
         deviceCmdOut
     );
 
-    DeviceAdapter deviceAdapter(deviceIn, deviceCmdOut, timingLog);
+    DeviceAdapter deviceAdapter(deviceIn, deviceCmdOut, timingLog, stateLog);
 
     PhysicsEnginePhysX physics(
         wm,
@@ -148,17 +150,26 @@ int main() {
                 std::chrono::duration<double>(now.time_since_epoch()).count()
             );
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     });
 
     std::thread logThread([&]() {
-        while (logRunning.load(std::memory_order_relaxed) || timingLog.size() > 0) {
-            DeviceTimingLogMsg msg;
+        while (logRunning.load(std::memory_order_relaxed) ||
+            timingLog.size() > 0 ||
+            stateLog.size() > 0) {
+
             bool gotAny = false;
 
-            while (timingLog.tryConsume(msg)) {
-                timingLogs.push_back(msg);
+            DeviceTimingLogMsg timingMsg;
+            while (timingLog.tryConsume(timingMsg)) {
+                timingLogs.push_back(timingMsg);
+                gotAny = true;
+            }
+
+            DeviceStateLogMsg stateMsg;
+            while (stateLog.tryConsume(stateMsg)) {
+                stateLogs.push_back(stateMsg);
                 gotAny = true;
             }
 
@@ -205,11 +216,15 @@ int main() {
     // ------------------------------------------------------------
     {
         std::ofstream csv("device_timing.csv");
-        csv << "rx_seq,t_rx_parse_ns,t_tool_publish_ns,t_wrench_consume_ns,"
-               "t_tx_start_ns,t_tx_done_ns,q1,q2,fx,fy,tau1,tau2\n";
+        csv << "rx_state_seq,state_mcu_us,tx_cmd_seq,ref_state_seq,"
+            "t_rx_parse_ns,t_tool_publish_ns,t_wrench_consume_ns,"
+            "t_tx_start_ns,t_tx_done_ns,q1,q2,fx,fy,tau1,tau2\n";
 
         for (const auto& x : timingLogs) {
-            csv << x.rx_seq << ","
+            csv << x.rx_state_seq << ","
+                << x.state_mcu_us << ","
+                << x.tx_cmd_seq << ","
+                << x.ref_state_seq << ","
                 << x.t_rx_parse_ns << ","
                 << x.t_tool_publish_ns << ","
                 << x.t_wrench_consume_ns << ","
@@ -221,6 +236,19 @@ int main() {
                 << x.fy << ","
                 << x.tau1 << ","
                 << x.tau2 << "\n";
+        }
+    }
+
+    {
+        std::ofstream csv("device_state_log.csv");
+        csv << "rx_state_seq,state_mcu_us,t_rx_parse_ns,q1,q2\n";
+
+        for (const auto& x : stateLogs) {
+            csv << x.rx_state_seq << ","
+                << x.state_mcu_us << ","
+                << x.t_rx_parse_ns << ","
+                << x.q1 << ","
+                << x.q2 << "\n";
         }
     }
 

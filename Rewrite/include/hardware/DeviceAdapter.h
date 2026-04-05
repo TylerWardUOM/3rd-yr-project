@@ -20,7 +20,8 @@ public:
     DeviceAdapter(
         msg::Channel<ToolStateMsg>& deviceIn,
         msg::Channel<HapticWrenchCmd>& deviceCmdOut,
-        msg::Channel<DeviceTimingLogMsg>& timingLogOut
+        msg::Channel<DeviceTimingLogMsg>& timingLogOut,
+        msg::Channel<DeviceStateLogMsg>& stateLogOut
     );
 
     bool connect(const std::string& port, int baud = 460800);
@@ -30,6 +31,7 @@ private:
     msg::Channel<ToolStateMsg>& deviceIn_;
     msg::Channel<HapticWrenchCmd>& deviceCmdOut_;
     msg::Channel<DeviceTimingLogMsg>& timingLogOut_;
+    msg::Channel<DeviceStateLogMsg>& stateLogOut_;
     SerialLink link_;
 
     std::vector<uint8_t> incomingBuffer_;
@@ -44,4 +46,8 @@ private:
     // Internal caching of latest data
     ToolStateMsg currentIn_;
     HapticWrenchCmd lastOut_;
+
+    uint32_t nextCmdSeq_ = 1;
+    uint32_t latestStateSeq_ = 0;
+    uint32_t latestStateMcuUs_ = 0;
 };
