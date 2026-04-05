@@ -1,0 +1,2 @@
+rawHostDt_mean_ms,rawHostDt_median_ms,rawHostDt_std_ms,rawHostDt_p95_ms,rawHostDt_p99_ms,rawHostParseRate_Hz,rawStateSeqGap_mean,rawStateSeqGap_median,rawStateSeqGap_max,rawMcuDt_mean_ms,rawMcuDt_median_ms,effectiveMcuPeriod_mean_ms,effectiveMcuPeriod_median_ms,effectiveMcuPeriod_p95_ms,effectiveMcuPeriod_p99_ms,effectiveMcuRate_Hz
+0.986250643878233,0.9998,0.160373338241177,1.0676,1.163657,1013.94103639588,18.7664316937739,1,451144,18.7664317725358,0.998,1.00000007876182,0.998,1.007,1.007,999.999921238188
