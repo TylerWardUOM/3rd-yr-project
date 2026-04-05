@@ -143,14 +143,20 @@ int main() {
     }
 
     std::thread deviceThread([&]() {
+        using clock = std::chrono::steady_clock;
+
+        constexpr auto targetPeriod = std::chrono::microseconds(1000); // 1 kHz
+        auto nextWake = clock::now();
+
         while (appRunning.load(std::memory_order_relaxed)) {
-            auto now = std::chrono::steady_clock::now();
+            auto now = clock::now();
 
             deviceAdapter.update(
                 std::chrono::duration<double>(now.time_since_epoch()).count()
             );
 
-            //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            nextWake += targetPeriod;
+            std::this_thread::sleep_until(nextWake);
         }
     });
 
