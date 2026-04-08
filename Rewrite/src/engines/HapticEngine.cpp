@@ -102,13 +102,43 @@ HapticEngine::HapticEngine(const GeometryDatabase& geomDb,
 // ------------------------------------------------------------
 void HapticEngine::run()
 {
-    constexpr float dt = 0.001f; // 1 kHz
+    using clock = std::chrono::steady_clock;
+
+    constexpr auto targetPeriod = std::chrono::microseconds(1000);
+    auto nextWake = clock::now();
+    auto lastLoopStart = nextWake;
+
     while (true) {
+        auto loopStart = clock::now();
+
+        double periodMs =
+            std::chrono::duration<double, std::milli>(loopStart - lastLoopStart).count();
+        float dt =
+            static_cast<float>(std::chrono::duration<double>(loopStart - lastLoopStart).count());
+        lastLoopStart = loopStart;
+
+        auto computeStart = clock::now();
         update(dt);
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        auto computeEnd = clock::now();
+
+        double computeMs =
+            std::chrono::duration<double, std::milli>(computeEnd - computeStart).count();
+
+        nextWake += targetPeriod;
+        std::this_thread::sleep_until(nextWake);
+
+        auto afterSleep = clock::now();
+        double wakeErrorMs =
+            std::chrono::duration<double, std::milli>(afterSleep - nextWake).count();
+
+        // static int printCounter = 0;
+        // if (++printCounter % 1000 == 0) {
+        //     std::cout << "Haptic period: " << periodMs
+        //               << " ms, compute: " << computeMs
+        //               << " ms, wake error: " << wakeErrorMs << " ms\n";
+        // }
     }
 }
-
 // ------------------------------------------------------------
 // Core haptics update
 // ------------------------------------------------------------
@@ -191,7 +221,7 @@ void HapticEngine::update(float dt)
     // --------------------------------------------------------
     // Virtual coupling (spring–damper)
     // --------------------------------------------------------
-    constexpr double K = 45.0;
+    constexpr double K = 500.0;
     constexpr double M = 0.02;
     const double D = 0.7 * 2.0 * std::sqrt(K * M);
 
@@ -203,7 +233,7 @@ void HapticEngine::update(float dt)
         mul(sub(proxyVel, toolVel), D)
     );
 
-    constexpr double Fmax = 15.0;
+    constexpr double Fmax = 31.0;
     double fn = norm(F);
     if (fn > Fmax) {
         F = mul(F, Fmax / fn);
@@ -212,21 +242,29 @@ void HapticEngine::update(float dt)
     // --------------------------------------------------------
     // Publish wrench command (device / physics)
     // --------------------------------------------------------
-    if (contactId != 0) {
-        HapticWrenchCmd w;
-        w.targetId   = contactId;
-        w.force_ws   = -F; // apply equal & opposite force to contact object
-        w.torque_ws  = {0,0,0};
-        w.point_ws   = contactPoint_ws;
-        w.duration_s = dt;
-        w.t_sec      = latestTool_.t_sec;
+    HapticWrenchCmd w;
+    w.targetId   = contactId;
+    w.torque_ws  = {0,0,0};
+    w.point_ws   = contactPoint_ws;
+    w.duration_s = dt;
+    w.t_sec      = latestTool_.t_sec;
 
-        wrenchOut_.publish(w);
-        w.force_ws = F; // send positive force to device
-        //ADD: Compute joint torques for device command using Jacobian 
-        // maybe in DeviceAdapter instead? since it has direct access to joint angles and can compute Jacobian more efficiently
-        deviceCmdOut_.publish(w);
+    if (contactId != 0) {
+        wrenchOut_.publish(HapticWrenchCmd{
+            contactId,
+            -F,
+            {0,0,0},
+            contactPoint_ws,
+            dt,
+            latestTool_.t_sec
+        });
+
+        w.force_ws = F;   // device feels contact force
+    } else {
+        w.force_ws = {0,0,0};  // explicit zero command
     }
+
+    deviceCmdOut_.publish(w);
 
     // --------------------------------------------------------
     // Publish haptics snapshot
