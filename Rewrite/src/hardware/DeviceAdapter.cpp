@@ -2,6 +2,21 @@
 #include <iostream>
 #include <chrono>
 
+#if (DEBUG_DEVICE_ADAPTER  == 0)
+
+#define DEBUG_DEVICE_ANGLE_PRINT        0
+#define DEBUG_DEVICE_ANGLE_RATE         100
+
+#define DEBUG_DEVICE_TORQUE_PRINT       0
+#define DEBUG_DEVICE_TORQUE_RATE        100
+
+#define DEBUG_DEVICE_PARSE_PRINT        0
+#define DEBUG_DEVICE_PARSE_RATE         100
+
+#define DEBUG_DEVICE_TIMING_PRINT       0
+#define DEBUG_DEVICE_TIMING_RATE        500
+
+#endif
 
 static uint16_t computeChecksum(const void* data, size_t len)
 {
@@ -98,6 +113,17 @@ bool DeviceAdapter::parseIncoming(std::vector<uint8_t>& newData, DeviceStatePack
 }
 
 void DeviceAdapter::update(double timeNow) {
+    static uint64_t lastUpdateNs = 0;
+    uint64_t now = nowNs();
+
+    if (lastUpdateNs != 0) {
+        double dtMs = (now - lastUpdateNs) * 1e-6;
+        static int updPrint = 0;
+        if (++updPrint % DEBUG_DEVICE_TIMING_RATE == 0 && DEBUG_DEVICE_TIMING_PRINT) {
+            std::cout << "[DeviceAdapter] update dt = " << dtMs << " ms\n";
+        }
+    }
+    lastUpdateNs = now;
     static int counter = 0;
     DeviceTimingLogMsg logMsg{};
 
@@ -114,6 +140,7 @@ void DeviceAdapter::update(double timeNow) {
     bool gotState = false;
 
     // Parse everything currently buffered, keep only newest valid packet
+    int parsedCount = 0;
     while (tryParseOnePacket(pkt)) {
         uint64_t parseNs = nowNs();
         DeviceStateLogMsg stateMsg{};
@@ -128,10 +155,15 @@ void DeviceAdapter::update(double timeNow) {
         newestPkt = pkt;
         newestRxParseNs = parseNs;
         gotState = true;
+        parsedCount++;
     }
 
     uint64_t toolPublishNs = 0;
-
+    if (parsedCount > 0 && counter % DEBUG_DEVICE_PARSE_RATE == 0 && DEBUG_DEVICE_PARSE_PRINT) {
+        std::cout << "[DeviceAdapter] parsed " << parsedCount
+                << " packets this update, newest state_seq="
+                << newestPkt.state_seq << "\n";
+    }
     if (gotState) {
         latestAngles_[0] = newestPkt.joint_angle[0];
         latestAngles_[1] = newestPkt.joint_angle[1];
@@ -139,7 +171,7 @@ void DeviceAdapter::update(double timeNow) {
         latestStateSeq_ = newestPkt.state_seq;
         latestStateMcuUs_ = newestPkt.t_mcu_us;
 
-        if (counter++ % 100 == 0) {
+        if (counter++ % DEBUG_DEVICE_ANGLE_RATE == 0 && DEBUG_DEVICE_ANGLE_PRINT) {
             std::cout << "[DeviceAdapter] Updated joint angles: ("
                       << latestAngles_[0] << ", "
                       << latestAngles_[1] << ")"
@@ -187,30 +219,10 @@ void DeviceAdapter::update(double timeNow) {
         pkt_out.cmd_seq = nextCmdSeq_++;
         pkt_out.ref_state_seq = latestStateSeq_;
 
-        double q1 = latestAngles_[0];
-        double q2 = latestAngles_[1];
+        //TODO: verify this works as hasnt been tested as a function yet
+        computeJacobiansAndTorques(latestAngles_, newestOut, pkt_out, logMsg);
 
-        double L1 = 0.15;
-        double L2 = 0.15;
-
-        double J11 = -L1 * sin(q1) - L2 * sin(q1 + q2);
-        double J12 = -L2 * sin(q1 + q2);
-        double J21 =  L1 * cos(q1) + L2 * cos(q1 + q2);
-        double J22 =  L2 * cos(q1 + q2);
-
-        double Fx = newestOut.force_ws.x;
-        double Fy = newestOut.force_ws.y;
-
-        logMsg.fx = static_cast<float>(Fx);
-        logMsg.fy = static_cast<float>(Fy);
-
-        double tau1 = J11 * Fx + J21 * Fy;
-        double tau2 = J12 * Fx + J22 * Fy;
-
-        pkt_out.joint_torque[0] = -(float)tau1;
-        pkt_out.joint_torque[1] =  (float)tau2;
-
-        if (counter % 100 == 0) {
+        if (counter % DEBUG_DEVICE_TORQUE_RATE == 0 && DEBUG_DEVICE_TORQUE_PRINT) {
             std::cout << "[DeviceAdapter] Sending torque command: ("
                       << pkt_out.joint_torque[0] << ", "
                       << pkt_out.joint_torque[1] << ")"
@@ -257,4 +269,29 @@ Pose DeviceAdapter::anglesToPose(const float jointAngles[2]){
     p.p = glm::dvec3(x, y, 0.0);
     p.q = glm::angleAxis(t1 + t2, glm::dvec3(0, 0, 1));
     return p;
+}
+
+void DeviceAdapter::computeJacobiansAndTorques(const float jointAngles[2], const HapticWrenchCmd& newestOut, TorqueCommandPacket& pkt_out, DeviceTimingLogMsg& logMsg) {
+    double q1 = latestAngles_[0];
+    double q2 = latestAngles_[1];
+
+    double L1 = 0.15;
+    double L2 = 0.15;
+
+    double J11 = -L1 * sin(q1) - L2 * sin(q1 + q2);
+    double J12 = -L2 * sin(q1 + q2);
+    double J21 =  L1 * cos(q1) + L2 * cos(q1 + q2);
+    double J22 =  L2 * cos(q1 + q2);
+
+    double Fx = newestOut.force_ws.x;
+    double Fy = newestOut.force_ws.y;
+
+    logMsg.fx = static_cast<float>(Fx);
+    logMsg.fy = static_cast<float>(Fy);
+
+    double tau1 = J11 * Fx + J21 * Fy;
+    double tau2 = J12 * Fx + J22 * Fy;
+
+    pkt_out.joint_torque[0] = -(float)tau1;
+    pkt_out.joint_torque[1] =  (float)tau2;
 }

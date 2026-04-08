@@ -1,3 +1,25 @@
+#pragma region Definitions
+#define DEBUG_DEVICE_ADAPTER 1
+#pragma region Device Adapter Debug Settings
+#if (DEBUG_DEVICE_ADAPTER == 1)
+#define DEBUG_DEVICE_ANGLE_PRINT        1
+#define DEBUG_DEVICE_ANGLE_RATE         100
+
+#define DEBUG_DEVICE_TORQUE_PRINT       1
+#define DEBUG_DEVICE_TORQUE_RATE        100
+
+#define DEBUG_DEVICE_PARSE_PRINT        1
+#define DEBUG_DEVICE_PARSE_RATE         100
+
+#define DEBUG_DEVICE_TIMING_PRINT       1
+#define DEBUG_DEVICE_TIMING_RATE        500
+#endif
+#pragma endregion
+#pragma endregion
+
+
+
+#pragma region Includes
 #include "world/WorldManager.h"
 #include "geometry/GeometryDatabase.h"
 #include "geometry/GeometryEntry.h"
@@ -22,6 +44,8 @@
 #include <vector>
 #include <chrono>
 #include <iostream>
+#pragma endregion
+
 
 void simulationLoop(
     WorldManager& wm,

@@ -43,6 +43,8 @@ private:
 
     Pose anglesToPose(const float jointAngles[2]);
 
+    void computeJacobiansAndTorques(const float jointAngles[2], const HapticWrenchCmd& newestOut, TorqueCommandPacket& pkt_out, DeviceTimingLogMsg& logMsg);
+
     // Internal caching of latest data
     ToolStateMsg currentIn_;
     HapticWrenchCmd lastOut_;

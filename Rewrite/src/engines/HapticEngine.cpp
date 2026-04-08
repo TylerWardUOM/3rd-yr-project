@@ -221,7 +221,7 @@ void HapticEngine::update(float dt)
     // --------------------------------------------------------
     // Virtual coupling (spring–damper)
     // --------------------------------------------------------
-    constexpr double K = 45.0;
+    constexpr double K = 500.0;
     constexpr double M = 0.02;
     const double D = 0.7 * 2.0 * std::sqrt(K * M);
 
@@ -233,7 +233,7 @@ void HapticEngine::update(float dt)
         mul(sub(proxyVel, toolVel), D)
     );
 
-    constexpr double Fmax = 15.0;
+    constexpr double Fmax = 31.0;
     double fn = norm(F);
     if (fn > Fmax) {
         F = mul(F, Fmax / fn);
@@ -242,21 +242,29 @@ void HapticEngine::update(float dt)
     // --------------------------------------------------------
     // Publish wrench command (device / physics)
     // --------------------------------------------------------
-    if (contactId != 0) {
-        HapticWrenchCmd w;
-        w.targetId   = contactId;
-        w.force_ws   = -F; // apply equal & opposite force to contact object
-        w.torque_ws  = {0,0,0};
-        w.point_ws   = contactPoint_ws;
-        w.duration_s = dt;
-        w.t_sec      = latestTool_.t_sec;
+    HapticWrenchCmd w;
+    w.targetId   = contactId;
+    w.torque_ws  = {0,0,0};
+    w.point_ws   = contactPoint_ws;
+    w.duration_s = dt;
+    w.t_sec      = latestTool_.t_sec;
 
-        wrenchOut_.publish(w);
-        w.force_ws = F; // send positive force to device
-        //ADD: Compute joint torques for device command using Jacobian 
-        // maybe in DeviceAdapter instead? since it has direct access to joint angles and can compute Jacobian more efficiently
-        deviceCmdOut_.publish(w);
+    if (contactId != 0) {
+        wrenchOut_.publish(HapticWrenchCmd{
+            contactId,
+            -F,
+            {0,0,0},
+            contactPoint_ws,
+            dt,
+            latestTool_.t_sec
+        });
+
+        w.force_ws = F;   // device feels contact force
+    } else {
+        w.force_ws = {0,0,0};  // explicit zero command
     }
+
+    deviceCmdOut_.publish(w);
 
     // --------------------------------------------------------
     // Publish haptics snapshot
