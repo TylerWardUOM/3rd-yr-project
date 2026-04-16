@@ -37,6 +37,8 @@ GlSceneRenderer      WorldManager          HapticEngine         DeviceAdapter
 - [[Haptic Engine]] — contact search (SDF), proxy projection, virtual coupling
 - [[Hardware Interface]] — SerialLink, DeviceAdapter, packets, kinematics/torques
 - [[Messaging]] — Channel, SnapshotChannel, MessageBus
+- [[Logging]] — log channels, log thread, CSV export pipeline
+- [[Communication Tests]] — serial rate/RTT test harness and CSV metrics
 
 ---
 
