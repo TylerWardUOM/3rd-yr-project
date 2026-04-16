@@ -3,3 +3,15 @@
 /docs
 /Doxyfile
 /src/.vscode
+/x64/Debug
+/.vs
+/core_env
+/core_haptics
+/core_meshing
+/core_physics
+/core_scene
+/core_viz
+/core_world
+/firmware
+/Rewrite
+/tests
