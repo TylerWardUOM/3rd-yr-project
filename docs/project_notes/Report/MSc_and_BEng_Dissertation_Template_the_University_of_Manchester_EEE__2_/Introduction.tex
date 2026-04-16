@@ -1,0 +1,47 @@
+\subsection{Background and Motivation}
+
+Robotic manipulators are increasingly deployed in domains such as industrial automation, teleoperation, and robot-assisted surgery. In many of these applications, operator training is essential to ensure safe and efficient task execution. While visual feedback provides global situational awareness, it is often insufficient for developing fine motor skills, accurate force regulation, and intuitive understanding of interaction constraints.
+
+Haptic interfaces enable bidirectional physical interaction between a human operator and a robotic or simulated environment. By rendering interaction forces to the user, such systems can improve perception of contact conditions, enhance motor learning, and support safer manipulation strategies during training tasks. As robotic systems become more widely adopted in both research and educational settings, there is increasing motivation to develop accessible haptic training platforms that allow users to experience realistic interaction dynamics without requiring direct access to expensive physical manipulators.
+
+Despite these motivations, many existing haptic training solutions remain costly, proprietary, and tightly coupled to specific software ecosystems. This limits transparency of the control architecture and restricts the ability of researchers and students to experiment with alternative control strategies, custom simulation environments, or novel hardware configurations. There is therefore a practical need for modular and low-cost haptic interface systems that enable real-time bidirectional interaction with robotic manipulation simulations while remaining flexible and extensible.
+
+% NOTE: keep this section conceptual and problem-driven.
+% Detailed discussion of prior work and specific rendering methods
+% has been intentionally moved to the literature review.
+
+\subsection{Research Gap}
+
+While prior work has addressed either high-fidelity haptic rendering or low-cost robotic hardware in isolation, there is limited work that integrates low-cost actuated haptic devices with fully transparent, simulator-agnostic software architectures suitable for education and rapid prototyping.
+
+The absence of a flexible, low-cost, and simulator-agnostic haptic interface therefore limits the ability of researchers, educators, and students to prototype and evaluate robotic manipulation systems in a safe virtual environment. There is a clear need for a system that provides:
+\begin{enumerate}
+	\item \textbf{Affordable haptic hardware} constructed from widely available, low-cost components.
+	\item \textbf{An open, hardware-independent communication protocol} enabling integration with arbitrary simulators or robotic platforms.
+	\item \textbf{A transparent haptic rendering engine} in which latency, force computation, and stability constraints are explicitly controlled.
+	\item \textbf{A modular architecture} that can be extended from simulation-based training to real robotic manipulators with minimal redesign.
+\end{enumerate}
+
+\subsection{Aims and Objectives}
+
+The aim of this project is to design, implement, and evaluate a low-cost, open-architecture two-degree-of-freedom (2-DOF) haptic interface and simulation framework capable of delivering real-time, stable force feedback for robotic manipulator training.
+
+The specific objectives are to:
+\begin{itemize}
+	\item Design and construct a 2-DOF haptic input device using low-cost BLDC actuators and magnetic rotary encoders.
+	\item Develop embedded firmware implementing field-oriented motor control, encoder acquisition, and real-time bidirectional communication.
+	\item Define and implement a device-agnostic packet-based communication protocol for streaming joint states and receiving force or torque commands.
+	\item Develop a custom physics and rendering engine supporting collision detection, virtual proxy methods, and real-time force computation.
+	\item Implement Jacobian-based mappings from end-effector interaction forces to joint-space actuator torques.
+	\item Evaluate system performance in terms of latency, stability, and force fidelity against established haptic rendering requirements.
+	\item Demonstrate modular integration with external simulation environments such as NVIDIA Isaac Sim or MATLAB/Simulink.
+\end{itemize}
+
+\subsection{Contributions of This Work}
+
+This work presents the design and implementation of a modular real-time haptic rendering system integrating a low-cost actuated input device with a custom multithreaded simulation and visualisation framework. The system emphasises transparency of the control architecture, explicit handling of latency and stability considerations, and hardware-independent communication interfaces to support extensibility towards alternative simulators or physical robotic platforms.
+
+% NOTE: refine contributions AFTER results section is complete.
+% Add quantitative achievements here later (latency, force bandwidth, etc).
+
+% NOTE: also add a short "Report Structure" paragraph at the end of the intro.
