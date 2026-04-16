@@ -1,7 +1,8 @@
 /.vscode
 /build
-/CMakeLists.txt
 /third_party
 /docs
 /Doxyfile
 /src/.vscode
+/x64/Debug
+/.vs
