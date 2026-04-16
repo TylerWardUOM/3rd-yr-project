@@ -1,24 +1,7 @@
-/docs/project_notes/.obsidian
-/docs/project_notes/Chat gpt responses storage.md
 /.vscode
-/docs/project_notes/
-/.vscode/
 /build
 /CMakeLists.txt
-/src/Enviroment/tests
-/.vs/
-
-# Visual Studio
-.vs/
-*.vcxproj.user
-*.VC.db
-*.opendb
-
-# Build outputs
-Debug/
-Release/
-x64/
-*.log
-/docs/.html
-/docs/latex
+/third_party
+/docs
 /Doxyfile
+/src/.vscode
