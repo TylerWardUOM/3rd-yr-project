@@ -1,6 +1,6 @@
 # System Implementation
 
-Top-level index for the Rewrite implementation notes (Clean-Spaghetti branch).  
+Top-level index for the system implementation notes.  
 Written to support the system implementation section of the project report.
 
 ## Architecture Overview
@@ -42,7 +42,7 @@ GlSceneRenderer      WorldManager          HapticEngine         DeviceAdapter
 
 ## Application Entry Point
 
-`Rewrite/src/main.cpp` wires all subsystems together:
+`src/main.cpp` wires all subsystems together:
 
 1. Create shared infrastructure (`GeometryDatabase`, `RenderMeshRegistry`, `MessageBus`)
 2. Create all named channels on the bus

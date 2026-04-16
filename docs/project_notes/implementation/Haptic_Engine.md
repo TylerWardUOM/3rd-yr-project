@@ -16,7 +16,7 @@ Part of the [[Implementation_Index]].
 
 ## Overview
 
-`HapticEngine` (`Rewrite/include/engines/HapticEngine.h`) runs the haptic feedback loop.
+`HapticEngine` (`include/engines/HapticEngine.h`) runs the haptic feedback loop.
 
 It runs at **1 kHz** on its own thread.  
 Each tick it:

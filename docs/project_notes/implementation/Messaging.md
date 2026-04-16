@@ -27,7 +27,7 @@ Two primitives:
 
 ## Channel (Queue)
 
-`Channel<T>` (`Rewrite/include/messaging/Channel.h`) is a mutex-protected `std::queue<T>`.
+`Channel<T>` (`include/messaging/Channel.h`) is a mutex-protected `std::queue<T>`.
 
 API:
 - `publish(msg)` — enqueue a message (copy or move)
@@ -49,7 +49,7 @@ Messages accumulate between consumer ticks — the consumer drains everything ea
 
 ## SnapshotChannel (Latest-Value)
 
-`SnapshotChannel<T>` (`Rewrite/include/messaging/SnapshotChannel.h`) is a **lock-free double-buffer** for single-producer, multiple-consumer (SPMC) latest-value updates.
+`SnapshotChannel<T>` (`include/messaging/SnapshotChannel.h`) is a **lock-free double-buffer** for single-producer, multiple-consumer (SPMC) latest-value updates.
 
 Internals:
 - Two `T` buffers, `buffers_[0]` and `buffers_[1]`
@@ -69,7 +69,7 @@ Used for: `world.snapshots` (WorldManager → Renderer + Physics).
 
 ## MessageBus
 
-`MessageBus` (`Rewrite/include/messaging/MessageBus.h`) is a named channel registry.
+`MessageBus` (`include/messaging/MessageBus.h`) is a named channel registry.
 
 API:
 - `channel<T>(name)` — get or create a `Channel<T>` by name

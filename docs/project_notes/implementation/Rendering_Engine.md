@@ -20,7 +20,7 @@ Part of the [[Implementation_Index]].
 
 ## Window and OpenGL Setup
 
-`Window` (`Rewrite/include/platform/Window.h`) wraps GLFW.
+`Window` (`include/platform/Window.h`) wraps GLFW.
 
 Responsibilities:
 - init GLFW, set OpenGL version hints (3.3 core)
@@ -37,7 +37,7 @@ This keeps GLFW details out of the rest of the renderer.
 
 ## Shader System
 
-`Shader` (`Rewrite/include/render/shader/Shader.h`) handles OpenGL shader programs.
+`Shader` (`include/render/shader/Shader.h`) handles OpenGL shader programs.
 
 Lifecycle:
 1. `loadFile()` reads vertex + fragment source from disk
@@ -61,7 +61,7 @@ Inputs the shaders expect (assembled by [[#Renderable and MVPUniforms]]):
 
 ## MeshGPU
 
-`MeshGPU` (`Rewrite/include/render/gpu/MeshGPU.h`) owns a GPU-resident triangle mesh.
+`MeshGPU` (`include/render/gpu/MeshGPU.h`) owns a GPU-resident triangle mesh.
 
 Stores: `VAO`, `VBO`, `EBO`, `count` (index count).
 
@@ -82,7 +82,7 @@ Instances are managed by [[#Geometry and Mesh Registries]].
 
 ## Renderable and MVPUniforms
 
-`Renderable` (`Rewrite/include/render/Renderable.h`) is a transient per-draw bundle:
+`Renderable` (`include/render/Renderable.h`) is a transient per-draw bundle:
 - `mesh*` — pointer to [[#MeshGPU]]
 - `shader*` — pointer to [[#Shader System]]
 - `colour` — per-object RGB
@@ -95,7 +95,7 @@ Instances are managed by [[#Geometry and Mesh Registries]].
 4. `uniforms.upload(*shader)` — sends all uniforms to GPU
 5. `mesh->draw()` — issues draw call
 
-`MVPUniforms` (`Rewrite/include/render/shader/MVPUniforms.h`) holds:
+`MVPUniforms` (`include/render/shader/MVPUniforms.h`) holds:
 - `model` (mat4) — object → world, from [[#Pose and Model Matrix]]
 - `view` (mat4) — world → camera, from [[#Camera]]
 - `proj` (mat4) — perspective, from [[#Camera]]
@@ -109,7 +109,7 @@ Instances are managed by [[#Geometry and Mesh Registries]].
 
 ## Pose and Model Matrix
 
-`Pose` (`Rewrite/include/data/core/Math.h`):
+`Pose` (`include/data/core/Math.h`):
 - `p` (Vec3 / dvec3) — world position
 - `q` (Quat / dquat) — orientation quaternion
 - `s` (double) — uniform scale
@@ -126,7 +126,7 @@ This matrix is the `model` fed into [[#Renderable and MVPUniforms]].
 
 ## Camera
 
-`Camera` (`Rewrite/include/render/Camera.h`):
+`Camera` (`include/render/Camera.h`):
 - `eye`, `front`, `right`, `up`
 - `yawDeg`, `pitchDeg` (Euler angles)
 - `fovDeg`, `aspect`, `znear`, `zfar`
@@ -143,7 +143,7 @@ Camera movement is handled by `ViewportController` (WASD + mouse look + scroll z
 
 ## GlSceneRenderer
 
-`GlSceneRenderer` (`Rewrite/include/render/GlSceneRenderer.h`) is the central rendering subsystem.
+`GlSceneRenderer` (`include/render/GlSceneRenderer.h`) is the central rendering subsystem.
 
 Owns/holds:
 - `Window&` — for input, resize, swap/poll
