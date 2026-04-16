@@ -31,7 +31,7 @@ It sends encoder angle packets at ~1 kHz and receives torque command packets at 
 
 ## SerialLink
 
-`SerialLink` (`Rewrite/include/hardware/SerialLink.h`) is a thin wrapper around a Windows `HANDLE`-based serial connection.
+`SerialLink` (`include/hardware/SerialLink.h`) is a thin wrapper around a Windows `HANDLE`-based serial connection.
 
 API:
 - `connect(portName, baud)` — open COM port, configure baud rate
@@ -46,7 +46,7 @@ The `HANDLE` is stored as `void*` to avoid pulling Windows headers into other tr
 
 ## Packets
 
-`Packets.h` (`Rewrite/include/hardware/Packets.h`) defines the wire format structs, all `#pragma pack(push, 1)` (no padding):
+`Packets.h` (`include/hardware/Packets.h`) defines the wire format structs, all `#pragma pack(push, 1)` (no padding):
 
 ### DeviceStatePacket (firmware → host)
 
@@ -74,7 +74,7 @@ Checksum is a simple unsigned byte sum of all bytes except the last two.
 
 ## DeviceAdapter
 
-`DeviceAdapter` (`Rewrite/include/hardware/DeviceAdapter.h`) bridges hardware I/O to the messaging layer.
+`DeviceAdapter` (`include/hardware/DeviceAdapter.h`) bridges hardware I/O to the messaging layer.
 
 Constructor inputs:
 - `deviceIn` channel — publishes `ToolStateMsg` (tool pose from FK)

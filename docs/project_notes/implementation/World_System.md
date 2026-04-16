@@ -17,7 +17,7 @@ Part of the [[Implementation_Index]].
 
 ## WorldManager
 
-`WorldManager` (`Rewrite/include/world/WorldManager.h`) is the **authoritative source of world state**.
+`WorldManager` (`include/world/WorldManager.h`) is the **authoritative source of world state**.
 
 It owns:
 - a map of `WorldObject` records (id → object)
@@ -56,7 +56,7 @@ Objects are stored in an `unordered_map<ObjectID, WorldObject>`, keyed by auto-i
 
 ## WorldCommand
 
-`WorldCommand` (`Rewrite/include/data/Commands.h`) is a `std::variant` of:
+`WorldCommand` (`include/data/Commands.h`) is a `std::variant` of:
 
 | Variant | Purpose |
 |---|---|
@@ -74,7 +74,7 @@ This keeps mutations serialised through the world command channel rather than ha
 
 ## WorldSnapshot
 
-`WorldSnapshot` (`Rewrite/include/data/WorldSnapshot.h`) is a value-copy of the scene state:
+`WorldSnapshot` (`include/data/WorldSnapshot.h`) is a value-copy of the scene state:
 
 ```cpp
 struct WorldSnapshot {
@@ -115,7 +115,7 @@ The geometry layer sits between the world and the rendering/physics/haptics subs
 
 ### GeometryEntry
 
-`GeometryEntry` (`Rewrite/include/geometry/GeometryEntry.h`) bundles per-shape data:
+`GeometryEntry` (`include/geometry/GeometryEntry.h`) bundles per-shape data:
 - `id` — unique `GeometryID`
 - `SurfaceType` — Plane / Sphere / Cube / TriMesh
 - `sdf` — shared pointer to an [[#SDF Interface]] (used by [[Haptic Engine]])
@@ -141,7 +141,7 @@ This decouples object records from rendering/physics implementation details.
 
 ## SDF Interface
 
-`SDF` (`Rewrite/include/geometry/sdf/SDF.h`) is an abstract interface:
+`SDF` (`include/geometry/sdf/SDF.h`) is an abstract interface:
 
 ```cpp
 struct SDFQuery { double phi; Vec3 grad; Vec3 proj; bool inside; };
@@ -164,7 +164,7 @@ The [[Haptic Engine]] uses `queryLocal()` with a point transformed into object-l
 
 ## PhysicsProps
 
-`PhysicsProps` (`Rewrite/include/data/PhysicsProps.h`) stores per-object physics config:
+`PhysicsProps` (`include/data/PhysicsProps.h`) stores per-object physics config:
 
 | Field | Default | Meaning |
 |---|---|---|

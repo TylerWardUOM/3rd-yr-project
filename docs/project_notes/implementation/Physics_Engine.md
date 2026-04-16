@@ -15,7 +15,7 @@ Part of the [[Implementation_Index]].
 
 ## Overview
 
-`PhysicsEnginePhysX` (`Rewrite/include/engines/PhysicsEnginePhysX.h`) wraps NVIDIA PhysX to provide rigid-body simulation.
+`PhysicsEnginePhysX` (`include/engines/PhysicsEnginePhysX.h`) wraps NVIDIA PhysX to provide rigid-body simulation.
 
 It is driven on the simulation thread (see [[Implementation_Index#Architecture Overview]]) and called from `simulationLoop()` in `main.cpp`.
 
