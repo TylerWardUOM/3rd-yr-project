@@ -1,0 +1,75 @@
+%need to add why satements for method choices such as 2 dof freedom and stuff
+
+This chapter describes the design methodology adopted to develop the proposed low-cost haptic training interface. The system was designed using a modular, layered approach to ensure real-time performance, stability, and extensibility. Particular emphasis was placed on decoupling hardware, control, simulation, and rendering components to enable safe experimentation and future integration with physical robotic manipulators.
+
+\subsection{System Overview and Architecture}
+
+The proposed system follows a bidirectional haptic interaction loop consisting of four principal layers: the haptic device hardware, embedded control firmware, host-side simulation and haptic rendering, and visualisation. A high-level overview of the data flow is shown in Figure~\ref{fig:system_architecture}.
+
+User motion is captured at the haptic device joints using magnetic rotary encoders and streamed to the host system in real time. The host simulation computes the resulting interaction forces based on the virtual environment state and returns torque commands to the device actuators. This closed-loop architecture enables the user to both influence and feel the simulated robotic environment.
+
+To ensure stability and real-time performance, the system is explicitly partitioned into time-critical and non-time-critical components. Low-level motor control and safety functions are executed on the embedded controller at high frequency, while collision detection, haptic rendering, and visualisation are handled on the host.
+
+
+\subsection{Design Constraints and Assumptions}
+The system design was guided by a set of practical constraints and modelling assumptions intended to prioritise stability, transparency, and reproducibility over mechanical complexity.
+
+The haptic servo loop was designed to operate at a target update rate of approximately $1~\text{kHz}$, consistent with established requirements for stable haptic rendering. End-to-end latency between user motion and actuator response was assumed to remain below perceptual thresholds for haptic interaction.
+
+The user was assumed to behave as a passive element during interaction, and the virtual environment was modelled using rigid-body contact dynamics only. Deformable objects, frictional stick--slip effects, and high-frequency surface textures were considered outside the scope of this project.
+
+The system was designed for desktop operation, with power and workspace constraints suitable for laboratory and educational environments. Actuator torque limits, mechanical hard-stops, and software safety bounds were imposed to ensure safe operation under fault conditions.
+
+These constraints informed all subsequent hardware, control, and simulation design decisions described in this chapter.
+
+\subsection{Haptic Device Hardware Design}
+
+The haptic interface was designed as a two-degree-of-freedom planar mechanism, providing rotational motion about two orthogonal axes. This configuration was selected to balance mechanical simplicity, workspace usability, and force controllability while remaining representative of common robotic joint interactions.
+
+Each joint is actuated using a low-cost brushless DC (BLDC) motor, selected for its high torque density, efficiency, and compatibility with field-oriented control (FOC). Joint positions are measured using magnetic rotary encoders, which provide absolute angle measurements without mechanical wear, making them suitable for continuous interactive use.
+
+The mechanical structure was designed to be lightweight and back-drivable to reduce inertia felt by the user and improve haptic transparency. %Mechanical hard-stops and electrical current limits were incorporated to ensure safe operation under fault conditions.
+
+\subsection{Embedded Firmware and Motor Control}
+
+Embedded firmware was developed to perform real-time motor control, sensor acquisition, and communication with the host system. Field-oriented control was implemented to enable precise torque generation and smooth force feedback across the full operating range of the motors.
+
+Encoder readings are sampled at high frequency and filtered to reduce measurement noise while preserving responsiveness. Joint velocities are estimated numerically and used for damping and safety checks. The firmware enforces current and torque limits to prevent instability or hardware damage.
+
+A bidirectional communication loop is maintained between the embedded controller and the host system. Joint position and velocity data are transmitted at a fixed update rate, while commanded joint torques are received and applied in real time. %Watchdog timers and sanity checks are used to ensure safe degradation of behaviour in the event of communication loss.
+
+\subsection{Communication Protocol}
+
+A custom packet-based communication protocol was defined to ensure low latency, deterministic timing, and hardware independence. Each packet contains timestamped joint state data or torque commands encoded in a compact binary format.
+
+The protocol was designed to be device-agnostic, allowing the haptic device to be replaced or extended without modification to the host-side simulation. This abstraction also enables future integration with external simulators or physical robotic manipulators using the same communication interface.
+
+\subsection{Simulation and Haptic Rendering}
+
+The host-side simulation is responsible for modelling the virtual environment, detecting collisions, and computing interaction forces. A constraint-based haptic rendering approach based on the virtual proxy method was adopted due to its proven stability properties in high-frequency haptic systems \cite{525876,10.1145/258734.258878}.
+
+In this approach, the user-controlled end-effector is represented by a virtual proxy constrained by the geometry of the environment. Interaction forces are computed based on the displacement between the proxy and the unconstrained device position, ensuring continuous and stable contact behaviour even under discrete-time simulation.
+
+To guarantee stability, the haptic rendering loop operates independently of the visual rendering loop and is designed to meet real-time update requirements. A virtual coupling model is used to decouple the device dynamics from the virtual environment, providing unconditional stability under passive user and environment assumptions \cite{768179}.
+
+\subsection{Force Mapping and Jacobian-Based Control}
+
+Interaction forces are initially computed in Cartesian space at the end-effector. These forces are mapped to joint-space actuator torques using the manipulator Jacobian according to
+\begin{equation}
+	\tau = J^{T}(q)\,F,
+\end{equation}
+where $\tau$ is the joint torque vector, $J(q)$ is the configuration-dependent Jacobian matrix, and $F$ is the Cartesian interaction force vector.
+
+This formulation is consistent with operational-space control theory and allows physically meaningful force feedback to be rendered at the device joints \cite{768179}. The Jacobian is recomputed in real time based on the current joint configuration to ensure accurate force transmission.
+
+\subsection{Visualisation and User Feedback}
+
+A lightweight rendering engine was implemented to provide visual feedback of the virtual environment and device interaction. Visualisation is decoupled from the haptic loop to prevent graphical latency from affecting haptic stability.
+
+Debug overlays and diagnostic tools were incorporated to allow inspection of contact states, proxy motion, and force magnitudes during development and testing.
+
+\subsection{Evaluation Methodology}
+
+System performance was evaluated in terms of latency, stability, and force fidelity. End-to-end latency was measured from joint motion at the device to torque response at the actuators. Stability was assessed under sustained contact and rapid interaction scenarios.
+
+Force accuracy was evaluated by comparing commanded and measured actuator torques under controlled interaction conditions. These metrics were assessed against established requirements for real-time haptic rendering to determine the suitability of the system for training applications.

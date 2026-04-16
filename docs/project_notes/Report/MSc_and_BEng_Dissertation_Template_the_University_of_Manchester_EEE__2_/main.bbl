@@ -1,0 +1,224 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{ref:Bergholz2023}{article}{}
+      \name{author}{3}{}{%
+        {{hash=20d47a7f80074c3632c157d63e934bc9}{%
+           family={Bergholz},
+           familyi={B\bibinitperiod},
+           given={Max},
+           giveni={M\bibinitperiod}}}%
+        {{hash=1ec55b13c82f86ab8db3a54d5847677a}{%
+           family={Ferle},
+           familyi={F\bibinitperiod},
+           given={Manuel},
+           giveni={M\bibinitperiod}}}%
+        {{hash=f34ee153a5c5e5b94bbb68fa0716dcb8}{%
+           family={Weber},
+           familyi={W\bibinitperiod},
+           given={Bernhard\bibnamedelima M.},
+           giveni={B\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{4e7531ed6c1046dcf7fd44a5ae8e29ee}
+      \strng{fullhash}{1ccaaac13f8a751fb89b39ace70a658c}
+      \strng{bibnamehash}{1ccaaac13f8a751fb89b39ace70a658c}
+      \strng{authorbibnamehash}{1ccaaac13f8a751fb89b39ace70a658c}
+      \strng{authornamehash}{4e7531ed6c1046dcf7fd44a5ae8e29ee}
+      \strng{authorfullhash}{1ccaaac13f8a751fb89b39ace70a658c}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Robot assisted surgery (RAS) provides medical practitioners with valuable tools, decreasing strain during surgery and leading to better patient outcomes. While the loss of haptic sensation is a commonly cited disadvantage of RAS, new systems aim to address this problem by providing artificial haptic feedback. N{\thinspace}={\thinspace}56 papers that compared robotic surgery systems with and without haptic feedback were analyzed to quantify the performance benefits of restoring the haptic modality. Additionally, this study identifies factors moderating the effect of restoring haptic sensation. Overall results showed haptic feedback was effective in reducing average forces (Hedges' g{\thinspace}={\thinspace}0.83) and peak forces (Hedges' g{\thinspace}={\thinspace}0.69) applied during surgery, as well as reducing the completion time (Hedges' g{\thinspace}={\thinspace}0.83). Haptic feedback has also been found to lead to higher accuracy (Hedges' g{\thinspace}={\thinspace}1.50) and success rates (Hedges' g{\thinspace}={\thinspace}0.80) during surgical tasks. Effect sizes on several measures varied between tasks, the type of provided feedback, and the subjects' levels of surgical expertise, with higher levels of expertise generally associated with smaller effect sizes. No significant differences were found between virtual fixtures and rendering contact forces. Implications for future research are discussed.}
+      \field{issn}{2045-2322}
+      \field{journaltitle}{Scientific Reports}
+      \field{month}{11}
+      \field{number}{1}
+      \field{title}{The benefits of haptic feedback in robot assisted surgery and their moderators: a meta-analysis}
+      \field{volume}{13}
+      \field{year}{2023}
+      \field{pages}{19215}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1038/s41598-023-46641-8
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1038/s41598-023-46641-8
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1038/s41598-023-46641-8
+      \endverb
+    \endentry
+    \entry{525876}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=6f0da45b73c619f55a548cfae8e12c2c}{%
+           family={Zilles},
+           familyi={Z\bibinitperiod},
+           given={C.B.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=f8f63dc5c9792282c9295074ee7653ea}{%
+           family={Salisbury},
+           familyi={S\bibinitperiod},
+           given={J.K.},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{fullhash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{bibnamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{authorbibnamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{authornamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{authorfullhash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings 1995 IEEE/RSJ International Conference on Intelligent Robots and Systems. Human Robot Interaction and Cooperative Robots}
+      \field{title}{A constraint-based god-object method for haptic display}
+      \field{volume}{3}
+      \field{year}{1995}
+      \field{pages}{146\bibrangedash 151 vol.3}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1109/IROS.1995.525876
+      \endverb
+      \keyw{Haptic interfaces;Displays;Shape;Humans;Force control;Control systems;Mathematical model;Computational modeling;Rendering (computer graphics);Virtual environment}
+    \endentry
+    \entry{10.1145/258734.258878}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=44694ef7a2ad35094d650d84323a6bd9}{%
+           family={Ruspini},
+           familyi={R\bibinitperiod},
+           given={Diego\bibnamedelima C.},
+           giveni={D\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=82117b2659f9d84595f52e5b12d1e35a}{%
+           family={Kolarov},
+           familyi={K\bibinitperiod},
+           given={Krasimir},
+           giveni={K\bibinitperiod}}}%
+        {{hash=a1ed48939870abd896792330bc735967}{%
+           family={Khatib},
+           familyi={K\bibinitperiod},
+           given={Oussama},
+           giveni={O\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {USA}%
+      }
+      \list{publisher}{1}{%
+        {ACM Press/Addison-Wesley Publishing Co.}%
+      }
+      \strng{namehash}{b4aa88ee0355fa080ae7345924737f4a}
+      \strng{fullhash}{5fc41db55f48daf390cdb46450ce90bf}
+      \strng{bibnamehash}{5fc41db55f48daf390cdb46450ce90bf}
+      \strng{authorbibnamehash}{5fc41db55f48daf390cdb46450ce90bf}
+      \strng{authornamehash}{b4aa88ee0355fa080ae7345924737f4a}
+      \strng{authorfullhash}{5fc41db55f48daf390cdb46450ce90bf}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 24th Annual Conference on Computer Graphics and Interactive Techniques}
+      \field{isbn}{0897918967}
+      \field{series}{SIGGRAPH '97}
+      \field{title}{The haptic display of complex graphical environments}
+      \field{year}{1997}
+      \field{pages}{345\bibrangedash 352}
+      \range{pages}{8}
+      \verb{doi}
+      \verb 10.1145/258734.258878
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1145/258734.258878
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1145/258734.258878
+      \endverb
+      \keyw{contact constraints,force feedback,force shading,friction model,haptic,haptic texture,virtual environments}
+    \endentry
+    \entry{1087068}{article}{}
+      \name{author}{1}{}{%
+        {{hash=0a9bcb07c557a30beb3c13b8fab1ad99}{%
+           family={Khatib},
+           familyi={K\bibinitperiod},
+           given={O.},
+           giveni={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{fullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{bibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authorbibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authornamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authorfullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{IEEE Journal on Robotics and Automation}
+      \field{number}{1}
+      \field{title}{A unified approach for motion and force control of robot manipulators: The operational space formulation}
+      \field{volume}{3}
+      \field{year}{1987}
+      \field{pages}{43\bibrangedash 53}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1109/JRA.1987.1087068
+      \endverb
+      \keyw{Force control;Orbital robotics;Manipulator dynamics;Motion control;Motion analysis;Control systems;Equations;Control system analysis;Kinematics;Robot sensing systems}
+    \endentry
+    \entry{768179}{article}{}
+      \name{author}{2}{}{%
+        {{hash=14167937052e978da21869318b2893f6}{%
+           family={Adams},
+           familyi={A\bibinitperiod},
+           given={R.J.},
+           giveni={R\bibinitperiod}}}%
+        {{hash=889af4bd8c0baf5c73f322145b824ecc}{%
+           family={Hannaford},
+           familyi={H\bibinitperiod},
+           given={B.},
+           giveni={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{7ae22225ca34fa41a0361cdf72999e2d}
+      \strng{fullhash}{7ae22225ca34fa41a0361cdf72999e2d}
+      \strng{bibnamehash}{7ae22225ca34fa41a0361cdf72999e2d}
+      \strng{authorbibnamehash}{7ae22225ca34fa41a0361cdf72999e2d}
+      \strng{authornamehash}{7ae22225ca34fa41a0361cdf72999e2d}
+      \strng{authorfullhash}{7ae22225ca34fa41a0361cdf72999e2d}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{IEEE Transactions on Robotics and Automation}
+      \field{number}{3}
+      \field{title}{Stable haptic interaction with virtual environments}
+      \field{volume}{15}
+      \field{year}{1999}
+      \field{pages}{465\bibrangedash 474}
+      \range{pages}{10}
+      \verb{doi}
+      \verb 10.1109/70.768179
+      \endverb
+      \keyw{Haptic interfaces;Virtual environment;Coupling circuits;Displays;Circuit stability;Impedance;Admittance;Linear circuits;Sufficient conditions;Circuit simulation}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -1,0 +1,30 @@
+\subsection{Haptic Interfaces for Robotics}
+
+Haptic interfaces play a central role in teleoperation, robot-assisted surgery, and operator training, where visual feedback alone is insufficient for the development of accurate motor skills and safe manipulation strategies. A large body of empirical evidence demonstrates that the inclusion of haptic feedback improves task performance, accuracy, and force regulation across a wide range of robotic manipulation tasks. A recent meta-analysis of robot-assisted surgery systems reports significant reductions in applied forces, task completion time, and error rates when haptic feedback is present, particularly for inexperienced and novice users \cite{ref:Bergholz2023}.
+
+Commercial haptic devices such as the \emph{Geomagic Touch} are widely used in research and training environments but are typically associated with high cost and proprietary software ecosystems. Such constraints can limit adaptability, reduce transparency of the control loop, and complicate integration with custom simulation frameworks or experimental hardware platforms.
+
+\subsection{Haptic Rendering Techniques}
+
+Research in real-time haptic simulation has advanced substantially over recent decades, particularly in collision-based interaction models. Methods such as the virtual coupling and virtual proxy (or ``god-object'') approach introduced by Zilles and Salisbury and later extended by Ruspini \emph{et al.} are widely adopted due to their robustness and favourable stability properties when interacting with rigid or constrained environments \cite{525876,10.1145/258734.258878}.
+
+These approaches rely on high servo-loop update rates (typically $\geq 1~\text{kHz}$), accurate end-effector pose tracking, and reliable mappings from Cartesian interaction forces to actuator torques. In robotic systems, such mappings are conventionally computed using the manipulator Jacobian, as formalised in operational-space control frameworks \cite{1087068}.
+
+\subsection{Stability in Haptic Systems}
+
+Ensuring stable haptic interaction places strict requirements on system latency, numerical integration, and control architecture. Foundational work by Adams and Hannaford demonstrated that unconditional stability in haptic systems can be achieved through the use of virtual coupling networks, which decouple device control from virtual environment dynamics and allow stability guarantees under passive user and environment assumptions \cite{768179}.
+
+These principles underpin many modern haptic rendering systems and highlight the importance of explicitly managing dynamic coupling, discrete-time implementation effects, and feedback loop timing in practical haptic interface design.
+
+\subsection{Low-Cost Haptic Hardware}
+
+Recent advances in low-cost hardware---including hobby-grade brushless motors, magnetic encoders, and high-performance microcontrollers---have made it increasingly feasible to construct capable actuated haptic devices using widely available components. At the same time, there is growing interest in open, modular, and reproducible research platforms that allow researchers to experiment with alternative control strategies and system architectures.
+
+However, existing open-source software frameworks such as CHAI3D, SOFA, or Unity-based extensions frequently impose fixed control architectures, device-specific driver layers, or restrictive communication models. These constraints can complicate integration with custom hardware and limit the ability to explicitly control latency, update rates, or stability-critical elements of the haptic interaction loop.
+
+\subsection{Summary of Literature}
+
+Overall, the literature demonstrates clear benefits of haptic feedback for robotic manipulation training and establishes well-developed theoretical foundations for stable haptic rendering. Nevertheless, there remains a practical gap in the availability of integrated systems that combine low-cost actuated hardware with transparent, simulator-agnostic software architectures suitable for educational use and rapid experimental prototyping.
+
+% NOTE: later add a short critical comparison paragraph here.
+% e.g. stability vs cost vs openness trade-offs.
