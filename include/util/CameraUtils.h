@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "viz/Camera.h"
-#include "viz/ray.h"
+#include "render/Camera.h"
+#include "util/Ray.h"
 #include <iostream>
 
 // Convert window pixel coords to NDC (-1 to +1)
