@@ -48,7 +48,7 @@
 \usepackage{subcaption}            % for multiple sub-figures in a single float
 \usepackage{siunitx}               % add SI units
 % Add your packages here
-
+\usepackage{enumitem}
 
 % Custom commands
 \newcommand{\degree}{\ensuremath{^\circ}}
@@ -57,7 +57,8 @@
 \newcommand{\otoprule}{\midrule[\heavyrulewidth]}
 \newcolumntype{Z}{>{\centering\arraybackslash}X}  % tabularx centered columns 
 % Add your custom commands here
-
+\setlist[itemize]{topsep=2pt, itemsep=1.5pt, parsep=0pt, partopsep=0pt}
+\setlist[enumerate]{topsep=2pt, itemsep=1.5pt, parsep=0pt, partopsep=0pt}
 
 
 %%%%%%%%%%%%%%%%%% REFERENCES SETUP %%%%%%%%%%%%%%%%%%

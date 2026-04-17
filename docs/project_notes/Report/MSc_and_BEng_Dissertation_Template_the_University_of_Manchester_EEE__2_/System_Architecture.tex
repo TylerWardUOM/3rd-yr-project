@@ -86,13 +86,19 @@ A virtual coupling relationship between proxy and device states provides dynamic
 
 \subsection{Force Transmission to the Device}
 
-Interaction forces computed in Cartesian space at the end-effector are mapped to joint-space actuator torques using the manipulator Jacobian
+For haptic force reflection, Cartesian interaction forces computed at the virtual end-effector are mapped into joint-space actuator torques using the Jacobian transpose formulation
 
 \begin{equation}
-	\tau = J^{T}(q) F.
+	\tau = J^{T}(q)F
 \end{equation}
 
-This operational-space formulation enables physically meaningful force feedback to be rendered at the device joints while accounting for configuration-dependent kinematic relationships.
+where $\tau$ is the joint torque vector, $J(q)$ is the manipulator Jacobian evaluated at joint configuration $q$, and $F$ is the rendered Cartesian interaction force.
+
+This relationship represents a quasi-static operational-space force mapping and is used specifically for force reflection from the virtual environment to the device actuators.
+
+It does not represent the full dynamics of the haptic device, which would additionally require consideration of link inertia, Coriolis terms, damping, and actuator dynamics.
+
+Extension toward a full dynamic operational-space formulation, following the object-space dynamics framework introduced by \cite{khatibUnifiedApproachMotion1987a}, is identified as future work.
 
 \subsection{Visualisation Layer}
 
