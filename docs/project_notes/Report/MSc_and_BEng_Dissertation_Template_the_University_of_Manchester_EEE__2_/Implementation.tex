@@ -27,24 +27,21 @@ Each joint rotates about an 8\,mm diameter steel shaft supported by rolling elem
 The embedded control system is implemented using an STM32 Nucleo-G401RE development board.
 % NOTE: later add timer / control loop implementation details if useful
 
-The microcontroller interfaces with two magnetic rotary encoders (AS5600) which are used to measure joint angular position.
+Joint angular position is measured using AS5048 absolute magnetic rotary encoders communicating via SPI and mounted coaxially with the joint axes.
 % NOTE: encoder model left as placeholder for final confirmation if needed
 
-Each encoder is mounted coaxially with the joint shaft, with a diametrically magnetised magnet attached to the shaft using a custom adapter. Angular position measurements are acquired via an SPI communication interface.
-% NOTE: double-check this matches final wiring / firmware implementation for AS5600
+For the first actuator, which is coupled to the output joint through a timing belt transmission, an additional AS5600 magnetic rotary encoder is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This encoder provides rotor position feedback for the field-oriented control loop, enabling closed-loop torque control of the brushless motor.
 
-Encoder data are polled at a fixed sampling rate.
+Encoder data are polled at a fixed sampling rate and packaged into device state packets for transmission to the host computer via a USB virtual COM interface.
 % NOTE: insert measured encoder polling frequency
-
-The measured joint angles are packaged into device state packets and transmitted to the host computer via a USB virtual COM interface.
 % NOTE: if needed later clarify whether this is via ST-Link virtual COM or native USB path
 
-The microcontroller additionally communicates with two brushless motor driver modules (BG-3421-ESC1). Torque commands received from the host system are forwarded to the motor drivers via a UART communication interface.
+The actuator control layer is implemented using SimpleFOC Mini brushless motor driver modules and the SimpleFOC library~\cite{simplefoc2022}, selected following earlier integration challenges with alternative ESC hardware. Torque commands received from the host system are processed by the embedded firmware and applied through the SimpleFOC library, which performs the required field-oriented control computations and generates the corresponding PWM drive signals for the motors.
 % NOTE: later add baud rate / framing if it becomes relevant in comms section
 
 A communication watchdog mechanism is implemented such that if valid torque commands are not received within a predefined timeout interval, the commanded joint torques are automatically set to zero to ensure safe device behaviour.
 
-Each motor driver executes a field-oriented control (FOC) algorithm in torque control mode. Rotor electrical angle feedback for the FOC algorithm is obtained using integrated hall-effect sensors operating in a quadrature encoder configuration.
+Each actuator operates in field-oriented control (FOC) torque control mode.\cite{vasSensorlessVectorDirect1998} Rotor electrical angle feedback for the FOC algorithm is obtained from the dedicated motor-shaft encoder, allowing continuous estimation of electrical rotor position and stable low-speed torque output suitable for haptic interaction.
 % NOTE: later mention any limits this introduces for angle resolution / smoothness if discussed in results
 
 \subsection{Communication Protocol}
@@ -182,3 +179,20 @@ Following each simulation update, the resulting poses of dynamic actors are writ
 % NOTE: add subsection here explaining how Cartesian force commands are mapped to joint torques
 % NOTE: good place to include \tau = J^T(q)F and mention where it is evaluated in the loop
 % NOTE: if implemented approximately or only for planar kinematics, say that explicitly
+
+\subsubsection{Logging Framework}
+A dedicated logging and diagnostics subsystem was implemented to support timing analysis, communication validation, and offline performance evaluation without perturbing the real-time device control loop.
+
+To avoid introducing disk I/O latency into the 1 kHz communication thread, logging was implemented as an asynchronous message-passing pipeline using dedicated channels on the message bus.
+
+Two structured log message types were defined:
+\begin{itemize}
+	\item device state logs, capturing all successfully parsed incoming device packets
+	\item device timing logs, capturing matched receive–compute–transmit control cycles
+\end{itemize}
+
+These messages include host-side timestamps, device sequence counters, MCU timestamps, measured joint angles, rendered forces, and transmitted torque commands.
+
+A dedicated background logging thread continuously drains the logging channels and appends entries to in-memory buffers. At application shutdown, the captured data are exported to CSV files for offline analysis.
+
+This architecture ensures that instrumentation overhead does not affect the timing-critical haptic control path.
