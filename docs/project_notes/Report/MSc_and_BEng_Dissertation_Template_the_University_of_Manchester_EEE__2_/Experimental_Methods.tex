@@ -66,37 +66,19 @@ Safety validation tests ensured that the system remained bounded and behaved pre
 
 A torque saturation test verified that actuator command limits were correctly enforced across both host and embedded layers.
 
-Force outputs were limited on the host side to a predefined maximum, and the embedded controller applied an additional clamp to ensure commands remained within safe bounds. Testing confirmed that:
-
-\begin{itemize}
-	\item host-side force commands were correctly limited
-	\item transmitted torque commands were further bounded by the embedded controller
-	\item actuator output remained within safe and predictable limits
-\end{itemize}
+Force outputs were limited on the host side to a predefined maximum, and the embedded controller applied an additional clamp to ensure commands remained within safe bounds. Testing confirmed that host-side force commands were correctly limited, transmitted torque commands were further bounded by the embedded controller, and actuator output remained within safe and predictable limits.
 
 \subsubsection{Rate Limiting Test}
 
 A rate limiting test evaluated the effect of constraining the rate of change of commanded torque at the embedded controller level.
 
-A slew-rate limiter was implemented to reduce high-frequency oscillations and improve stability during rapid contact transitions. Testing verified that:
-
-\begin{itemize}
-	\item rapid command changes were smoothed into bounded torque ramps
-	\item high-frequency oscillations were reduced during contact events
-	\item overall system stability improved during interaction
-\end{itemize}
+A slew-rate limiter was implemented to reduce high-frequency oscillations and improve stability during rapid contact transitions. Testing verified that rapid command changes were smoothed into bounded torque ramps, high-frequency oscillations were reduced during contact events, and overall system stability improved during interaction.
 
 \subsubsection{Watchdog Timeout Test}
 
 A watchdog timeout test verified safe system behaviour under communication loss by interrupting the incoming command stream during operation.
 
-The embedded controller response confirmed that:
-
-\begin{itemize}
-	\item the watchdog triggered reliably when command updates ceased
-	\item commanded torque was removed within the intended timeout window
-	\item the device returned to a safe passive state
-\end{itemize}
+The embedded controller response confirmed that the watchdog triggered reliably when command updates ceased, commanded torque was removed within the intended timeout window, and the device returned to a safe passive state.
 
 \subsection{Hardware Validation}
 

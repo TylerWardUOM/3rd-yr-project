@@ -24,13 +24,7 @@ Future work should therefore investigate lower-latency communication architectur
 
 A systematic comparison of these communication approaches would allow the contribution of each component in the communication stack to be isolated and could provide a pathway toward significantly reducing round-trip latency and improving achievable haptic stiffness.
 
-Improving actuator performance and force fidelity is another critical area. The incorporation of current sensing would enable accurate torque control and allow quantitative validation of rendered forces. This would also support the implementation of more advanced control strategies, including impedance control and operational-space control formulations.
-
-Mechanical transmission design could also be improved. While GT2 timing belts provided a simple and low-cost solution for torque amplification, they introduced slip and compliance under high load conditions. Future designs could explore alternative transmission mechanisms such as capstan drives, as demonstrated in low-cost haptic systems such as the Hapkit platform. These approaches offer reduced backlash and improved force transmission characteristics, which could enhance both stability and realism.
-
-The use of higher torque actuators or geared motor systems would further improve the ability to render stiff virtual environments, reducing compliance during contact and enabling more realistic hard-contact interactions.
-
-Restoration of full two-degree-of-freedom actuation is also an important step. Enabling force feedback across both joints would improve interaction realism and allow more complex manipulation and constraint-based tasks to be explored.
+Hardware improvements represent an important area for future development. The incorporation of current sensing would enable accurate torque control, allow quantitative validation of rendered forces, and support more advanced control strategies including impedance and operational-space control formulations. Mechanical transmission design could also be improved: while GT2 timing belts provided a low-cost solution for torque amplification, they introduced slip and compliance under high load, and future designs could explore capstan drives for reduced backlash and improved force transmission. The use of higher torque actuators or geared motor systems would further improve the ability to render stiff virtual environments, and restoration of full two-degree-of-freedom actuation would improve interaction realism and allow more complex manipulation and constraint-based tasks to be explored.
 
 Further improvements to the haptic rendering model could address limitations observed under large penetration conditions. More advanced contact handling approaches, such as continuous collision detection, constraint-based solvers, or improved normal estimation techniques, could enhance robustness and force consistency.
 %TODO: matbe explain why constrain based solver needed or what it solves
