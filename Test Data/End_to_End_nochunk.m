@@ -17,14 +17,13 @@
 %      - every valid packet parsed on the host
 %      - raw state sequence progression
 %      - host-side parsed-packet inter-arrival timing
-%      - host chunk delivery timing
-%      - chunk-to-parse delay
 %      - MCU timestamp progression
 %      - estimated parsed packet rate
 %
 % IMPORTANT:
-% device_state_log.csv is generated INSIDE the packet parse loop.
-% Therefore each row corresponds to one valid parsed state packet.
+% device_state_log.csv is now generated INSIDE the packet parse loop.
+% Therefore each row corresponds to one valid parsed state packet,
+% not merely the newest retained packet from a host update cycle.
 %
 % NOTE:
 % Host and MCU clocks are not synchronized.
@@ -142,6 +141,16 @@ disp(worstRows(:, {'rx_state_seq','state_mcu_us','tx_cmd_seq','ref_state_seq', .
 
 %% =========================================================
 % PART 2: RAW PARSED STATE-PACKET ANALYSIS
+%
+% Because device_state_log.csv is emitted inside the parse loop,
+% each row corresponds to one valid parsed state packet.
+%
+% Therefore the metrics below now represent:
+% - actual parsed packet sequence progression on the host
+% - actual parsed packet inter-arrival timing on the host
+% - actual parsed packet MCU timestamp progression
+%
+% This is much stronger than the old "freshest per host update" log.
 %% =========================================================
 
 fprintf("\n========================================\n");
@@ -152,25 +161,17 @@ numStateRows = height(State);
 fprintf("Total raw parsed state rows: %d\n", numStateRows);
 
 raw_state_seq_gap = [NaN; diff(State.("rx_state_seq"))];
-raw_parse_dt_ms   = [NaN; diff(State.("t_rx_parse_ns"))] / 1e6;
+raw_host_dt_ms    = [NaN; diff(State.("t_rx_parse_ns"))] / 1e6;
 raw_mcu_dt_ms     = [NaN; diff(State.("state_mcu_us"))] / 1000.0;
-
-% New: chunk-based timing
-raw_chunk_to_parse_ms = (State.("t_rx_parse_ns") - State.("t_chunk_read_ns")) / 1e6;
-
-uniqueChunkNs = unique(State.("t_chunk_read_ns"));
-unique_chunk_dt_ms = [NaN; diff(uniqueChunkNs)] / 1e6;
 
 % Effective MCU packet period per state increment
 raw_effective_mcu_period_ms = raw_mcu_dt_ms ./ raw_state_seq_gap;
 
-% Valid subsets
-valid_gap_idx       = raw_state_seq_gap > 0;
-valid_parse_dt      = raw_parse_dt_ms(2:end);
-valid_mcu_dt        = raw_mcu_dt_ms(2:end);
-valid_eff_mcu       = raw_effective_mcu_period_ms(valid_gap_idx);
-valid_chunk_to_parse = raw_chunk_to_parse_ms(~isnan(raw_chunk_to_parse_ms));
-valid_unique_chunk_dt = unique_chunk_dt_ms(2:end);
+% Valid subsets (exclude NaN and impossible zero/negative gaps)
+valid_gap_idx = raw_state_seq_gap > 0;
+valid_host_dt = raw_host_dt_ms(2:end);
+valid_mcu_dt  = raw_mcu_dt_ms(2:end);
+valid_eff_mcu = raw_effective_mcu_period_ms(valid_gap_idx);
 
 fprintf("\n========================================\n");
 fprintf("RAW STATE SEQUENCE ANALYSIS\n");
@@ -185,36 +186,14 @@ fprintf("\n========================================\n");
 fprintf("RAW PARSED-PACKET HOST TIMING ANALYSIS\n");
 fprintf("========================================\n");
 
-fprintf("Mean raw parse inter-arrival:   %.4f ms\n", mean(valid_parse_dt, 'omitnan'));
-fprintf("Median raw parse inter-arrival: %.4f ms\n", median(valid_parse_dt, 'omitnan'));
-fprintf("Std raw parse inter-arrival:    %.4f ms\n", std(valid_parse_dt, 'omitnan'));
-fprintf("P95 raw parse inter-arrival:    %.4f ms\n", prctile(valid_parse_dt,95));
-fprintf("P99 raw parse inter-arrival:    %.4f ms\n", prctile(valid_parse_dt,99));
+fprintf("Mean raw host inter-arrival:   %.4f ms\n", mean(valid_host_dt, 'omitnan'));
+fprintf("Median raw host inter-arrival: %.4f ms\n", median(valid_host_dt, 'omitnan'));
+fprintf("Std raw host inter-arrival:    %.4f ms\n", std(valid_host_dt, 'omitnan'));
+fprintf("P95 raw host inter-arrival:    %.4f ms\n", prctile(valid_host_dt,95));
+fprintf("P99 raw host inter-arrival:    %.4f ms\n", prctile(valid_host_dt,99));
 
-raw_measured_rate_hz = 1000 / mean(valid_parse_dt, 'omitnan');
+raw_measured_rate_hz = 1000 / mean(valid_host_dt, 'omitnan');
 fprintf("Estimated parsed packet rate on host: %.2f Hz\n", raw_measured_rate_hz);
-
-fprintf("\n========================================\n");
-fprintf("CHUNK DELIVERY TIMING ANALYSIS\n");
-fprintf("========================================\n");
-
-fprintf("Unique chunk count:              %d\n", length(uniqueChunkNs));
-fprintf("Mean unique chunk inter-arrival: %.4f ms\n", mean(valid_unique_chunk_dt, 'omitnan'));
-fprintf("Median unique chunk inter-arrival: %.4f ms\n", median(valid_unique_chunk_dt, 'omitnan'));
-fprintf("Std unique chunk inter-arrival:  %.4f ms\n", std(valid_unique_chunk_dt, 'omitnan'));
-fprintf("P95 unique chunk inter-arrival:  %.4f ms\n", prctile(valid_unique_chunk_dt,95));
-fprintf("P99 unique chunk inter-arrival:  %.4f ms\n", prctile(valid_unique_chunk_dt,99));
-
-fprintf("\n========================================\n");
-fprintf("CHUNK-TO-PARSE DELAY ANALYSIS\n");
-fprintf("========================================\n");
-
-fprintf("Mean chunk->parse delay:   %.6f ms\n", mean(valid_chunk_to_parse, 'omitnan'));
-fprintf("Median chunk->parse delay: %.6f ms\n", median(valid_chunk_to_parse, 'omitnan'));
-fprintf("Std chunk->parse delay:    %.6f ms\n", std(valid_chunk_to_parse, 'omitnan'));
-fprintf("P95 chunk->parse delay:    %.6f ms\n", prctile(valid_chunk_to_parse,95));
-fprintf("P99 chunk->parse delay:    %.6f ms\n", prctile(valid_chunk_to_parse,99));
-fprintf("Max chunk->parse delay:    %.6f ms\n", max(valid_chunk_to_parse));
 
 fprintf("\n========================================\n");
 fprintf("RAW MCU TIMING TREND ANALYSIS\n");
@@ -280,43 +259,36 @@ ylabel("TX duration (ms)");
 title("Matched serial TX duration over time");
 grid on;
 
+figure;
+plot(matched_state_seq_gap, 'o-');
+xlabel("Matched sample index");
+ylabel("Matched state sequence gap");
+title("Matched state sequence gaps");
+grid on;
+
+figure;
+plot(matched_cmd_seq_gap, 'o-');
+xlabel("Matched sample index");
+ylabel("Matched command sequence gap");
+title("Matched command sequence gaps");
+grid on;
+
 %% =========================================================
 % PLOTS: RAW PARSED STATE LOG
 %% =========================================================
 
 figure;
-histogram(valid_parse_dt, 50);
+histogram(valid_host_dt, 50);
 xlabel("Parsed state packet inter-arrival time on host (ms)");
 ylabel("Count");
-title("Raw parsed state packet parse inter-arrival distribution");
+title("Raw parsed state packet inter-arrival distribution");
 grid on;
 
 figure;
-plot(raw_parse_dt_ms, 'o-');
+plot(raw_host_dt_ms, '-');
 xlabel("Parsed state packet index");
-ylabel("Host parse inter-arrival time (ms)");
-title("Raw parsed state packet host parse inter-arrival time");
-grid on;
-
-figure;
-histogram(valid_unique_chunk_dt, 50);
-xlabel("Unique chunk inter-arrival time (ms)");
-ylabel("Count");
-title("Distribution of host chunk delivery intervals");
-grid on;
-
-figure;
-histogram(valid_chunk_to_parse, 50);
-xlabel("Chunk-to-parse delay (ms)");
-ylabel("Count");
-title("Delay between chunk read and packet parse");
-grid on;
-
-figure;
-plot(raw_chunk_to_parse_ms, 'o-');
-xlabel("Parsed state packet index");
-ylabel("Chunk-to-parse delay (ms)");
-title("Chunk-to-parse delay over parsed packets");
+ylabel("Host inter-arrival time (ms)");
+title("Raw parsed state packet host inter-arrival time");
 grid on;
 
 figure;
@@ -361,23 +333,17 @@ timingSummary = table( ...
     });
 
 stateSummary = table( ...
-    mean(valid_parse_dt, 'omitnan'), median(valid_parse_dt, 'omitnan'), std(valid_parse_dt, 'omitnan'), ...
-    prctile(valid_parse_dt,95), prctile(valid_parse_dt,99), ...
+    mean(valid_host_dt, 'omitnan'), median(valid_host_dt, 'omitnan'), std(valid_host_dt, 'omitnan'), ...
+    prctile(valid_host_dt,95), prctile(valid_host_dt,99), ...
     raw_measured_rate_hz, ...
-    mean(valid_unique_chunk_dt, 'omitnan'), median(valid_unique_chunk_dt, 'omitnan'), std(valid_unique_chunk_dt, 'omitnan'), ...
-    prctile(valid_unique_chunk_dt,95), prctile(valid_unique_chunk_dt,99), ...
-    mean(valid_chunk_to_parse, 'omitnan'), median(valid_chunk_to_parse, 'omitnan'), std(valid_chunk_to_parse, 'omitnan'), ...
-    prctile(valid_chunk_to_parse,95), prctile(valid_chunk_to_parse,99), max(valid_chunk_to_parse), ...
     mean(raw_state_seq_gap(2:end), 'omitnan'), median(raw_state_seq_gap(2:end), 'omitnan'), max(raw_state_seq_gap(2:end)), ...
     mean(valid_mcu_dt, 'omitnan'), median(valid_mcu_dt, 'omitnan'), ...
     mean(valid_eff_mcu, 'omitnan'), median(valid_eff_mcu, 'omitnan'), ...
     prctile(valid_eff_mcu,95), prctile(valid_eff_mcu,99), ...
     raw_mcu_rate_hz, ...
     'VariableNames', { ...
-    'rawParseDt_mean_ms','rawParseDt_median_ms','rawParseDt_std_ms','rawParseDt_p95_ms','rawParseDt_p99_ms', ...
+    'rawHostDt_mean_ms','rawHostDt_median_ms','rawHostDt_std_ms','rawHostDt_p95_ms','rawHostDt_p99_ms', ...
     'rawHostParseRate_Hz', ...
-    'chunkDt_mean_ms','chunkDt_median_ms','chunkDt_std_ms','chunkDt_p95_ms','chunkDt_p99_ms', ...
-    'chunkToParse_mean_ms','chunkToParse_median_ms','chunkToParse_std_ms','chunkToParse_p95_ms','chunkToParse_p99_ms','chunkToParse_max_ms', ...
     'rawStateSeqGap_mean','rawStateSeqGap_median','rawStateSeqGap_max', ...
     'rawMcuDt_mean_ms','rawMcuDt_median_ms', ...
     'effectiveMcuPeriod_mean_ms','effectiveMcuPeriod_median_ms', ...

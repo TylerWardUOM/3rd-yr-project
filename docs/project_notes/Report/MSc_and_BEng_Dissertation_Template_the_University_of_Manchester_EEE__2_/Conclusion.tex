@@ -1,0 +1,41 @@
+\subsection{Conclusions}
+
+This project presented the design, implementation, and evaluation of a low-cost, modular haptic rendering system integrating a two-degree-of-freedom input device with a custom real-time simulation and visualisation framework.
+
+The system successfully achieved its primary objective of enabling bidirectional interaction between a user-operated device and a virtual environment, with real-time computation of interaction forces and feedback through actuator torque control. The architecture was designed to prioritise modularity and extensibility, allowing clear separation between hardware, communication, simulation, and rendering subsystems.
+
+Experimental results demonstrated that the system is capable of sustaining high update rates of approximately 1 kHz, with negligible packet loss at higher transmission frequencies and low host-side processing latency. However, communication analysis revealed a consistent round-trip delay of approximately 15--16 ms, which dominates the closed-loop response and imposes a fundamental limitation on achievable haptic performance.
+
+Despite this latency, stable and controllable haptic interaction was achieved through a combination of architectural and control strategies. The use of snapshot-based communication ensured that the system operated on the most recent available data, mitigating the effects of burst-like packet delivery. In addition, the application of damping and torque rate limiting was critical in maintaining stability, preventing oscillatory behaviour during contact, and enabling sustained interaction with virtual constraints.
+
+Simulation and hardware validation confirmed that the system is capable of rendering physically consistent contact and constraint forces. The virtual coupling and proxy-based rendering approach produced expected unilateral contact behaviour and supported constrained motion along virtual surfaces. Hardware testing further demonstrated that stable interaction could be maintained under real-time conditions, even with communication variability and partial actuation.
+
+However, the results also highlight an important trade-off between stability and force fidelity. While the system remains stable under delayed feedback, the achievable virtual stiffness is limited, and contact forces exhibit a finite rise time rather than instantaneous response. This reduces the realism of high-speed or high-stiffness interactions, particularly for rigid contact scenarios.
+
+Overall, the project demonstrates that stable and usable haptic interaction can be achieved using low-cost hardware and a modular software architecture, even in the presence of significant communication latency. The findings emphasise that in practical systems, communication delay is often the dominant constraint, and that appropriate architectural and control design is essential to achieving stable performance.
+
+\subsection{Future Work}
+%TODO: mention future work integrating task space dynamics like khatlib to reflect the motion of manipulator itself
+Several avenues for future development have been identified to improve system performance, fidelity, and extensibility.
+
+A key priority is the reduction of communication latency. The current system relies on the ST-Link virtual COM interface, which was selected for its simplicity and ease of integration during early development. While this approach enabled rapid prototyping, the results presented in Section 6.1 indicate that the communication pathway introduces buffering and scheduling delays that dominate the closed-loop response.
+
+Future work should therefore investigate lower-latency communication architectures between the host and embedded controller. In particular, direct UART communication via a dedicated USB--UART bridge may reduce buffering effects associated with the virtual COM interface, while alternative approaches such as native USB implementations (e.g., bulk transfer), CAN bus, or Ethernet-based communication could provide more deterministic timing behaviour. 
+
+A systematic comparison of these communication approaches would allow the contribution of each component in the communication stack to be isolated and could provide a pathway toward significantly reducing round-trip latency and improving achievable haptic stiffness.
+
+Improving actuator performance and force fidelity is another critical area. The incorporation of current sensing would enable accurate torque control and allow quantitative validation of rendered forces. This would also support the implementation of more advanced control strategies, including impedance control and operational-space control formulations.
+
+Mechanical transmission design could also be improved. While GT2 timing belts provided a simple and low-cost solution for torque amplification, they introduced slip and compliance under high load conditions. Future designs could explore alternative transmission mechanisms such as capstan drives, as demonstrated in low-cost haptic systems such as the Hapkit platform. These approaches offer reduced backlash and improved force transmission characteristics, which could enhance both stability and realism.
+
+The use of higher torque actuators or geared motor systems would further improve the ability to render stiff virtual environments, reducing compliance during contact and enabling more realistic hard-contact interactions.
+
+Restoration of full two-degree-of-freedom actuation is also an important step. Enabling force feedback across both joints would improve interaction realism and allow more complex manipulation and constraint-based tasks to be explored.
+
+Further improvements to the haptic rendering model could address limitations observed under large penetration conditions. More advanced contact handling approaches, such as continuous collision detection, constraint-based solvers, or improved normal estimation techniques, could enhance robustness and force consistency.
+
+From a software perspective, the modular architecture provides a strong foundation for extension toward more advanced simulation environments. Integration with external platforms such as NVIDIA Isaac Sim or MATLAB/Simulink would enable more realistic robotic scenarios and facilitate comparison with established robotic control frameworks.
+
+Finally, a more comprehensive evaluation framework incorporating quantitative force measurement, user studies, and task-based performance metrics would provide deeper insight into the effectiveness of the system as a training tool.
+
+Together, these developments would enable the system to evolve from a low-cost prototype into a more capable and general-purpose haptic interface platform for robotic interaction and training applications.

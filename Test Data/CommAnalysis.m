@@ -256,6 +256,40 @@ ylabel("Inter-arrival time (ms)");
 title("Distribution of packet inter-arrival time by requested rate");
 grid on;
 
+%% ---------------------------------------------------------
+% Plot 8: Packet inter-arrival timing statistics vs requested rate
+%% ---------------------------------------------------------
+figure;
+plot(requestedRateHz, meanDtMs, 'o-', 'DisplayName', 'Mean');
+hold on;
+plot(requestedRateHz, p99DtMs, '^-', 'DisplayName', 'P99');
+hold off;
+xlabel("Requested packet rate (Hz)");
+ylabel("Inter-arrival time (ms)");
+title("Packet inter-arrival timing statistics vs requested rate");
+legend("Location","best");
+grid on;
+
+
+%% ---------------------------------------------------------
+% Plot 9: CDF of packet inter-arrival time
+%% ---------------------------------------------------------
+figure;
+hold on;
+for i = 1:numRate
+    if requestedRateHz(i)==1000 || requestedRateHz(i)==2000
+        T = rateTables{i};
+        dt = sort(T.dt_arrival_ms(T.dt_arrival_ms > 0));
+        y = (1:length(dt))/length(dt);
+        plot(dt, y, 'DisplayName', sprintf('%d Hz', requestedRateHz(i)));
+    end
+end
+hold off;
+xlabel("Inter-arrival time (ms)");
+ylabel("Cumulative probability");
+title("CDF of packet inter-arrival time");
+legend("Location","best");
+grid on;
 
 %% =========================================================
 % PART 2: ROUND-TRIP LATENCY ANALYSIS
@@ -426,7 +460,9 @@ for i = 1:numRtt
     allRtt = [allRtt; rttValid]; %#ok<AGROW>
     allRttGroups = [allRttGroups; repmat(testIntervalMs(i), length(rttValid), 1)]; %#ok<AGROW>
 end
-
+%% ---------------------------------------------------------
+% Plot 7: CDF of round-trip latency
+%% ---------------------------------------------------------
 figure;
 boxplot(allRtt, allRttGroups);
 xlabel("Nominal ping interval (ms)");
@@ -434,6 +470,20 @@ ylabel("RTT (ms)");
 title("Distribution of round-trip latency by test interval");
 grid on;
 
+figure;
+hold on;
+for i = 1:numRtt
+    T = rttTables{i};
+    rttValid = sort(T.rtt_ms(T.success == 1));
+    y = (1:length(rttValid)) / length(rttValid);
+    plot(rttValid, y, 'DisplayName', rttNames(i));
+end
+hold off;
+xlabel("RTT (ms)");
+ylabel("Cumulative probability");
+title("CDF of round-trip latency");
+legend("Location","best");
+grid on;
 
 %% =========================================================
 % OPTIONAL: SAVE SUMMARY TABLES

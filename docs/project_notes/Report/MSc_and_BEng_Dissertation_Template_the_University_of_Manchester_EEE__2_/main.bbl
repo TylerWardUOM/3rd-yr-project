@@ -19,7 +19,66 @@
 
 \refsection{0}
   \datalist[entry]{none/global//global/global}
-    \entry{ref:Bergholz2023}{article}{}
+    \entry{giriApplicationBasedReviewHaptics2021}{article}{}
+      \name{author}{3}{}{%
+        {{hash=789a0de6ce19943a24204afc136b0c7f}{%
+           family={Giri},
+           familyi={G\bibinitperiod},
+           given={Gowri\bibnamedelima Shankar},
+           giveni={G\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=b6d8338a500e2f03b922e8d640cd80b5}{%
+           family={Maddahi},
+           familyi={M\bibinitperiod},
+           given={Yaser},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=5784f2aece24ec8e655eefec7c136140}{%
+           family={Zareinia},
+           familyi={Z\bibinitperiod},
+           given={Kourosh},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{674bb85b3597591a86570e9e7077baa1}
+      \strng{fullhash}{7bacf75a45fb7e82175c4fa072cfa6ea}
+      \strng{bibnamehash}{7bacf75a45fb7e82175c4fa072cfa6ea}
+      \strng{authorbibnamehash}{7bacf75a45fb7e82175c4fa072cfa6ea}
+      \strng{authornamehash}{674bb85b3597591a86570e9e7077baa1}
+      \strng{authorfullhash}{7bacf75a45fb7e82175c4fa072cfa6ea}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Recent technological development has led to the invention of different designs of haptic devices, electromechanical devices that mediate communication between the user and the computer and allow users to manipulate objects in a virtual environment while receiving tactile feedback. The main criteria behind providing an interactive interface are to generate kinesthetic feedback and relay information actively from the haptic device. Sensors and feedback control apparatus are of paramount importance in designing and manufacturing a haptic device. In general, haptic technology can be implemented in different applications such as gaming, teleoperation, medical surgeries, augmented reality (AR), and virtual reality (VR) devices. This paper classifies the application of haptic devices based on the construction and functionality in various fields, followed by addressing major limitations related to haptics technology and discussing prospects of this technology.}
+      \field{day}{5}
+      \field{issn}{2218-6581}
+      \field{journaltitle}{Robotics}
+      \field{langid}{english}
+      \field{month}{2}
+      \field{number}{1}
+      \field{shortjournal}{Robotics}
+      \field{title}{An {{Application-Based Review}} of {{Haptics Technology}}}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{volume}{10}
+      \field{year}{2021}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{29}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/robotics10010029
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\674M9UAV\Giri et al. - 2021 - An Application-Based Review of Haptics Technology.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://www.mdpi.com/2218-6581/10/1/29
+      \endverb
+      \verb{url}
+      \verb https://www.mdpi.com/2218-6581/10/1/29
+      \endverb
+    \endentry
+    \entry{bergholzBenefitsHapticFeedback2023}{article}{}
       \name{author}{3}{}{%
         {{hash=20d47a7f80074c3632c157d63e934bc9}{%
            family={Bergholz},
@@ -43,65 +102,43 @@
       \strng{authorbibnamehash}{1ccaaac13f8a751fb89b39ace70a658c}
       \strng{authornamehash}{4e7531ed6c1046dcf7fd44a5ae8e29ee}
       \strng{authorfullhash}{1ccaaac13f8a751fb89b39ace70a658c}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{abstract}{Robot assisted surgery (RAS) provides medical practitioners with valuable tools, decreasing strain during surgery and leading to better patient outcomes. While the loss of haptic sensation is a commonly cited disadvantage of RAS, new systems aim to address this problem by providing artificial haptic feedback. N{\thinspace}={\thinspace}56 papers that compared robotic surgery systems with and without haptic feedback were analyzed to quantify the performance benefits of restoring the haptic modality. Additionally, this study identifies factors moderating the effect of restoring haptic sensation. Overall results showed haptic feedback was effective in reducing average forces (Hedges' g{\thinspace}={\thinspace}0.83) and peak forces (Hedges' g{\thinspace}={\thinspace}0.69) applied during surgery, as well as reducing the completion time (Hedges' g{\thinspace}={\thinspace}0.83). Haptic feedback has also been found to lead to higher accuracy (Hedges' g{\thinspace}={\thinspace}1.50) and success rates (Hedges' g{\thinspace}={\thinspace}0.80) during surgical tasks. Effect sizes on several measures varied between tasks, the type of provided feedback, and the subjects' levels of surgical expertise, with higher levels of expertise generally associated with smaller effect sizes. No significant differences were found between virtual fixtures and rendering contact forces. Implications for future research are discussed.}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{Abstract Robot assisted surgery (RAS) provides medical practitioners with valuable tools, decreasing strain during surgery and leading to better patient outcomes. While the loss of haptic sensation is a commonly cited disadvantage of RAS, new systems aim to address this problem by providing artificial haptic feedback. N\,=\,56 papers that compared robotic surgery systems with and without haptic feedback were analyzed to quantify the performance benefits of restoring the haptic modality. Additionally, this study identifies factors moderating the effect of restoring haptic sensation. Overall results showed haptic feedback was effective in reducing average forces (Hedges’ g\,=\,0.83) and peak forces (Hedges’ g\,=\,0.69) applied during surgery, as well as reducing the completion time (Hedges’ g\,=\,0.83). Haptic feedback has also been found to lead to higher accuracy (Hedges’ g\,=\,1.50) and success rates (Hedges’ g\,=\,0.80) during surgical tasks. Effect sizes on several measures varied between tasks, the type of provided feedback, and the subjects’ levels of surgical expertise, with higher levels of expertise generally associated with smaller effect sizes. No significant differences were found between virtual fixtures and rendering contact forces. Implications for future research are discussed.}
+      \field{day}{6}
       \field{issn}{2045-2322}
       \field{journaltitle}{Scientific Reports}
+      \field{langid}{english}
       \field{month}{11}
       \field{number}{1}
-      \field{title}{The benefits of haptic feedback in robot assisted surgery and their moderators: a meta-analysis}
+      \field{shortjournal}{Sci Rep}
+      \field{shorttitle}{The Benefits of Haptic Feedback in Robot Assisted Surgery and Their Moderators}
+      \field{title}{The Benefits of Haptic Feedback in Robot Assisted Surgery and Their Moderators: A Meta-Analysis}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
       \field{volume}{13}
       \field{year}{2023}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
       \field{pages}{19215}
       \range{pages}{1}
       \verb{doi}
       \verb 10.1038/s41598-023-46641-8
       \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\C956X4IV\Bergholz et al. - 2023 - The benefits of haptic feedback in robot assisted surgery and their moderators a meta-analysis.pdf
+      \endverb
       \verb{urlraw}
-      \verb https://doi.org/10.1038/s41598-023-46641-8
+      \verb https://www.nature.com/articles/s41598-023-46641-8
       \endverb
       \verb{url}
-      \verb https://doi.org/10.1038/s41598-023-46641-8
+      \verb https://www.nature.com/articles/s41598-023-46641-8
       \endverb
     \endentry
-    \entry{525876}{inproceedings}{}
-      \name{author}{2}{}{%
-        {{hash=6f0da45b73c619f55a548cfae8e12c2c}{%
-           family={Zilles},
-           familyi={Z\bibinitperiod},
-           given={C.B.},
-           giveni={C\bibinitperiod}}}%
-        {{hash=f8f63dc5c9792282c9295074ee7653ea}{%
-           family={Salisbury},
-           familyi={S\bibinitperiod},
-           given={J.K.},
-           giveni={J\bibinitperiod}}}%
-      }
-      \strng{namehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
-      \strng{fullhash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
-      \strng{bibnamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
-      \strng{authorbibnamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
-      \strng{authornamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
-      \strng{authorfullhash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{booktitle}{Proceedings 1995 IEEE/RSJ International Conference on Intelligent Robots and Systems. Human Robot Interaction and Cooperative Robots}
-      \field{title}{A constraint-based god-object method for haptic display}
-      \field{volume}{3}
-      \field{year}{1995}
-      \field{pages}{146\bibrangedash 151 vol.3}
-      \range{pages}{-1}
-      \verb{doi}
-      \verb 10.1109/IROS.1995.525876
-      \endverb
-      \keyw{Haptic interfaces;Displays;Shape;Humans;Force control;Control systems;Mathematical model;Computational modeling;Rendering (computer graphics);Virtual environment}
-    \endentry
-    \entry{10.1145/258734.258878}{inproceedings}{}
+    \entry{ruspiniHapticDisplayComplex1997}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=44694ef7a2ad35094d650d84323a6bd9}{%
            family={Ruspini},
@@ -120,10 +157,10 @@
            giveni={O\bibinitperiod}}}%
       }
       \list{location}{1}{%
-        {USA}%
+        {Not Known}%
       }
       \list{publisher}{1}{%
-        {ACM Press/Addison-Wesley Publishing Co.}%
+        {ACM Press}%
       }
       \strng{namehash}{b4aa88ee0355fa080ae7345924737f4a}
       \strng{fullhash}{5fc41db55f48daf390cdb46450ce90bf}
@@ -131,59 +168,38 @@
       \strng{authorbibnamehash}{5fc41db55f48daf390cdb46450ce90bf}
       \strng{authornamehash}{b4aa88ee0355fa080ae7345924737f4a}
       \strng{authorfullhash}{5fc41db55f48daf390cdb46450ce90bf}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{Proceedings of the 24th Annual Conference on Computer Graphics and Interactive Techniques}
-      \field{isbn}{0897918967}
-      \field{series}{SIGGRAPH '97}
-      \field{title}{The haptic display of complex graphical environments}
+      \field{abstract}{Force feedback coupled with visual display allows people to interact intuitiv ely with complex virtual environments. For this synergy of haptics and graphics to flourish, however, haptic systems must be capable of modeling environments with the same richness, complexity and interactivity that can be found in existing graphic systems. To help meet this challenge, we have developed a haptic rendering system that allows for the efficient tactile display of graphical information. The system uses a common high-level framework to model contact constraints, surface shading, friction and tex ture. The multilevel control system also helps ensure that the haptic device will remain stable even as the limits of the renderer’s capabilities are reached.}
+      \field{booktitle}{Proceedings of the 24th Annual Conference on {{Computer}} Graphics and Interactive Techniques - {{SIGGRAPH}} '97}
+      \field{eventtitle}{The 24th Annual Conference}
+      \field{isbn}{978-0-89791-896-1}
+      \field{langid}{english}
+      \field{title}{The Haptic Display of Complex Graphical Environments}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
       \field{year}{1997}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
       \field{pages}{345\bibrangedash 352}
       \range{pages}{8}
       \verb{doi}
       \verb 10.1145/258734.258878
       \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\96EPWLRV\Ruspini et al. - 1997 - The haptic display of complex graphical environments.pdf
+      \endverb
       \verb{urlraw}
-      \verb https://doi.org/10.1145/258734.258878
+      \verb http://portal.acm.org/citation.cfm?doid=258734.258878
       \endverb
       \verb{url}
-      \verb https://doi.org/10.1145/258734.258878
+      \verb http://portal.acm.org/citation.cfm?doid=258734.258878
       \endverb
-      \keyw{contact constraints,force feedback,force shading,friction model,haptic,haptic texture,virtual environments}
     \endentry
-    \entry{1087068}{article}{}
-      \name{author}{1}{}{%
-        {{hash=0a9bcb07c557a30beb3c13b8fab1ad99}{%
-           family={Khatib},
-           familyi={K\bibinitperiod},
-           given={O.},
-           giveni={O\bibinitperiod}}}%
-      }
-      \strng{namehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{fullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{bibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{authorbibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{authornamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{authorfullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{IEEE Journal on Robotics and Automation}
-      \field{number}{1}
-      \field{title}{A unified approach for motion and force control of robot manipulators: The operational space formulation}
-      \field{volume}{3}
-      \field{year}{1987}
-      \field{pages}{43\bibrangedash 53}
-      \range{pages}{11}
-      \verb{doi}
-      \verb 10.1109/JRA.1987.1087068
-      \endverb
-      \keyw{Force control;Orbital robotics;Manipulator dynamics;Motion control;Motion analysis;Control systems;Equations;Control system analysis;Kinematics;Robot sensing systems}
-    \endentry
-    \entry{768179}{article}{}
+    \entry{adamsStableHapticInteraction1999}{article}{}
       \name{author}{2}{}{%
         {{hash=14167937052e978da21869318b2893f6}{%
            family={Adams},
@@ -206,19 +222,533 @@
       \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
+      \field{abstract}{A haptic interface is a kinesthetic link between a human operator and a virtual environment. This paper addresses fundamental stability and performance issues associated with haptic interaction. It generalizes and extends the concept of a virtual coupling network, an artificial link between the haptic display and a virtual world, to include both the impedance and admittance models of haptic interaction. A benchmark example exposes an important duality between these two cases. Linear circuit theory is used to develop necessary and sufficient conditions for the stability of a haptic simulation, assuming the human operator and virtual environment are passive. These equations lead to an explicit design procedure for virtual coupling networks which give maximum performance while guaranteeing stability. By decoupling the haptic display control problem from the design of virtual environments, the use of a virtual coupling network frees the developer of haptic-enabled virtual reality models from issues of mechanical stability.}
+      \field{issn}{1042296X}
       \field{journaltitle}{IEEE Transactions on Robotics and Automation}
+      \field{langid}{english}
+      \field{month}{6}
       \field{number}{3}
-      \field{title}{Stable haptic interaction with virtual environments}
+      \field{shortjournal}{IEEE Trans. Robot. Automat.}
+      \field{title}{Stable Haptic Interaction with Virtual Environments}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
       \field{volume}{15}
       \field{year}{1999}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
       \field{pages}{465\bibrangedash 474}
       \range{pages}{10}
       \verb{doi}
       \verb 10.1109/70.768179
       \endverb
-      \keyw{Haptic interfaces;Virtual environment;Coupling circuits;Displays;Circuit stability;Impedance;Admittance;Linear circuits;Sufficient conditions;Circuit simulation}
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\IRW2SVME\Adams and Hannaford - 1999 - Stable haptic interaction with virtual environments.pdf
+      \endverb
+      \verb{urlraw}
+      \verb http://ieeexplore.ieee.org/document/768179/
+      \endverb
+      \verb{url}
+      \verb http://ieeexplore.ieee.org/document/768179/
+      \endverb
+    \endentry
+    \entry{martinez3DPrintedHaptic2016}{inproceedings}{}
+      \name{author}{10}{}{%
+        {{hash=0816392c9712cd1e8d6f59793df2f112}{%
+           family={Martinez},
+           familyi={M\bibinitperiod},
+           given={Melisa\bibnamedelima Orta},
+           giveni={M\bibinitperiod\bibinitdelim O\bibinitperiod}}}%
+        {{hash=8dcb54f1eef8b2194be9605d3bf21519}{%
+           family={Morimoto},
+           familyi={M\bibinitperiod},
+           given={Tania\bibnamedelima K.},
+           giveni={T\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+        {{hash=0d81a364f877e701df68d448aaf7a6fb}{%
+           family={Taylor},
+           familyi={T\bibinitperiod},
+           given={Annalisa\bibnamedelima T.},
+           giveni={A\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+        {{hash=377a0f63621c6e41e59baca1251085c9}{%
+           family={Barron},
+           familyi={B\bibinitperiod},
+           given={Aaron\bibnamedelima C.},
+           giveni={A\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=538f5a20829a187eaecc94a5957b72d9}{%
+           family={Pultorak},
+           familyi={P\bibinitperiod},
+           given={J.\bibnamedelimi D.\bibnamedelimi Akzl},
+           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=b23eaa40e7000f0a44dad0b6ca1de12b}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Jeanny},
+           giveni={J\bibinitperiod}}}%
+        {{hash=4f6fbc03adc61d20bc831036df824559}{%
+           family={Calasanz-Kaiser},
+           familyi={C\bibinithyphendelim K\bibinitperiod},
+           given={Agnes},
+           giveni={A\bibinitperiod}}}%
+        {{hash=8b32e8f0d44cc4d3ad47eec2269534b7}{%
+           family={Davis},
+           familyi={D\bibinitperiod},
+           given={Richard\bibnamedelima Lee},
+           giveni={R\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=c8dbe9a14a58b0682cd4cac1982fa4da}{%
+           family={Blikstein},
+           familyi={B\bibinitperiod},
+           given={Paulo},
+           giveni={P\bibinitperiod}}}%
+        {{hash=bac61a3e8656a1a0694c87bf2a42acae}{%
+           family={Okamura},
+           familyi={O\bibinitperiod},
+           given={Allison\bibnamedelima M.},
+           giveni={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{fullhash}{46b0db6124a04cf6932acb35d0426bfe}
+      \strng{bibnamehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{authorbibnamehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{authornamehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{authorfullhash}{46b0db6124a04cf6932acb35d0426bfe}
+      \field{extraname}{1}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Haptic technology has the potential to expand and transform the ways that students can experience a variety of science, technology, engineering, and math (STEM) topics. Designing kinesthetic haptic devices for educational applications is challenging because of the competing objectives of using low-cost components, making the device robust enough to be handled by students, and the desire to render high fidelity haptic virtual environments. In this paper, we present the evolution of a device called "Hapkit": a low cost, one-degree-of-freedom haptic kit that can be assembled by students. From 2013–2015, different versions of Hapkit were used in courses as a tool to teach haptics, physics, and control. These include a Massive Open Online Course (MOOC), two undergraduate courses, a graduate course, and a middle school class. Based on our experience using Hapkit in these educational environments, we evolved the design in terms of its structural materials, drive mechanism, and mechatronic components. Our latest design, Hapkit 3.0, includes several features that allow students to manufacture and assemble a robust and high-fidelity haptic device. First, it uses 3-D printed plastic structural material, which allows the design to be built and customized using readily available tools. Second, the design takes into account the limitations of 3-D printing, such as warping during printing and poor tolerances. This is achieved at a materials cost of approximately US \$50, which makes it feasible for distribution in classroom and online education settings. The open source design is available at http://hapkit.stanford.edu.}
+      \field{booktitle}{2016 {{IEEE Haptics Symposium}} ({{HAPTICS}})}
+      \field{eventtitle}{2016 {{IEEE Haptics Symposium}} ({{HAPTICS}})}
+      \field{issn}{2324-7355}
+      \field{month}{4}
+      \field{title}{3-{{D}} Printed Haptic Devices for Educational Applications}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2016}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{126\bibrangedash 133}
+      \range{pages}{8}
+      \verb{doi}
+      \verb 10.1109/HAPTICS.2016.7463166
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\F7RCZG2M\Martinez et al. - 2016 - 3-D printed haptic devices for educational applications.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://ieeexplore.ieee.org/document/7463166
+      \endverb
+      \verb{url}
+      \verb https://ieeexplore.ieee.org/document/7463166
+      \endverb
+      \keyw{Education,Friction,Haptic interfaces,Kinematics,Performance evaluation,Robustness,Wheels}
+    \endentry
+    \entry{martinezOpenSourceModular2017}{inproceedings}{}
+      \name{author}{6}{}{%
+        {{hash=0816392c9712cd1e8d6f59793df2f112}{%
+           family={Martinez},
+           familyi={M\bibinitperiod},
+           given={Melisa\bibnamedelima Orta},
+           giveni={M\bibinitperiod\bibinitdelim O\bibinitperiod}}}%
+        {{hash=8473c34019d293d36672344a807d1258}{%
+           family={Campion},
+           familyi={C\bibinitperiod},
+           given={Joseph},
+           giveni={J\bibinitperiod}}}%
+        {{hash=ca17e1b03e8bf7ea48e867db43bfce35}{%
+           family={Gholami},
+           familyi={G\bibinitperiod},
+           given={Tara},
+           giveni={T\bibinitperiod}}}%
+        {{hash=007de46d4830b18619eb8a6ac2d342cb}{%
+           family={Rittikaidachar},
+           familyi={R\bibinitperiod},
+           given={Michal\bibnamedelima K.},
+           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+        {{hash=377a0f63621c6e41e59baca1251085c9}{%
+           family={Barron},
+           familyi={B\bibinitperiod},
+           given={Aaron\bibnamedelima C.},
+           giveni={A\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=bac61a3e8656a1a0694c87bf2a42acae}{%
+           family={Okamura},
+           familyi={O\bibinitperiod},
+           given={Allison\bibnamedelima M.},
+           giveni={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{fullhash}{4e38ecbffdab46d6a9b7c92cb80ad5a7}
+      \strng{bibnamehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{authorbibnamehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{authornamehash}{7981e51c510231c91b338cf7aff59c72}
+      \strng{authorfullhash}{4e38ecbffdab46d6a9b7c92cb80ad5a7}
+      \field{extraname}{2}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Open Source Hardware allows users to share, customize, and improve designs, thus enabling technological advancement through communities of practice. We propose open source hardware for educational haptics that permits researchers, educators, and students to share designs arising from their different perspectives, with the potential to expand educational applications. In this paper we present a family of open source kinesthetic haptic devices that build upon the design of a previous educational haptic device, Hapkit 3.0. First, we discuss methods for Hapkit personalization and customization that can be achieved by K-12 students and educators. Next, we describe two kinesthetic haptic device designs that evolved from the original Hapkit 3.0. One uses two standard Hapkits with additional components to form a Pantograph mechanism, and the other uses customized Hapkit elements along with a novel kinematic design to form a serial mechanism. These designs are modular; after building two Hapkits, a user acquires a small number of additional parts to transform them into a two-degree-of-freedom device. The Pantograph mechanism was used in an undergraduate class to teach robotics and haptics to both engineering and nonengineering students. Open source designs for all devices as well as tutorials for customization are available at http://hapkit.stanford.edu.}
+      \field{booktitle}{2017 {{IEEE World Haptics Conference}} ({{WHC}})}
+      \field{eventtitle}{2017 {{IEEE World Haptics Conference}} ({{WHC}})}
+      \field{month}{6}
+      \field{title}{Open Source, Modular, Customizable, 3-{{D}} Printed Kinesthetic Haptic Devices}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2017}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{142\bibrangedash 147}
+      \range{pages}{6}
+      \verb{doi}
+      \verb 10.1109/WHC.2017.7989891
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\KWWPZ4WT\Martinez et al. - 2017 - Open source, modular, customizable, 3-D printed kinesthetic haptic devices.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://ieeexplore.ieee.org/abstract/document/7989891
+      \endverb
+      \verb{url}
+      \verb https://ieeexplore.ieee.org/abstract/document/7989891
+      \endverb
+      \keyw{Haptic interfaces,Hardware,Kinematics,Printing,Software,Tools,Virtual environments}
+    \endentry
+    \entry{haplyInverse3X}{online}{}
+      \list{publisher}{1}{%
+        {Haply Robotics}%
+      }
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labeltitlesource}{title}
+      \field{title}{Inverse3 {{X}}}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.haply.co/inverse3x
+      \endverb
+      \verb{url}
+      \verb https://www.haply.co/inverse3x
+      \endverb
+    \endentry
+    \entry{geomagicTouchPrice}{online}{}
+      \list{publisher}{1}{%
+        {GoMeasure3D}%
+      }
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{Geomagic Touch Haptic Device}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://shop.gomeasure3d.com/products/geomagic-touch-haptic-device
+      \endverb
+      \verb{url}
+      \verb https://shop.gomeasure3d.com/products/geomagic-touch-haptic-device
+      \endverb
+    \endentry
+    \entry{geomagicTouchXPrice}{online}{}
+      \list{publisher}{1}{%
+        {GoMeasure3D}%
+      }
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{Geomagic Touch {{X}} Haptic Device}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://shop.gomeasure3d.com/products/geomagic-touch-x-haptic-device
+      \endverb
+      \verb{url}
+      \verb https://shop.gomeasure3d.com/products/geomagic-touch-x-haptic-device
+      \endverb
+    \endentry
+    \entry{forceDimensionSales}{online}{}
+      \list{publisher}{1}{%
+        {Force Dimension}%
+      }
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{Sales Inquiries}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.forcedimension.com/contact/sales
+      \endverb
+      \verb{url}
+      \verb https://www.forcedimension.com/contact/sales
+      \endverb
+    \endentry
+    \entry{zillesConstraintbasedGodobjectMethod1995}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=6f0da45b73c619f55a548cfae8e12c2c}{%
+           family={Zilles},
+           familyi={Z\bibinitperiod},
+           given={C.B.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=f8f63dc5c9792282c9295074ee7653ea}{%
+           family={Salisbury},
+           familyi={S\bibinitperiod},
+           given={J.K.},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Pittsburgh, PA, USA}%
+      }
+      \list{publisher}{1}{%
+        {IEEE Comput. Soc. Press}%
+      }
+      \strng{namehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{fullhash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{bibnamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{authorbibnamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{authornamehash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \strng{authorfullhash}{f19e138dd65b0bd0ba6d3a9f0824b41b}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Haptic display is the process of applying forces to a h u m a n “observer” giving the sensation of touching and interacting with real physical objects. Touch is unique among the senses because it allows simultaneous exploration and manipulation of a n environment.}
+      \field{booktitle}{Proceedings 1995 {{IEEE}}/{{RSJ International Conference}} on {{Intelligent Robots}} and {{Systems}}. {{Human Robot Interaction}} and {{Cooperative Robots}}}
+      \field{eventtitle}{1995 {{IEEE}}/{{RSJ International Conference}} on {{Intelligent Robots}} and {{Systems}}. {{Human Robot Interaction}} and {{Cooperative Robots}}}
+      \field{isbn}{978-0-8186-7108-1}
+      \field{langid}{english}
+      \field{title}{A Constraint-Based God-Object Method for Haptic Display}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{volume}{3}
+      \field{year}{1995}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{146\bibrangedash 151}
+      \range{pages}{6}
+      \verb{doi}
+      \verb 10.1109/IROS.1995.525876
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\ZSHX4NL5\Zilles and Salisbury - 1995 - A constraint-based god-object method for haptic display.pdf
+      \endverb
+      \verb{urlraw}
+      \verb http://ieeexplore.ieee.org/document/525876/
+      \endverb
+      \verb{url}
+      \verb http://ieeexplore.ieee.org/document/525876/
+      \endverb
+    \endentry
+    \entry{khatibUnifiedApproachMotion1987a}{article}{}
+      \name{author}{1}{}{%
+        {{hash=0a9bcb07c557a30beb3c13b8fab1ad99}{%
+           family={Khatib},
+           familyi={K\bibinitperiod},
+           given={O.},
+           giveni={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{fullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{bibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authorbibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authornamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authorfullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{A framework for the analysis and control of manipulator systems with respect to the dynamic behavior of their end-effectors is developed. First, issues related to the description of end-effector tasks that involve constrained motion and active force control are discussed. The fundamentals of the operational space formulation are then presented, and the unified approach for motion and force control is developed. The extension of this formulation to redundant manipulator systems is also presented, constructing the end-effector equations of motion and describing their behavior with respect to joint forces. These results are used in the development of a new and systematic approach for dealing with the problems arising at kinematic singularities. At a singular configuration, the manipulator is treated as a mechanism that is redundant with respect to the motion of the end-effector in the subspace of operational space orthogonal to the singular direction.}
+      \field{issn}{2374-8710}
+      \field{journaltitle}{IEEE Journal on Robotics and Automation}
+      \field{month}{2}
+      \field{number}{1}
+      \field{shorttitle}{A Unified Approach for Motion and Force Control of Robot Manipulators}
+      \field{title}{A Unified Approach for Motion and Force Control of Robot Manipulators: {{The}} Operational Space Formulation}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{volume}{3}
+      \field{year}{1987}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{43\bibrangedash 53}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1109/JRA.1987.1087068
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\JRVBVLHG\Khatib - 1987 - A unified approach for motion and force control of robot manipulators The operational space formula.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://ieeexplore.ieee.org/abstract/document/1087068
+      \endverb
+      \verb{url}
+      \verb https://ieeexplore.ieee.org/abstract/document/1087068
+      \endverb
+      \keyw{Control system analysis,Control systems,Equations,Force control,Kinematics,Manipulator dynamics,Motion analysis,Motion control,Orbital robotics,Robot sensing systems}
+    \endentry
+    \entry{lavatelliDesignOpenSource2014}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=f7001987e44010db59abf9de42873de6}{%
+           family={Lavatelli},
+           familyi={L\bibinitperiod},
+           given={Alberto},
+           giveni={A\bibinitperiod}}}%
+        {{hash=cca311dea56f279b2ec8ed08dad63089}{%
+           family={Bordegoni},
+           familyi={B\bibinitperiod},
+           given={Monica},
+           giveni={M\bibinitperiod}}}%
+        {{hash=c1c698b5a19eb5720d8876338e9fa368}{%
+           family={Ferrise},
+           familyi={F\bibinitperiod},
+           given={Francesco},
+           giveni={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{a97a1fd03ae67baf4c891c4985db32cd}
+      \strng{fullhash}{0dd29712141115405d1cb142bc9c6a7b}
+      \strng{bibnamehash}{0dd29712141115405d1cb142bc9c6a7b}
+      \strng{authorbibnamehash}{0dd29712141115405d1cb142bc9c6a7b}
+      \strng{authornamehash}{a97a1fd03ae67baf4c891c4985db32cd}
+      \strng{authorfullhash}{0dd29712141115405d1cb142bc9c6a7b}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{9}
+      \field{title}{Design of an Open-Source Low Cost {{2DOF}} Haptic Device}
+      \field{year}{2014}
+      \field{dateera}{ce}
+      \verb{doi}
+      \verb 10.1109/MESA.2014.6935574
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\HM6A8XT3\Lavatelli et al. - 2014 - Design of an open-source low cost 2DOF haptic device.pdf
+      \endverb
+    \endentry
+    \entry{simplefoc2022}{article}{}
+      \name{author}{5}{}{%
+        {{hash=d4a959e6c0ae5da460248f76000e4222}{%
+           family={Skuric},
+           familyi={S\bibinitperiod},
+           given={Antun},
+           giveni={A\bibinitperiod}}}%
+        {{hash=30fa191a2ebba12d813e03d7175313bd}{%
+           family={Bank},
+           familyi={B\bibinitperiod},
+           given={Hasan\bibnamedelima Sinan},
+           giveni={H\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=2608eb0a8a41b45c291d30fad699eca8}{%
+           family={Unger},
+           familyi={U\bibinitperiod},
+           given={Richard},
+           giveni={R\bibinitperiod}}}%
+        {{hash=2c21cfd1435bb5be7055d439dfa3e313}{%
+           family={Williams},
+           familyi={W\bibinitperiod},
+           given={Owen},
+           giveni={O\bibinitperiod}}}%
+        {{hash=9a01e7ec4443abec9f1b8cb1306dd568}{%
+           family={González-Reyes},
+           familyi={G\bibinithyphendelim R\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {The Open Journal}%
+      }
+      \strng{namehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
+      \strng{fullhash}{dfcd1c9e447d66a9ea248cc3efb390bc}
+      \strng{bibnamehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
+      \strng{authorbibnamehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
+      \strng{authornamehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
+      \strng{authorfullhash}{dfcd1c9e447d66a9ea248cc3efb390bc}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Open Source Software}
+      \field{number}{74}
+      \field{title}{{{SimpleFOC}}: A Field Oriented Control ({{FOC}}) Library for Controlling Brushless Direct Current ({{BLDC}}) and Stepper Motors}
+      \field{volume}{7}
+      \field{year}{2022}
+      \field{dateera}{ce}
+      \field{pages}{4232}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.21105/joss.04232
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\Z24PNCUV\Skuric et al. - 2022 - SimpleFOC a field oriented control (FOC) library for controlling brushless direct current (BLDC) an.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.21105/joss.04232
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.21105/joss.04232
+      \endverb
+    \endentry
+    \entry{vasSensorlessVectorDirect1998}{book}{}
+      \name{author}{1}{}{%
+        {{hash=b31eef85c811a251c7186ca8015ca7b0}{%
+           family={Vas},
+           familyi={V\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Oxford University Press}%
+      }
+      \strng{namehash}{b31eef85c811a251c7186ca8015ca7b0}
+      \strng{fullhash}{b31eef85c811a251c7186ca8015ca7b0}
+      \strng{bibnamehash}{b31eef85c811a251c7186ca8015ca7b0}
+      \strng{authorbibnamehash}{b31eef85c811a251c7186ca8015ca7b0}
+      \strng{authornamehash}{b31eef85c811a251c7186ca8015ca7b0}
+      \strng{authorfullhash}{b31eef85c811a251c7186ca8015ca7b0}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This is the first comprehensive book on sensor less high performance a.c. drives. It is essential reading for anyone interested in acquiring a solid background on sensor less torque-controlled drives. It presents a detailed and unified treatment of sensor less vector-controlled and direct-torque controlled drive systems. It also discusses the applications of artificial intelligence to drives. Where possible, space vector theory is used and emphasis is laid on detailed mathematical and physical analysis. Sensorless drive schemes for different types of permanent magnet synchronous motors, synchronous reluctance motors, and induction motors are also presented. These include more than twenty vector drives e.g. five types of MRAS-based vector drives, and eleven types of direct-torque-controlled (DTC) drives, e.g. the ABB DTC drive. However, torque-controlled switched reluctance motor drives are also discussed due to their emerging importance. The book also covers various drive applications using artificial intelligence (fuzzy logic, neural networks, fuzzy-neural networks) and AI-based modelling of electrical machines. Finally, self-commissioning techniques are also discussed. This is a comprehensive thoroughly up-to-date, and self-contained book suitable for students at various levels, teachers, and industrial readership. Peter Vas is a Professor at the Department of Engineering at the University of Aberdeen, UK, where he is also the Head of the Intelligent Motion Control Group. His previous books published by Oxford University Press are extensively used worldwide.}
+      \field{day}{14}
+      \field{isbn}{978-0-19-856465-2}
+      \field{month}{5}
+      \field{title}{Sensorless {{Vector}} and {{Direct Torque Control}}}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{1998}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.1093/oso/9780198564652.001.0001
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1093/oso/9780198564652.001.0001
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1093/oso/9780198564652.001.0001
+      \endverb
     \endentry
   \enddatalist
+  \missing{inproceedings}
 \endrefsection
 \endinput
 

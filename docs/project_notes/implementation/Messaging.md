@@ -84,16 +84,16 @@ If the same name is requested with a different type or kind, it throws.
 
 ## Named Channels in Use
 
-| Name | Type | Producer | Consumer(s) |
-|---|---|---|---|
-| `world.commands` | `Channel<WorldCommand>` | UI/any | `WorldManager` |
-| `world.snapshots` | `SnapshotChannel<WorldSnapshot>` | `WorldManager` | `GlSceneRenderer`, `PhysicsEnginePhysX` |
-| `haptics.tool_in` | `Channel<ToolStateMsg>` | (mouse fallback) | `HapticEngine` |
-| `haptics.snapshots` | `Channel<HapticSnapshotMsg>` | `HapticEngine` | `GlSceneRenderer` |
-| `haptics.wrenches` | `Channel<HapticWrenchCmd>` | `HapticEngine` | `PhysicsEnginePhysX` |
-| `device.tool_in` | `Channel<ToolStateMsg>` | `DeviceAdapter` | `HapticEngine` |
-| `device.wrench_cmd` | `Channel<HapticWrenchCmd>` | `HapticEngine` | `DeviceAdapter` |
-| `logging.device_timing` | `Channel<DeviceTimingLogMsg>` | `DeviceAdapter` | log thread |
-| `logging.device_state` | `Channel<DeviceStateLogMsg>` | `DeviceAdapter` | log thread |
+| Name                    | Type                             | Producer         | Consumer(s)                             |
+| ----------------------- | -------------------------------- | ---------------- | --------------------------------------- |
+| `world.commands`        | `Channel<WorldCommand>`          | UI/any           | `WorldManager`                          |
+| `world.snapshots`       | `SnapshotChannel<WorldSnapshot>` | `WorldManager`   | `GlSceneRenderer`, `PhysicsEnginePhysX` |
+| `haptics.tool_in`       | `Channel<ToolStateMsg>`          | (mouse fallback) | `HapticEngine`                          |
+| `haptics.snapshots`     | `Channel<HapticSnapshotMsg>`     | `HapticEngine`   | `GlSceneRenderer`                       |
+| `haptics.wrenches`      | `Channel<HapticWrenchCmd>`       | `HapticEngine`   | `PhysicsEnginePhysX`                    |
+| `device.tool_in`        | `Channel<ToolStateMsg>`          | `DeviceAdapter`  | `HapticEngine`                          |
+| `device.wrench_cmd`     | `Channel<HapticWrenchCmd>`       | `HapticEngine`   | `DeviceAdapter`                         |
+| `logging.device_timing` | `Channel<DeviceTimingLogMsg>`    | `DeviceAdapter`  | log thread                              |
+| `logging.device_state`  | `Channel<DeviceStateLogMsg>`     | `DeviceAdapter`  | log thread                              |
 
 In `main.cpp`, `haptics.tool_in` is used for a software mouse-based tool input, and `device.tool_in` is used when the physical device is connected — both feed `HapticEngine` depending on configuration.

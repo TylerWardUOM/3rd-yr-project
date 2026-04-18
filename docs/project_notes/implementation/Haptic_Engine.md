@@ -1,4 +1,3 @@
-# Haptic Engine
 
 Part of the [[Implementation_Index]].
 

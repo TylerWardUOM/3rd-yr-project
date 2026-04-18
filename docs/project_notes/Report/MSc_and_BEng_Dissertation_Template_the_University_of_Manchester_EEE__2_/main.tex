@@ -7,7 +7,7 @@
 % - References are handed using biblatex.
 % - Link to the presentation of dissertations policy: https://documents.manchester.ac.uk/display.aspx?DocID=2863
 
-
+%TODO: Check through and tighten all claims to match evidence
 
 %%%%%%%%%%%%%%%%%% META DATA SETUP %%%%%%%%%%%%%%%%%%
 % This is where the document title and author are set. Other details for the title page are set later
@@ -49,7 +49,9 @@
 \usepackage{siunitx}               % add SI units
 % Add your packages here
 \usepackage{enumitem}
-
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usetikzlibrary{arrows.meta, positioning, fit, calc}
 % Custom commands
 \newcommand{\degree}{\ensuremath{^\circ}}
 \newcommand{\sus}[1]{$^{\mbox{\scriptsize #1}}$} % superscript in text (e.g. 1st)
@@ -105,7 +107,10 @@
 \submitdate{2026}                                  % regulations ask only for the year, not month
 \wordcount{\mywordcount}		                   % use \wordcount{} to set the count. Can just type in a number (e.g. \wordcount{1000}	if don't want to use the automatic count.) This is automatically displayed after the table of contents. 
 \maketitle
-
+Page \thepage\ of \pageref{endofmain}
+%TODO: Check im allowed to change numbering
+\pagenumbering{roman}
+\setcounter{page}{1}
 
 
 %%%%%%%%%%%%%%%%%% LISTS OF CONTENT %%%%%%%%%%%%%%%%%%
@@ -142,7 +147,10 @@
 
 %%%%%%%%%%%%%%%%%% Start content %%%%%%%%%%%%%%%%%%
 \uomstartmainbody % Don't delete. used to flag to the hyperlinks in the PDF that the main content is  starting
-
+%TODO: Check this numbering allowed
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
 
 
 %%%%%%%%%%%%%%%%%% INTRODUCTION %%%%%%%%%%%%%%%%%%
@@ -153,11 +161,6 @@
 %%%%%%%%%%%%%%%%%% LITERATURE REVIEW %%%%%%%%%%%%%%%%%%
 \section{Literature review} \label{sec:Literature Review}
 \input{Literature_Review}
-
-
-%%%%%%%%%%%%%%%%%%% METHODS %%%%%%%%%%%%%%%%%%
-%\section{Methods} \label{sec:methods}
-%\input{Methods}
 
 
 %%%%%%%%%%%%%%%%%% System Architecture %%%%%%%%%%%%%%%%%%
@@ -187,14 +190,12 @@
 
 %%%%%%%%%%%%%%%%%% CONCLUSION %%%%%%%%%%%%%%%%%%
 \section{Conclusions and Future Work} \label{sec:conclusion}
+\input{Conclusion}
 
-\subsection{Conclusions}
-
-\subsection{Future Work}
-
-
+\label{endofmain}
+Page \thepage\ of \pageref{endofmain}
 %%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
-%\clearpage % uncomment to start on a new page if wanted
+\clearpage % uncomment to start on a new page if wanted
 \printbibliography[title={References},heading=bibintoc] % a single list of references for the whole thesis
 
 
@@ -208,6 +209,7 @@
 	Risk assessment is a required appendix. Put here.
 
 	%\subsection{Other appendices as necessary}
+	\section{Code}
 \end{uomappendix}
 
 

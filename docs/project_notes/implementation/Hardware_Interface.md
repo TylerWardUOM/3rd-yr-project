@@ -1,4 +1,3 @@
-# Hardware Interface
 
 Part of the [[Implementation_Index]].
 

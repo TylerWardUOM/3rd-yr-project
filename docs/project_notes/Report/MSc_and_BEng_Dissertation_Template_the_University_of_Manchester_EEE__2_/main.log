@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.17.1 (MiKTeX 24.1) (format=lualatex 2025.12.17)  4 APR 2026 18:19
+This is LuaHBTeX, Version 1.17.1 (MiKTeX 24.1) (format=lualatex 2025.12.17)  18 APR 2026 12:56
  restricted system commands enabled.
 **main.tex
 (./main.tex
@@ -1283,59 +1283,157 @@ Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages
 \l__siunitx_unit_position_int=\count373
 \l__siunitx_unit_total_int=\count374
 )
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/circuitikz/circuitikz.s
+ty
+Package: circuitikz 2026/02/04{} The CircuiTikz circuit drawing package version
+ 1.8.5
+
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflibr
+aryarrows.meta.code.tex
+File: pgflibraryarrows.meta.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfarrowinset=\dimen319
+\pgfarrowlength=\dimen320
+\pgfarrowwidth=\dimen321
+\pgfarrowlinewidth=\dimen322
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/tik
+z/libraries/tikzlibrarybending.code.tex
+File: tikzlibrarybending.code.tex 2023-01-15 v3.1.10 (3.1.10)
+
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/modules/pgfmodule
+bending.code.tex
+File: pgfmodulebending.code.tex 2023-01-15 v3.1.10 (3.1.10)
+
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/modules/pgfmodule
+nonlineartransformations.code.tex
+File: pgfmodulenonlineartransformations.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgftransformnonlinearflatness=\dimen323
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflibr
+arycurvilinear.code.tex
+File: pgflibrarycurvilinear.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@curvilinear@time@a=\dimen324
+\pgf@curvilinear@length@a=\dimen325
+\pgf@curvilinear@length@b=\dimen326
+\pgf@curvilinear@length@c=\dimen327
+\pgf@curvilinear@length@d=\dimen328
+)
+\pgf@arrows@the@rigidity=\dimen329
+))
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/tik
+z/libraries/tikzlibraryfpu.code.tex
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflibr
+aryfpu.code.tex))
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcirc.de
+fines.tex
+\pgf@circ@count@a=\count375
+\pgf@circ@count@b=\count376
+\pgf@circ@count@c=\count377
+\pgf@circ@res@up=\dimen330
+\pgf@circ@res@down=\dimen331
+\pgf@circ@res@zero=\dimen332
+\pgf@circ@res@left=\dimen333
+\pgf@circ@res@right=\dimen334
+\pgf@circ@res@other=\dimen335
+\pgf@circ@res@step=\dimen336
+\pgf@circ@res@temp=\dimen337
+\pgf@circ@Rlen=\dimen338
+\pgf@circ@scaled@Rlen=\dimen339
+\pgfstartlinewidth=\dimen340
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircuti
+ls.tex
+\ctikz@scratchbox=\box83
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircpat
+h.tex
+\ctikz@vif@count=\count378
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircsha
+pes.tex)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircmon
+opoles.tex)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircbip
+oles.tex)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcirctri
+poles.tex
+\pgf@circ@res@count=\count379
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircqua
+dpoles.tex)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircmul
+tipoles.tex)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcirclab
+el.tex)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircvol
+tage.tex
+\pgfcirc@labelshift=\dimen341
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcirccur
+rent.tex)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/circuitikz/pgfcircflo
+w.tex))
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/tik
+z/libraries/tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/tik
+z/libraries/tikzlibraryfit.code.tex
+File: tikzlibraryfit.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/biblatex/biblatex.sty
 Package: biblatex 2023/03/05 v3.19 programmable bibliographies (PK/MW)
 
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/logreq/logreq.sty
 Package: logreq 2010/08/04 v1.0 xml request logger
-\lrq@indent=\count375
+\lrq@indent=\count380
 
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/logreq/logreq.def
 File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
 ))
-\c@tabx@nest=\count376
-\c@listtotal=\count377
-\c@listcount=\count378
-\c@liststart=\count379
-\c@liststop=\count380
-\c@citecount=\count381
-\c@citetotal=\count382
-\c@multicitecount=\count383
-\c@multicitetotal=\count384
-\c@instcount=\count385
-\c@maxnames=\count386
-\c@minnames=\count387
-\c@maxitems=\count388
-\c@minitems=\count389
-\c@citecounter=\count390
-\c@maxcitecounter=\count391
-\c@savedcitecounter=\count392
-\c@uniquelist=\count393
-\c@uniquename=\count394
-\c@refsection=\count395
-\c@refsegment=\count396
-\c@maxextratitle=\count397
-\c@maxextratitleyear=\count398
-\c@maxextraname=\count399
-\c@maxextradate=\count400
-\c@maxextraalpha=\count401
-\c@abbrvpenalty=\count402
-\c@highnamepenalty=\count403
-\c@lownamepenalty=\count404
-\c@maxparens=\count405
-\c@parenlevel=\count406
-\blx@tempcnta=\count407
-\blx@tempcntb=\count408
-\blx@tempcntc=\count409
-\c@blx@maxsection=\count410
-\blx@maxsegment@0=\count411
-\blx@notetype=\count412
-\blx@parenlevel@text=\count413
-\blx@parenlevel@foot=\count414
-\blx@sectionciteorder@0=\count415
-\blx@sectionciteorderinternal@0=\count416
-\blx@entrysetcounter=\count417
-\blx@biblioinstance=\count418
+\c@tabx@nest=\count381
+\c@listtotal=\count382
+\c@listcount=\count383
+\c@liststart=\count384
+\c@liststop=\count385
+\c@citecount=\count386
+\c@citetotal=\count387
+\c@multicitecount=\count388
+\c@multicitetotal=\count389
+\c@instcount=\count390
+\c@maxnames=\count391
+\c@minnames=\count392
+\c@maxitems=\count393
+\c@minitems=\count394
+\c@citecounter=\count395
+\c@maxcitecounter=\count396
+\c@savedcitecounter=\count397
+\c@uniquelist=\count398
+\c@uniquename=\count399
+\c@refsection=\count400
+\c@refsegment=\count401
+\c@maxextratitle=\count402
+\c@maxextratitleyear=\count403
+\c@maxextraname=\count404
+\c@maxextradate=\count405
+\c@maxextraalpha=\count406
+\c@abbrvpenalty=\count407
+\c@highnamepenalty=\count408
+\c@lownamepenalty=\count409
+\c@maxparens=\count410
+\c@parenlevel=\count411
+\blx@tempcnta=\count412
+\blx@tempcntb=\count413
+\blx@tempcntc=\count414
+\c@blx@maxsection=\count415
+\blx@maxsegment@0=\count416
+\blx@notetype=\count417
+\blx@parenlevel@text=\count418
+\blx@parenlevel@foot=\count419
+\blx@sectionciteorder@0=\count420
+\blx@sectionciteorderinternal@0=\count421
+\blx@entrysetcounter=\count422
+\blx@biblioinstance=\count423
 \labelnumberwidth=\skip115
 \labelalphawidth=\skip116
 \biblabelsep=\skip117
@@ -1347,9 +1445,9 @@ File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
 \blx@bcfin=\read6
 \blx@bcfout=\write5
 \blx@langwohyphens=\language79
-\c@mincomprange=\count419
-\c@maxcomprange=\count420
-\c@mincompwidth=\count421
+\c@mincomprange=\count424
+\c@maxcomprange=\count425
+\c@mincompwidth=\count426
 Package biblatex Info: Trying to load biblatex default data model...
 Package biblatex Info: ... file 'blx-dm.def' found.
 
@@ -1360,74 +1458,74 @@ Package biblatex Info: Trying to load biblatex style data model...
 Package biblatex Info: ... file 'ieee.dbx' not found.
 Package biblatex Info: Trying to load biblatex custom data model...
 Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
-\c@afterword=\count422
-\c@savedafterword=\count423
-\c@annotator=\count424
-\c@savedannotator=\count425
-\c@author=\count426
-\c@savedauthor=\count427
-\c@bookauthor=\count428
-\c@savedbookauthor=\count429
-\c@commentator=\count430
-\c@savedcommentator=\count431
-\c@editor=\count432
-\c@savededitor=\count433
-\c@editora=\count434
-\c@savededitora=\count435
-\c@editorb=\count436
-\c@savededitorb=\count437
-\c@editorc=\count438
-\c@savededitorc=\count439
-\c@foreword=\count440
-\c@savedforeword=\count441
-\c@holder=\count442
-\c@savedholder=\count443
-\c@introduction=\count444
-\c@savedintroduction=\count445
-\c@namea=\count446
-\c@savednamea=\count447
-\c@nameb=\count448
-\c@savednameb=\count449
-\c@namec=\count450
-\c@savednamec=\count451
-\c@translator=\count452
-\c@savedtranslator=\count453
-\c@shortauthor=\count454
-\c@savedshortauthor=\count455
-\c@shorteditor=\count456
-\c@savedshorteditor=\count457
-\c@labelname=\count458
-\c@savedlabelname=\count459
-\c@institution=\count460
-\c@savedinstitution=\count461
-\c@lista=\count462
-\c@savedlista=\count463
-\c@listb=\count464
-\c@savedlistb=\count465
-\c@listc=\count466
-\c@savedlistc=\count467
-\c@listd=\count468
-\c@savedlistd=\count469
-\c@liste=\count470
-\c@savedliste=\count471
-\c@listf=\count472
-\c@savedlistf=\count473
-\c@location=\count474
-\c@savedlocation=\count475
-\c@organization=\count476
-\c@savedorganization=\count477
-\c@origlocation=\count478
-\c@savedoriglocation=\count479
-\c@origpublisher=\count480
-\c@savedorigpublisher=\count481
-\c@publisher=\count482
-\c@savedpublisher=\count483
-\c@language=\count484
-\c@savedlanguage=\count485
-\c@origlanguage=\count486
-\c@savedoriglanguage=\count487
-\c@pageref=\count488
-\c@savedpageref=\count489
+\c@afterword=\count427
+\c@savedafterword=\count428
+\c@annotator=\count429
+\c@savedannotator=\count430
+\c@author=\count431
+\c@savedauthor=\count432
+\c@bookauthor=\count433
+\c@savedbookauthor=\count434
+\c@commentator=\count435
+\c@savedcommentator=\count436
+\c@editor=\count437
+\c@savededitor=\count438
+\c@editora=\count439
+\c@savededitora=\count440
+\c@editorb=\count441
+\c@savededitorb=\count442
+\c@editorc=\count443
+\c@savededitorc=\count444
+\c@foreword=\count445
+\c@savedforeword=\count446
+\c@holder=\count447
+\c@savedholder=\count448
+\c@introduction=\count449
+\c@savedintroduction=\count450
+\c@namea=\count451
+\c@savednamea=\count452
+\c@nameb=\count453
+\c@savednameb=\count454
+\c@namec=\count455
+\c@savednamec=\count456
+\c@translator=\count457
+\c@savedtranslator=\count458
+\c@shortauthor=\count459
+\c@savedshortauthor=\count460
+\c@shorteditor=\count461
+\c@savedshorteditor=\count462
+\c@labelname=\count463
+\c@savedlabelname=\count464
+\c@institution=\count465
+\c@savedinstitution=\count466
+\c@lista=\count467
+\c@savedlista=\count468
+\c@listb=\count469
+\c@savedlistb=\count470
+\c@listc=\count471
+\c@savedlistc=\count472
+\c@listd=\count473
+\c@savedlistd=\count474
+\c@liste=\count475
+\c@savedliste=\count476
+\c@listf=\count477
+\c@savedlistf=\count478
+\c@location=\count479
+\c@savedlocation=\count480
+\c@organization=\count481
+\c@savedorganization=\count482
+\c@origlocation=\count483
+\c@savedoriglocation=\count484
+\c@origpublisher=\count485
+\c@savedorigpublisher=\count486
+\c@publisher=\count487
+\c@savedpublisher=\count488
+\c@language=\count489
+\c@savedlanguage=\count490
+\c@origlanguage=\count491
+\c@savedoriglanguage=\count492
+\c@pageref=\count493
+\c@savedpageref=\count494
 \shorthandwidth=\skip123
 \shortjournalwidth=\skip124
 \shortserieswidth=\skip125
@@ -1457,19 +1555,19 @@ Package biblatex Info: Trying to load generic definitions...
 Package biblatex Info: ... file 'biblatex.def' found.
  (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/biblatex/biblatex.def
 File: biblatex.def 2023/03/05 v3.19 biblatex compatibility (PK/MW)
-\c@textcitecount=\count490
-\c@textcitetotal=\count491
-\c@textcitemaxnames=\count492
-\c@biburlbigbreakpenalty=\count493
-\c@biburlbreakpenalty=\count494
-\c@biburlnumpenalty=\count495
-\c@biburlucpenalty=\count496
-\c@biburllcpenalty=\count497
+\c@textcitecount=\count495
+\c@textcitetotal=\count496
+\c@textcitemaxnames=\count497
+\c@biburlbigbreakpenalty=\count498
+\c@biburlbreakpenalty=\count499
+\c@biburlnumpenalty=\count500
+\c@biburlucpenalty=\count501
+\c@biburllcpenalty=\count502
 \biburlbigskip=\muskip18
 \biburlnumskip=\muskip19
 \biburlucskip=\muskip20
 \biburllcskip=\muskip21
-\c@smartand=\count498
+\c@smartand=\count503
 )
 Package biblatex Info: Trying to load bibliography style 'ieee'...
 Package biblatex Info: ... file 'ieee.bbx' found.
@@ -1494,8 +1592,8 @@ Package biblatex Info: ... file 'standard.bbx' found.
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/biblatex/bbx/standard.b
 bx
 File: standard.bbx 2023/03/05 v3.19 biblatex bibliography style (PK/MW)
-\c@bbx:relatedcount=\count499
-\c@bbx:relatedtotal=\count500
+\c@bbx:relatedcount=\count504
+\c@bbx:relatedtotal=\count505
 ))))
 Package biblatex Info: Trying to load citation style 'ieee'...
 Package biblatex Info: ... file 'ieee.cbx' found.
@@ -1540,50 +1638,50 @@ Package: blx-case-expl3 2023/03/05 v3.19 expl3 case changing code for biblatex
 Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... none found.
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 91.
+h' as default language. on input line 94.
  (./main.aux)
 \openout1 = main.aux
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 91.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 94.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 9
-1.
+4.
 
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 91.
-LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 94.
+LaTeX Font Info:    ... okay on input line 94.
 
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.mk
 ii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count501
-\scratchdimen=\dimen319
-\scratchbox=\box83
-\nofMPsegments=\count502
-\nofMParguments=\count503
+\scratchcounter=\count506
+\scratchdimen=\dimen342
+\scratchbox=\box84
+\nofMPsegments=\count507
+\nofMParguments=\count508
 \everyMPshowfont=\toks51
-\MPscratchCnt=\count504
-\MPscratchDim=\dimen320
-\MPnumerator=\count505
-\makeMPintoPDFobject=\count506
+\MPscratchCnt=\count509
+\MPscratchDim=\dimen343
+\MPnumerator=\count510
+\makeMPintoPDFobject=\count511
 \everyMPtoPDFconversion=\toks52
 )
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/epstopdf-pkg/epstopdf-b
@@ -1596,7 +1694,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 fg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring OFF on input line 91.
+Package hyperref Info: Link coloring OFF on input line 94.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: luatex
@@ -1632,71 +1730,71 @@ Package hyperref Info: Link coloring OFF on input line 91.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package ragged2e Info: ABD: executing \RaggedRight on input line 91.
+Package ragged2e Info: ABD: executing \RaggedRight on input line 94.
 
 Package fontspec Info: Adjusting the maths setup (use [no-math] to avoid
 (fontspec)             this).
 
 \symlegacymaths=\mathgroup6
 LaTeX Font Info:    Overwriting symbol font `legacymaths' in version `bold'
-(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 91.
-LaTeX Font Info:    Redeclaring math accent \acute on input line 91.
-LaTeX Font Info:    Redeclaring math accent \grave on input line 91.
-LaTeX Font Info:    Redeclaring math accent \ddot on input line 91.
-LaTeX Font Info:    Redeclaring math accent \tilde on input line 91.
-LaTeX Font Info:    Redeclaring math accent \bar on input line 91.
-LaTeX Font Info:    Redeclaring math accent \breve on input line 91.
-LaTeX Font Info:    Redeclaring math accent \check on input line 91.
-LaTeX Font Info:    Redeclaring math accent \hat on input line 91.
-LaTeX Font Info:    Redeclaring math accent \dot on input line 91.
-LaTeX Font Info:    Redeclaring math accent \mathring on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Delta on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Theta on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Xi on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Pi on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Phi on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Psi on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \Omega on input line 91.
-LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 91.
-LaTeX Font Info:    Redeclaring symbol font `operators' on input line 91.
+(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 94.
+LaTeX Font Info:    Redeclaring math accent \acute on input line 94.
+LaTeX Font Info:    Redeclaring math accent \grave on input line 94.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 94.
+LaTeX Font Info:    Redeclaring math accent \tilde on input line 94.
+LaTeX Font Info:    Redeclaring math accent \bar on input line 94.
+LaTeX Font Info:    Redeclaring math accent \breve on input line 94.
+LaTeX Font Info:    Redeclaring math accent \check on input line 94.
+LaTeX Font Info:    Redeclaring math accent \hat on input line 94.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 94.
+LaTeX Font Info:    Redeclaring math accent \mathring on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 94.
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 94.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 91.
+(Font)              `operators' in the math version `normal' on input line 94.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/cmr/m/n --> TU/Carlito(0)/m/n on input line 91.
+(Font)                  OT1/cmr/m/n --> TU/Carlito(0)/m/n on input line 94.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 91.
+(Font)              `operators' in the math version `bold' on input line 94.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/cmr/bx/n --> TU/Carlito(0)/m/n on input line 91.
+(Font)                  OT1/cmr/bx/n --> TU/Carlito(0)/m/n on input line 94.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  TU/Carlito(0)/m/n --> TU/Carlito(0)/m/n on input line 9
-1.
+4.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/cmr/m/it --> TU/Carlito(0)/m/it on input line 91.
+(Font)                  OT1/cmr/m/it --> TU/Carlito(0)/m/it on input line 94.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/cmr/bx/n --> TU/Carlito(0)/b/n on input line 91.
+(Font)                  OT1/cmr/bx/n --> TU/Carlito(0)/b/n on input line 94.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 91.
+(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 94.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 91.
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 94.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  TU/Carlito(0)/m/n --> TU/Carlito(0)/b/n on input line 9
-1.
+4.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmr/bx/it --> TU/Carlito(0)/b/it on input line 91.
+(Font)                  OT1/cmr/bx/it --> TU/Carlito(0)/b/it on input line 94.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 91.
+(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 94.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 91.
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 94.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: rotating package is loaded.
 Package caption Info: End \AtBeginDocument code.
-\c@lstlisting=\count507
+\c@lstlisting=\count512
 
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/translations/dicts/tran
 slations-basic-dictionary-english.trsl
@@ -1704,7 +1802,7 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 91.
+or `english'. on input line 94.
 Package biblatex Info: Trying to load language 'english'...
 Package biblatex Info: ... file 'english.lbx' found.
 
@@ -1720,21 +1818,29 @@ Package biblatex Info: Automatic encoding selection.
 \openout5 = main.bcf
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' found.
- (./main.bbl)
-Package biblatex Info: Reference section=0 on input line 91.
-Package biblatex Info: Reference segment=0 on input line 91.
+ (./main.bbl
+
+Package biblatex Warning: The following entry could not be found
+(biblatex)                in the database:
+(biblatex)                inproceedings
+(biblatex)                Please verify the spelling and rerun
+(biblatex)                LaTeX afterwards.
+
+)
+Package biblatex Info: Reference section=0 on input line 94.
+Package biblatex Info: Reference segment=0 on input line 94.
 
 warning  (file ./images/uom_logo.pdf) (pdf inclusion): PDF inclusion: found PDF 
 version '1.5', but at most version '1.4' allowed
 <./images/uom_logo.pdf, id=9, 130.90004pt x 55.35129pt>
 File: ./images/uom_logo.pdf Graphic file (type pdf)
 <use ./images/uom_logo.pdf>
-Package luatex.def Info: ./images/uom_logo.pdf  used on input line 106.
+Package luatex.def Info: ./images/uom_logo.pdf  used on input line 109.
 (luatex.def)             Requested size: 113.82808pt x 48.1324pt.
 [1
 
-<./images/uom_logo.pdf>]
-Overfull \hbox (12.76602pt too wide) in paragraph at lines 120--120
+<./images/uom_logo.pdf>] [1]
+Overfull \hbox (12.76602pt too wide) in paragraph at lines 126--126
 \TU/Carlito(0)/m/n/12 adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer 
  []
 
@@ -1744,17 +1850,17 @@ Overfull \hbox (12.76602pt too wide) in paragraph at lines 120--120
 
 
 ]
-Overfull \hbox (3.12344pt too wide) in paragraph at lines 131--131
+Overfull \hbox (3.12344pt too wide) in paragraph at lines 137--137
 \TU/Carlito(0)/m/n/12 ments which the Uni-ver-sity has from time to time. This 
 page must form part of any such copies 
  []
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 131
+LaTeX Font Info:    Trying to load font information for U+msa on input line 137
 .
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 131
+LaTeX Font Info:    Trying to load font information for U+msb on input line 137
 .
 
 (C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/amsfonts/umsb.fd
@@ -1764,109 +1870,310 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ] [5
 
-] (./Introduction.tex [6
-
-] [7]) (./Literature_Review.tex
-Overfull \hbox (1.30313pt too wide) in paragraph at lines 5--6
-\TU/Carlito(0)/m/n/12 en-vi-ron-ments but are typ-i-cally as-so-ci-ated with hig
-h cost and pro-pri-etary soft-ware ecosys-tems. Such 
+] (./Introduction.tex
+Overfull \hbox (0.92227pt too wide) in paragraph at lines 9--10
+[]\TU/Carlito(0)/m/n/12 At the same time, achiev-ing sta-ble and con-vinc-ing ha
+p-tic in-ter-ac-tion is tech-ni-cally chal-leng-ing. Real- 
  []
 
 
-Overfull \hbox (7.47305pt too wide) in paragraph at lines 11--12
-\TU/Carlito(0)/m/n/12 pose track-ing, and re-li-able map-pings from Carte-sian 
-in-ter-ac-tion forces to ac-tu-a-tor torques. In robotic 
+warning  (pdf backend): ignoring duplicate destination with the name 'page.1'
+[1
+
+
+]
+
+LaTeX Warning: Citation 'inproceedings' on page 2 undefined on input line 17.
+
+
+Overfull \hbox (0.2836pt too wide) in paragraph at lines 25--26
+\TU/Carlito(0)/m/n/12 pro-duc-ing a commercial-grade hap-tic prod-uct. More spec
+if-i-cally, the dis-ser-ta-tion is con-cerned with:  
+ []
+
+[2] [3]) (./Literature_Review.tex [4]
+Overfull \hbox (1.40079pt too wide) in paragraph at lines 5--6
+\TU/Carlito(0)/m/n/12 range, and more re-cent sys-tems such as the Haply \TU/Ca
+rlito(0)/m/it/12 In-verse3 X\TU/Carlito(0)/m/n/12 . These de-vices of-fer high-p
+erformance 
  []
 
 
-Overfull \hbox (2.60782pt too wide) in paragraph at lines 11--12
-\TU/Carlito(0)/m/n/12 sys-tems, such map-pings are con-ven-tion-ally com-puted 
-us-ing the ma-nip-u-la-tor Ja-co-bian, as for-malised 
+Overfull \hbox (3.26993pt too wide) in paragraph at lines 5--6
+\TU/Carlito(0)/m/n/12 tially higher cost than low-cost aca-demic pro-to-types an
+d of-ten rely on pro-pri-etary or vendor-specific 
  []
 
-[8]
-Overfull \hbox (2.29141pt too wide) in paragraph at lines 27--28
+[5] [6]
+Overfull \hbox (9.17618pt too wide) in paragraph at lines 45--46
+\TU/Carlito(0)/m/n/12 tomis-able 3D-printed kines-thetic hap-tic de-vices that 
+can be re-con-fig-ured into two-degree-of-freedom 
+ []
+
+
+Overfull \hbox (1.84024pt too wide) in paragraph at lines 49--50
+\TU/Carlito(0)/m/n/12 Com-par-a-tively less em-pha-sis is placed on fully in-te-
+grated real-time soft-ware ar-chi-tec-tures that com- 
+ []
+
+
+Overfull \hbox (2.29141pt too wide) in paragraph at lines 55--56
 \TU/Carlito(0)/m/n/12 Over-all, the lit-er-a-ture demon-strates clear ben-e-fits
  of hap-tic feed-back for robotic ma-nip-u-la-tion train- 
  []
 
-[9]) (./System_Architecture.tex
-Overfull \hbox (2.54337pt too wide) in paragraph at lines 17--18
+) (./System_Architecture.tex [7]
+Overfull \hbox (2.54337pt too wide) in paragraph at lines 43--44
 \TU/Carlito(0)/m/n/12 The sys-tem ar-chi-tec-ture was de-vel-oped to pri-ori-tis
 e real-time sta-bil-ity, mod-u-lar-ity, and re-pro-ducibil- 
  []
 
-[10]
-Overfull \hbox (2.52579pt too wide) in paragraph at lines 48--49
+[8]
+Overfull \hbox (2.52579pt too wide) in paragraph at lines 74--75
 []\TU/Carlito(0)/m/n/12 Joint state mea-sure-ments are streamed to the host at 
 a fixed up-date rate, while com-manded torque 
  []
 
-[11]
-Overfull \hbox (13.1254pt too wide) in paragraph at lines 84--85
+[9]
+Overfull \hbox (13.1254pt too wide) in paragraph at lines 110--111
 \TU/Carlito(0)/m/n/12 tween the phys-i-cal in-ter-face and sim-u-lated en-vi-ron
 -ment, sup-port-ing sta-ble in-ter-ac-tion un-der discrete- 
  []
 
-[12]) (./Implementation.tex
-Overfull \hbox (10.6293pt too wide) in paragraph at lines 7--8
-\TU/Carlito(0)/m/n/12 in-tu-itive user in-ter-ac-tion, al-low-ing the end-effect
-or to be freely po-si-tioned within a pla-nar workspace.  
- []
-
-[13]
-Overfull \hbox (0.5629pt too wide) in paragraph at lines 16--17
-[]\TU/Carlito(0)/m/n/12 The link lengths were se-lected to pro-vide a suf-fi-cie
-nt reach-able workspace at the end-effector while 
- []
-
-
-Overfull \hbox (1.99258pt too wide) in paragraph at lines 27--29
+[10]) (./Implementation.tex [11] [12]
+Overfull \hbox (1.99258pt too wide) in paragraph at lines 59--61
 \TU/Carlito(0)/m/n/12 The em-bed-ded con-trol sys-tem is im-ple-mented us-ing an
  STM32 Nucleo-G401RE de-vel-op-ment board.  
  []
 
-
-Overfull \hbox (1.6586pt too wide) in paragraph at lines 42--44
-[]\TU/Carlito(0)/m/n/12 The mi-cro-con-troller ad-di-tion-ally com-mu-ni-cates 
-with two brush-less mo-tor driver mod-ules (BG-3421- 
- []
-
-[14] [15]
-Overfull \hbox (11.08047pt too wide) in paragraph at lines 74--75
+[13] [14]
+Overfull \hbox (11.08047pt too wide) in paragraph at lines 124--125
 []\TU/Carlito(0)/m/n/12 Snap-shot chan-nels are used for trans-mit-ting con-tin-
 u-ously up-dated state in-for-ma-tion be-tween threads 
  []
 
-[16]
-Overfull \hbox (2.08633pt too wide) in paragraph at lines 95--96
+[15]
+Overfull \hbox (2.08633pt too wide) in paragraph at lines 145--146
 []\TU/Carlito(0)/m/n/12 At each ren-der it-er-a-tion, the ren-derer first up-dat
 es the cam-era as-pect ra-tio us-ing the cur-rent frame- 
  []
 
-[17]
-Overfull \hbox (22.78165pt too wide) in paragraph at lines 113--114
-\TU/Carlito(0)/m/n/12 The hap-tic ren-der-ing en-gine is re-spon-si-ble for com-
-put-ing in-ter-ac-tion forces be-tween the user-controlled 
+[16] [17]
+Overfull \hbox (22.78165pt too wide) in paragraph at lines 180--181
+[]\TU/Carlito(0)/m/n/12 The hap-tic ren-der-ing en-gine is re-spon-si-ble for co
+m-put-ing in-ter-ac-tion forces be-tween the user-controlled 
  []
 
 [18]
-Overfull \hbox (0.14297pt too wide) in paragraph at lines 131--132
+Overfull \hbox (0.14297pt too wide) in paragraph at lines 198--199
 \TU/Carlito(0)/m/n/12 neg-a-tive signed dis-tance in-di-cates pen-e-tra-tion of the tool point into the ob-ject vol-ume. In this case, 
  []
 
-[19] [20]) (./Experimental_Methods.tex) (./Results.tex) (./Discussion.tex)
-[21]
-Overfull \vbox (558.52986pt too high) has occurred while \output is active []
-
-
-[22]
-Overfull \hbox (3.68965pt too wide) in paragraph at lines 197--197
-[]\TU/Carlito(0)/m/n/12 D. C. Rus-pini, K. Ko-larov, and O. Khatib, “  The hap
--tic dis-play of com-plex graph-i-cal en-vi-ron-ments,” 
+[19] [20]
+Overfull \hbox (6.91446pt too wide) in paragraph at lines 256--257
+[]\TU/Carlito(0)/m/n/12 To avoid in-tro-duc-ing disk I/O la-tency into the 1 kHz
+ com-mu-ni-ca-tion thread, log-ging was im-ple-mented 
  []
 
-[23] [24
+[21]) (./Experimental_Methods.tex [22] [23]
+Overfull \hbox (0.78555pt too wide) in paragraph at lines 55--56
+\TU/Carlito(0)/m/n/12 In ad-di-tion to the stan-dalone se-rial com-mu-ni-ca-tion
+ tests, end-to-end tim-ing of the host-side closed- 
+ []
+
+[24]
+Overfull \hbox (0.11954pt too wide) in paragraph at lines 79--80
+\TU/Carlito(0)/m/n/12 un-der con-trolled in-ter-ac-tion con-di-tions. Sec-ond, 
+the full sys-tem, in-clud-ing the phys-i-cal de-vice, com- 
+ []
+
+
+Overfull \hbox (3.19376pt too wide) in paragraph at lines 87--88
+[]\TU/Carlito(0)/m/n/12 The test was used to as-sess both the com-puted force re
+-sponse of the model and its be-haviour when 
+ []
+
+[25]
+Overfull \hbox (6.41641pt too wide) in paragraph at lines 131--132
+[]\TU/Carlito(0)/m/n/12 This test demon-strated that the sys-tem could pro-vide im-plicit mo-tion guid-ance along sur-faces, which 
+ []
+
+[26]
+Overfull \hbox (7.93399pt too wide) in paragraph at lines 154--155
+\TU/Carlito(0)/m/n/12 A rate lim-it-ing test was con-ducted to eval-u-ate the ef
+-fect of lim-it-ing the rate of change of com-manded 
+ []
+
+
+Overfull \hbox (4.45352pt too wide) in paragraph at lines 156--157
+[]\TU/Carlito(0)/m/n/12 A slew-rate lim-iter was im-ple-mented on the mi-cro-con
+-troller to con-strain the max-i-mum rate at which 
+ []
+
+[27] [28]) (./Results.tex [29]
+Overfull \hbox (2.76602pt too wide) in paragraph at lines 17--18
+[]\TU/Carlito(0)/m/n/12 The mea-sured re-ceive rate tracked the re-quested trans
+-mis-sion rate closely across the full test range. 
+ []
+
+<images/Dropped packets vs requested rate.pdf, id=309, 674.52pt x 440.64626pt>
+File: images/Dropped packets vs requested rate.pdf Graphic file (type pdf)
+<use images/Dropped packets vs requested rate.pdf>
+Package luatex.def Info: images/Dropped packets vs requested rate.pdf  used on 
+input line 23.
+(luatex.def)             Requested size: 232.17242pt x 151.66676pt.
+<images/Requested vs measured packet rate.pdf, id=310, 679.53876pt x 440.64626p
+t>
+File: images/Requested vs measured packet rate.pdf Graphic file (type pdf)
+<use images/Requested vs measured packet rate.pdf>
+Package luatex.def Info: images/Requested vs measured packet rate.pdf  used on 
+input line 28.
+(luatex.def)             Requested size: 232.17242pt x 150.55063pt.
+<images/Packet timing jitter vs requested rate.pdf, id=312, 663.47874pt x 440.6
+4626pt>
+File: images/Packet timing jitter vs requested rate.pdf Graphic file (type pdf)
+
+<use images/Packet timing jitter vs requested rate.pdf>
+Package luatex.def Info: images/Packet timing jitter vs requested rate.pdf  use
+d on input line 44.
+(luatex.def)             Requested size: 386.95897pt x 256.9937pt.
+[30] [31<./images/Dropped packets vs requested rate.pdf><./images/Requested vs m
+easured packet rate.pdf><./images/Packet timing jitter vs requested rate.pdf>]
+<images/CDF of round-trip latency.pdf, id=378, 666.49pt x 440.64626pt>
+File: images/CDF of round-trip latency.pdf Graphic file (type pdf)
+<use images/CDF of round-trip latency.pdf>
+Package luatex.def Info: images/CDF of round-trip latency.pdf  used on input li
+ne 63.
+(luatex.def)             Requested size: 386.95897pt x 255.83722pt.
+[32<./images/CDF of round-trip latency.pdf>]
+Overfull \hbox (4.4841pt too wide) in paragraph at lines 87--88
+[]\TU/Carlito(0)/m/n/12 Anal-y-sis of \TU/lmtt/m/n/12 device_timing.csv \TU/Car
+lito(0)/m/n/12 showed that all recorded con-trol cy-cles were suc-cess-fully mat
+ched, 
+ []
+
+
+Overfull \hbox (14.73868pt too wide) in paragraph at lines 89--90
+\TU/Carlito(0)/m/n/12 a me-dian of 0.104 ms. The 95th per-centile la-tency was 
+0.546 ms, and the 99th per-centile was 2.04 ms, 
+ []
+
+
+Overfull \hbox (0.58243pt too wide) in paragraph at lines 89--90
+\TU/Carlito(0)/m/n/12 with a max-i-mum ob-served la-tency of 3.35 ms. As shown 
+in Fig. []9[], the dis-tri-bu-tion was con-cen-trated 
+ []
+
+<images/Matched host-side end-to-end latency distribution.pdf, id=403, 669.5012
+5pt x 440.64626pt>
+File: images/Matched host-side end-to-end latency distribution.pdf Graphic file
+ (type pdf)
+<use images/Matched host-side end-to-end latency distribution.pdf>
+Package luatex.def Info: images/Matched host-side end-to-end latency distributi
+on.pdf  used on input line 93.
+(luatex.def)             Requested size: 386.95897pt x 254.6942pt.
+[33]
+<images/Raw parsed state packet inter-arrival distribution.pdf, id=412, 661.471
+25pt x 440.64626pt>
+File: images/Raw parsed state packet inter-arrival distribution.pdf Graphic fil
+e (type pdf)
+<use images/Raw parsed state packet inter-arrival distribution.pdf>
+Package luatex.def Info: images/Raw parsed state packet inter-arrival distribut
+ion.pdf  used on input line 111.
+(luatex.def)             Requested size: 386.95897pt x 257.77365pt.
+ [34<./images/Matched host-side end-to-end latency distribution.pdf>]
+Overfull \hbox (3.18399pt too wide) in paragraph at lines 121--122
+\TU/Carlito(0)/m/n/12 was highly reg-u-lar, packet pro-cess-ing at the host oc-c
+urred in a non-uniform burst-like pat-tern. These 
+ []
+
+[35<./images/Raw parsed state packet inter-arrival distribution.pdf>]
+Overfull \hbox (1.35977pt too wide) in paragraph at lines 159--160
+\TU/Carlito(0)/m/n/12 in a restor-ing force that in-creased with pen-e-tra-tion depth, con-sis-tent with the im-ple-mented spring-- 
+ []
+
+[36]
+Overfull \hbox (0.68594pt too wide) in paragraph at lines 173--174
+[]\TU/Carlito(0)/m/n/12 These re-sults demon-strate that the sim-u-la-tion model
+ can re-li-ably gen-er-ate con-straint forces aligned 
+ []
+
+
+Overfull \hbox (0.16446pt too wide) in paragraph at lines 186--187
+[]\TU/Carlito(0)/m/n/12 With-out rate lim-it-ing, abrupt force changes re-sulted
+ in no-tice-able vi-bra-tion and un-sta-ble be-haviour. 
+ []
+
+[37] [38] [39]
+Overfull \hbox (1.2543pt too wide) in paragraph at lines 241--242
+[]\TU/Carlito(0)/m/n/12 Un-der at-tempts to push strongly through a rigidly ren-
+dered ob-ject, trans-mis-sion non-idealities were 
+ []
+
+[40]) [41] (./Discussion.tex [42]
+Overfull \hbox (5.67813pt too wide) in paragraph at lines 18--19
+\TU/Carlito(0)/m/n/12 De-spite the pres-ence of sig-nif-i-cant com-mu-ni-ca-tion
+ la-tency and non-uniform packet ar-rival be-haviour 
+ []
+
+[43] [44] [45]
+Overfull \hbox (2.19766pt too wide) in paragraph at lines 57--58
+[]\TU/Carlito(0)/m/n/12 While the use of damp-ing and torque rate lim-it-ing was
+ ef-fec-tive in en-sur-ing sta-ble in-ter-ac-tion, these 
+ []
+
+) (./Conclusion.tex
+Overfull \hbox (1.58829pt too wide) in paragraph at lines 5--6
+[]\TU/Carlito(0)/m/n/12 The sys-tem suc-cess-fully achieved its pri-mary ob-jec-
+tive of en-abling bidi-rec-tional in-ter-ac-tion be-tween 
+ []
+
+[46]
+Overfull \hbox (1.30313pt too wide) in paragraph at lines 13--14
+[]\TU/Carlito(0)/m/n/12 How-ever, the re-sults also high-light an im-por-tant tr
+ade-off be-tween sta-bil-ity and force fi-delity. While 
+ []
+
+[47]
+Overfull \hbox (0.30704pt too wide) in paragraph at lines 23--24
+\TU/Carlito(0)/m/n/12 host and em-bed-ded con-troller. In par-tic-u-lar, di-rect
+ UART com-mu-ni-ca-tion via a ded-i-cated USB--UART 
+ []
+
+[48]) [49]
+Overfull \hbox (14.26694pt too wide) in paragraph at lines 199--199
+\TU/Carlito(0)/m/it/12 Robotics\TU/Carlito(0)/m/n/12 , vol. 10, no. 1, p. 29, Fe
+b. 5, 2021, ISSN: 2218-6581. DOI: []$\TU/lmtt/m/n/12 10 . 3390 / robotics1001002
+9$[] 
+ []
+
+
+Overfull \hbox (4.6919pt too wide) in paragraph at lines 199--199
+\TU/Carlito(0)/m/n/12 DOI: []$\TU/lmtt/m/n/12 10 . 1109 / 70 . 768179$[] \TU/Ca
+rlito(0)/m/n/12 Ac-cessed: Apr. 16, 2026. [On-line]. Avail-able: []$\TU/lmtt/m/
+n/12 http : / / ieeexplore . 
+ []
+
+
+Overfull \hbox (11.30447pt too wide) in paragraph at lines 199--199
+\TU/lmtt/m/n/12 1109 / WHC . 2017 . 7989891$[] \TU/Carlito(0)/m/n/12 Ac-cessed: Apr. 16, 2026. [On-line]. Avail-able: []$\TU/lmtt/m/n/12 https : / / ieeexplore . 
+ []
+
+[50
+
+]
+Overfull \hbox (12.64536pt too wide) in paragraph at lines 199--199
+[]\TU/Carlito(0)/m/n/12 “  Sales in-quiries,” Ac-cessed: Apr. 16, 2026. [On-
+line]. Avail-able: []$\TU/lmtt/m/n/12 https : / / www . forcedimension . 
+ []
+
+
+Overfull \hbox (5.38321pt too wide) in paragraph at lines 199--199
+\TU/Carlito(0)/m/it/12 Robot In-ter-ac-tion and Co-op-er-a-tive Robots\TU/Carli
+to(0)/m/n/12 , vol. 3, Pitts-burgh, PA, USA: IEEE Com-put. Soc. Press, 
+ []
+
+[51] [52
 
 ] (./main.aux)
  ***********
@@ -1879,15 +2186,16 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 )
 
 Here is how much of LuaTeX's memory you used:
- 44563 strings out of 476497
- 125161,1977958 words of node,token memory allocated
- 941 words of node memory still in use:
-   6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 18 attribute, 126 glue_spe
-c, 18 attribute_list, 2 write, 6 pdf_action nodes
-   avail lists: 2:877,3:467,4:124,5:955,6:71,7:5781,8:62,9:387,10:11,11:605
- 65500 multiletter control sequences out of 65536+600000
- 67 fonts using 16782847 bytes
- 104i,6n,108p,1492b,3395s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 63828 strings out of 476497
+ 125161,2848258 words of node,token memory allocated
+ 1021 words of node memory still in use:
+   6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 25 attribute, 128 glue_spe
+c, 25 attribute_list, 2 write, 13 pdf_action nodes
+   avail lists: 1:2,2:1638,3:1046,4:62,5:1135,6:70,7:6924,8:68,9:383,10:18,11:74
+4
+ 84544 multiletter control sequences out of 65536+600000
+ 70 fonts using 18119191 bytes
+ 104i,10n,108p,1702b,3396s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <//?/c:/users/tman0/appdata/local/programs/miktex/fonts/opentype/public/lm/lmmon
 o12-regular.otf><C:/Users/tman0/AppData/Local/Programs/MiKTeX/fonts/truetype/pub
 lic/simple-thesis-dissertation/carlito-italic.ttf><C:/Users/tman0/AppData/Local/
@@ -1901,9 +2209,9 @@ ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/tman0
 /AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Use
 rs/tman0/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
 
-Output written on main.pdf (24 pages, 339202 bytes).
+Output written on main.pdf (58 pages, 601181 bytes).
 
-PDF statistics: 509 PDF objects out of 1000 (max. 8388607)
- 108 named destinations out of 1000 (max. 131072)
- 583 words of extra memory for PDF output out of 10000 (max. 100000000)
+PDF statistics: 932 PDF objects out of 1000 (max. 8388607)
+ 173 named destinations out of 1000 (max. 131072)
+ 703 words of extra memory for PDF output out of 10000 (max. 100000000)
 
