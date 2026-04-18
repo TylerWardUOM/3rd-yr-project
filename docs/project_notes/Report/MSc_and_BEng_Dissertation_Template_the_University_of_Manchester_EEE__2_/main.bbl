@@ -747,6 +747,52 @@
       \verb https://doi.org/10.1093/oso/9780198564652.001.0001
       \endverb
     \endentry
+    \entry{ericsonRealTimeCollisionDetection2004}{book}{}
+      \name{author}{1}{}{%
+        {{hash=ce4108d000f2ab3383891dc12c16ae76}{%
+           family={Ericson},
+           familyi={E\bibinitperiod},
+           given={Christer},
+           giveni={C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {CRC Press}%
+      }
+      \strng{namehash}{ce4108d000f2ab3383891dc12c16ae76}
+      \strng{fullhash}{ce4108d000f2ab3383891dc12c16ae76}
+      \strng{bibnamehash}{ce4108d000f2ab3383891dc12c16ae76}
+      \strng{authorbibnamehash}{ce4108d000f2ab3383891dc12c16ae76}
+      \strng{authornamehash}{ce4108d000f2ab3383891dc12c16ae76}
+      \strng{authorfullhash}{ce4108d000f2ab3383891dc12c16ae76}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{22}
+      \field{edition}{0}
+      \field{isbn}{978-0-08-047414-4}
+      \field{langid}{english}
+      \field{month}{12}
+      \field{title}{Real-{{Time Collision Detection}}}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2004}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.1201/b14581
+      \endverb
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\NTJWCSBG\Ericson - 2004 - Real-Time Collision Detection.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://www.taylorfrancis.com/books/9780080474144
+      \endverb
+      \verb{url}
+      \verb https://www.taylorfrancis.com/books/9780080474144
+      \endverb
+    \endentry
   \enddatalist
   \missing{inproceedings}
 \endrefsection
