@@ -1,268 +1,142 @@
-This section describes the practical realisation of the proposed haptic interface system, including the mechanical construction of the device, embedded firmware architecture, communication protocol, and host-side simulation and haptic rendering software.
+This section describes the realised haptic system implementation, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
 
-The implementation was designed to balance low-cost hardware selection with sufficient dynamic performance to enable stable real-time bidirectional haptic interaction.
+The system prioritises modularity and deterministic timing: each major subsystem runs on its own thread and exchanges data through explicit message channels. This design reflects a trade-off between cost, achievable force fidelity, and system stability, with particular emphasis on maintaining stable interaction under non-negligible communication latency.
 
-%TODO mention why no force sensor was included why current-sense-free FOC was used the actuator failure if it materially changed the final test setup
+\subsection{Mechanical and Embedded Platform}
 
-\subsection{Mechanical Design of the Haptic Device}
+The physical interface is a planar two degree-of-freedom serial mechanism designed for low-cost fabrication and straightforward maintenance. A two-link layout was selected to provide a usable workspace while keeping actuator count, wiring complexity, and control overhead manageable.
 
-The haptic device was realised as a planar two degree-of-freedom serial mechanism providing rotational motion about two orthogonal revolute joints. This configuration enables intuitive user interaction, allowing the end-effector to be positioned freely within a planar workspace.
+The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208). The base joint incorporates a GT2 belt reduction stage (approximately 3:1) to increase available output torque, while the distal joint is direct-drive to minimise mechanical complexity.
 
-A two degree-of-freedom architecture was selected in preference to higher degree-of-freedom alternatives in order to reduce mechanical complexity and minimise the number of required actuators. This was an important design consideration for maintaining the system within the project budget while still demonstrating meaningful bidirectional haptic interaction.
+An adjustable idler pulley is integrated into the belt stage to enable tensioning and reduce backlash. Despite this, non-ideal behaviour such as compliance and occasional slip under high load was observed, as discussed in Section~\ref{sec:discussion}.
 
-The structural components of the device were predominantly fabricated using additive manufacturing techniques. This enabled rapid iteration of mechanical designs and reduced moving mass, improving the perceived backdrivability of the interface.
+To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048) are mounted directly on the joint axes and interfaced via SPI. This is particularly important for the belt-driven joint, where transmission compliance would otherwise introduce discrepancies between motor-side and output angles.
 
-The mechanism consists of two rigid links, with geometries and workspace illustrated in Fig.~\ref{fig:mechanical_diagram}.
+For the belt-driven actuator, an additional AS5600 magnetic encoder is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
+
+Embedded control runs on an STM32 Nucleo-G401RE platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero.
+
 \begin{figure}[htbp]
 	\centering
 	\fbox{%
 		\parbox[c][6cm][c]{0.8\textwidth}{%
 			\centering
 			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-			Mechanical Diagram to be added here\\
-			(showing: joints,link lengths, belt reduction, motors, encoders)
+			Mechanical diagram\\
+			(links, joints, belt reduction, encoders)
 		}
 	}
-	\caption{Placeholder for Mechanical diagram.}
-	\label{fig:mechanical_diagram}
+	\caption{Mechanical layout of the haptic device.}
+	\label{fig:mechanical_layout}
 \end{figure}
-%TODO: — Mechanical Diagram (Annotated)
 
-The link lengths were selected to provide a sufficient reachable workspace while ensuring that adequate torque could be delivered throughout the range of motion.
+Due to hardware constraints, no direct force sensing or current measurement was implemented; as a result, torque output is estimated rather than directly measured. Additionally, one actuator failed during development, meaning final hardware validation was conducted using single-axis actuation, although both joints remained available for sensing.
 
-Actuation is provided by brushless gimbal motors (T-Motor GB2208). Due to the limited torque output of these low-cost motors, a torque amplification mechanism was required for effective operation. A GT2 timing belt transmission was therefore implemented on the base joint, providing an approximate reduction ratio of $3{:}1$. This allowed the actuator to generate sufficient torque to support both its own link and the mass of the subsequent joint and actuator.
-%TODO verify ratio
+\subsection{Communication Protocol and Device Interface}
 
-The second joint was not equipped with a transmission stage, resulting in lower available torque at that joint. This reflects a design trade-off between mechanical complexity and performance within the constraints of the project.
+Host--device communication uses fixed-format binary packets over a USB virtual serial link at high update rate (target 1\,kHz exchange). Two packet families are used:
+\begin{itemize}
+	\item device state packets (firmware \(\rightarrow\) host), containing sequence number, MCU timestamp, and joint angles
+	\item torque command packets (host \(\rightarrow\) firmware), containing command sequence, referenced state sequence, and commanded joint torques
+\end{itemize}
 
-Adjustable belt tensioning was incorporated via an idler pulley mechanism to reduce backlash and compensate for belt compliance. However, as discussed in Section~7.3, the transmission exhibits non-ideal behaviour under high load conditions.
-%TODO: Do i need the as disccused
+Sequence numbers enable detection of dropped or out-of-order packets, while MCU timestamps provide a reference for timing analysis and latency measurement.
 
-Each joint rotates about an 8\,mm diameter steel shaft supported by rolling element bearings to minimise friction and radial play. The corresponding links are attached via a friction fit interface within the printed components, supplemented by radial set screws to prevent slip under load.
+Both packet types include a two-byte header for stream re-synchronisation and a checksum for integrity checks.
 
-To ensure accurate joint position measurement, absolute magnetic encoders were mounted directly on the joint axes rather than relying solely on motor-side sensing. This was particularly important for the belt-driven joint, where compliance and potential slip in the transmission would otherwise introduce errors in joint angle estimation.
-%TODO: Add picture of the final build maybe insetad of the figure above or both depends on pages i thinlk this one more important
-\begin{figure}[htbp]
-	\centering
-	\fbox{%
-		\parbox[c][6cm][c]{0.8\textwidth}{%
-			\centering
-			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-			Final build pic to be added here
-		}
-	}
-	\caption{Placeholder for Final build pic.}
-	\label{fig:final_build}
-\end{figure}
-\subsection{Embedded Firmware}
+On the host, serial I/O and protocol handling are split across two layers:
+\begin{itemize}
+	\item \textit{SerialLink}: low-level COM read/write abstraction
+	\item \textit{DeviceAdapter}: packet parsing, forward kinematics, Cartesian force-to-joint torque mapping, and message-bus integration
+\end{itemize}
 
-The embedded control system is implemented using an STM32 Nucleo-G401RE development board.
-% NOTE: later add timer / control loop implementation details if useful
+The device adapter runs in a dedicated 1\,kHz loop. At each cycle, it retains the newest valid state packet, publishes tool pose and velocity to the haptic engine, consumes the latest wrench command, computes joint torques using the planar Jacobian transpose relation \(\tau = J^{T}F\), and transmits the resulting torque command packet.
 
-Joint angular position is measured using AS5048 absolute magnetic rotary encoders communicating via SPI and mounted coaxially with the joint axes.
-% NOTE: encoder model left as placeholder for final confirmation if needed
-
-For the first actuator, which is coupled to the output joint through a timing belt transmission, an additional AS5600 magnetic rotary encoder is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This encoder provides rotor position feedback for the field-oriented control loop, enabling closed-loop torque control of the brushless motor.
-
-Encoder data are polled at a fixed sampling rate and packaged into device state packets for transmission to the host computer via a USB virtual COM interface.
-% NOTE: insert measured encoder polling frequency
-% NOTE: if needed later clarify whether this is via ST-Link virtual COM or native USB path
-
-The actuator control layer is implemented using SimpleFOC Mini brushless motor driver modules and the SimpleFOC library~\cite{simplefoc2022}, selected following earlier integration challenges with alternative ESC hardware. Torque commands received from the host system are processed by the embedded firmware and applied through the SimpleFOC library, which performs the required field-oriented control computations and generates the corresponding PWM drive signals for the motors.
-% NOTE: later add baud rate / framing if it becomes relevant in comms section
-
-A communication watchdog mechanism is implemented such that if valid torque commands are not received within a predefined timeout interval, the commanded joint torques are automatically set to zero to ensure safe device behaviour.
-
-Each actuator operates in field-oriented control (FOC) torque control mode.\cite{vasSensorlessVectorDirect1998} Rotor electrical angle feedback for the FOC algorithm is obtained from the dedicated motor-shaft encoder, allowing continuous estimation of electrical rotor position and stable low-speed torque output suitable for haptic interaction.
-% NOTE: later mention any limits this introduces for angle resolution / smoothness if discussed in results
-
-\subsection{Communication Protocol}
-
-Bidirectional communication between the host computer and the embedded controller is implemented using fixed-format binary data packets. Two primary packet types are defined: device state packets transmitted from the microcontroller to the host, and torque command packets transmitted from the host to the microcontroller.
-
-Each packet contains a unique header identifier used for packet synchronisation, followed by joint angle or torque data and a checksum field used for basic transmission integrity verification.
-
-% NOTE: clarify whether final implementation includes sequence numbers and/or timestamps
-% NOTE: maybe add packet structure table or byte layout later
-
-Upon reception of incoming data, packet headers are validated before the payload is processed.
-% NOTE: confirm whether final firmware receive path is interrupt-driven or polling-based
+This ensures that control decisions are always based on the most recent available state, avoiding backlog-induced latency and improving responsiveness under high update rates.
 
 \subsection{Host Software Architecture}
 
-The host-side software is implemented as a multithreaded C++ application composed of several modular subsystems responsible for world state management, physics simulation, haptic rendering, device communication, and graphical rendering.
-%TODO: Software Architecture Diagram
 \begin{figure}[htbp]
 	\centering
 	\fbox{%
-		\parbox[c][6cm][c]{0.8\textwidth}{%
+		\parbox[c][6cm][c]{0.85\textwidth}{%
 			\centering
 			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-			Software architecture diagram to be added here\\
-			(showing 	
-				threads:
-						rendering
-						physics
-						haptics
-						device comms
-				message channels:
-					queue vs snapshot)
+			System architecture diagram\\
+			(threads + message channels)
 		}
 	}
-	\caption{Placeholder for software architecture diagram.}
+	\caption{Overview of the host-side software architecture.}
 	\label{fig:software_architecture}
 \end{figure}
 
-\subsubsection{Inter-Thread Communication Architecture}
+The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
 
-Communication between software subsystems executing on different threads is implemented using a structured message-passing architecture. This design avoids shared mutable state wherever possible and instead enforces controlled data exchange through explicitly defined communication channels.
+Inter-thread communication is implemented through a message bus with two channel types:
+\begin{itemize}
+	\item queue channels for discrete commands/events (e.g., world edits, wrench messages)
+	\item snapshot channels for latest-value shared state (e.g., world snapshots)
+\end{itemize}
 
-A central \textit{MessageBus} object provides named access to communication channels. Two primary channel types are implemented: queue-based command channels and snapshot-based state channels.
+This separation allows command traffic to be drained in batches while continuous state can be accessed with low latency.
 
-Queue channels are implemented using a thread-safe FIFO structure protected by a mutex. These channels are primarily used for transmitting discrete event-driven messages such as world modification commands, force application requests, or tool pose updates. Messages are published by producer threads and consumed non-blockingly by the receiving subsystem. In certain subsystems, such as the physics engine, multiple queued messages may be drained and processed in batches during a single simulation step.
+\subsubsection{World and Rendering Subsystems}
 
-Snapshot channels are used for transmitting continuously updated state information between threads in a low-latency manner. These channels implement a double-buffered data structure combined with atomic index switching to allow single-producer, multi-consumer access without requiring mutex locking during read operations. A version counter is maintained to allow consumers to detect whether a new state update has been published since the previous read.
+\textit{WorldManager} is the authoritative owner of virtual scene state. Objects store identity, geometry reference, pose, appearance, role labels, and physics properties. Subsystems do not mutate world data directly; instead, they publish commands which are applied centrally by the world manager.
 
-This communication architecture enables deterministic separation between the rendering loop, physics simulation loop, haptic rendering loop, and device communication loop. By distinguishing between event-driven queue channels and continuously refreshed snapshot channels, the system reduces contention between threads while maintaining timely propagation of critical state updates.
-
-% NOTE: add short architecture diagram showing thread layout and channel directions
-% NOTE: maybe explicitly state which subsystem publishes to which channels
-
-\subsubsection{World State Management}
-
-The \textit{WorldManager} subsystem acts as the authoritative owner of the virtual environment state. It is responsible for creating, modifying, and deleting world objects, and provides a structured interface through which other subsystems issue high-level commands affecting the simulation.
-
-Each object in the virtual world is represented by a data structure containing geometric identifiers, pose information (position, orientation, and scale), visual attributes, physical properties, and semantic role labels.
-
-Geometric shape definitions are generated via a \textit{GeometryFactory}, where each geometry entry represents a reusable shape description rather than a specific object instance. These entries may include signed distance field (SDF) representations used for haptic collision queries, along with rendering mesh handles and optional physics shape descriptors.
-
-A geometry database provides indexed storage and lookup functionality for these geometry entries.
-
-\subsubsection{Rendering Subsystem}
-
-Visualisation of the simulated environment is performed by a dedicated rendering subsystem implemented using OpenGL. The renderer executes on its own thread and is responsible for displaying the current state of the virtual world, visualising haptic interaction states, and providing an interactive user interface for modifying simulation parameters at runtime.
-
-At each render iteration, the renderer first updates the camera aspect ratio using the current framebuffer dimensions and then reads the most recent world snapshot from a snapshot communication channel. This snapshot provides a read-only view of the current simulation state, including the pose, colour, geometry identifier, role, and physical properties of each object.
-
-For each object in the world snapshot, the renderer performs a geometry lookup through the geometry database. Each geometry entry stores a lightweight render mesh handle, which is used to retrieve the corresponding GPU-resident mesh from the render mesh registry. This separation allows simulation geometry definitions to remain independent from the underlying rendering resources.
-
-A model matrix is constructed from the object pose using its position, quaternion orientation, and uniform scale. The object is then rendered using a lightweight \textit{Renderable} abstraction, which combines the mesh resource, shader, object colour, and rendering options before uploading the model, view, and projection transforms to the shader and issuing the final draw call.
-
-GPU mesh resources are represented by \textit{MeshGPU} objects, which manage the required OpenGL vertex array, vertex buffer, and element buffer objects. In the current implementation, primitive meshes such as planes, spheres, and cubes are generated once, uploaded to GPU memory, and reused across multiple scene objects via the render mesh registry.
-
-In addition to rendering world objects, the subsystem also visualises haptic state information received from the haptic engine. The latest haptic snapshot is consumed from a queue channel and used to render overlay markers representing the current device pose and proxy pose. This provides a useful visual indication of the relationship between the unconstrained device position and the constrained proxy position during contact interactions.
-
-The rendering subsystem also provides interactive camera navigation. Keyboard and mouse inputs are processed through a viewport controller to allow the user to move around the virtual environment and inspect the scene from different viewpoints. Camera parameters such as field of view, near plane, far plane, yaw, and pitch are maintained as part of the renderer state.
-
-An ImGui-based graphical user interface is layered on top of the rendered scene to support live inspection and modification of simulation parameters. Through this interface the user can select objects, adjust object pose and colour, modify physical properties such as density, damping, friction, and restitution, and create new scene objects. These edits are not applied directly to the simulation state. Instead, the UI publishes structured world modification commands to the world manager via the message bus, preserving the separation between rendering and authoritative world state ownership.
-
-This architecture ensures that rendering remains decoupled from both the physics and haptic subsystems while still providing a responsive visual and interactive front-end for simulation control and debugging.
+Rendering is handled by an OpenGL subsystem running on the main thread. Each frame reads the latest world snapshot, resolves geometry and mesh handles, composes model transforms from object pose, and renders via shared shader and mesh abstractions. An ImGui interface provides runtime controls for object editing and parameter tuning; UI edits are emitted as world commands to preserve ownership boundaries.
 
 \subsubsection{Haptic Rendering Engine}
+
+The haptic engine executes at 1\,kHz in a dedicated loop. At each cycle, it reads the latest world snapshot and newest tool state, performs contact queries, computes force output, and publishes results to device, physics, and visualisation channels.
+
+Contact detection is performed using signed distance field (SDF) queries, with penetration depth and surface normals obtained from the local distance field gradient~\cite{ericsonRealTimeCollisionDetection2004}. For each candidate object, the tool position is transformed into object-local coordinates and queried against that object's SDF. If penetration is detected (negative signed distance), the tool point is projected to the surface to define the proxy position; otherwise, the proxy follows the tool in free space.
+
+Force output is generated using a proxy-based virtual coupling model, in which a spring--damper relationship is defined between the device position and a contact-constrained proxy~\cite{adamsStableHapticInteraction1999}:
+\[
+\mathbf{F} = K\left(\mathbf{x}_{p}-\mathbf{x}_{t}\right) + D\left(\mathbf{v}_{p}-\mathbf{v}_{t}\right)
+\]
+where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and
+\[
+D = 0.7\cdot 2\sqrt{KM}.
+\]
+
+This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a constrained dynamic system. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford.
+
+To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N before publication.
+
 \begin{figure}[htbp]
 	\centering
 	\fbox{%
-		\parbox[c][6cm][c]{0.8\textwidth}{%
+		\parbox[c][6cm][c]{0.75\textwidth}{%
 			\centering
 			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-			Haptic Rendering Diagram to be added here\\
-			(Show:
-				tool position
-				proxy position
-				surface
-				force vector)
+			Proxy-based haptic rendering\\
+			(tool, proxy, surface, force vector)
 		}
 	}
-	\caption{Placeholder for Haptic Rendering Diagram.}
-	\label{fig:haptic_rendering}
+	\caption{Proxy-based contact rendering using virtual coupling.}
+	\label{fig:haptic_proxy}
 \end{figure}
-%TODO: Haptic Rendering Diagram
-The haptic rendering engine is responsible for computing interaction forces between the user-controlled device and virtual objects in the simulated environment. The engine operates in a dedicated high-frequency loop and exchanges information with other subsystems using the message bus communication architecture described previously.
-
-\paragraph{Real-Time Haptic Interaction Loop}
-
-At each iteration of the haptic update cycle, the engine first retrieves the most recent world state snapshot using a snapshot channel. This provides the latest positions, orientations, and physical properties of all simulated objects.
-
-The engine then drains any pending tool state messages received from the device communication subsystem. These messages contain the most recent estimate of the device end-effector pose and velocity expressed in the world coordinate frame.
-
-Using this information, the engine performs a contact search across all relevant virtual objects. Objects designated as tool or proxy representations are excluded from this process. For each remaining object, a signed distance query is performed to determine the closest penetration condition between the tool point and the object surface.
-
-If penetration is detected, a proxy position representing the constrained end-effector location on the object surface is computed. If no contact is present, the proxy position coincides with the current tool position.
-
-Based on the resulting proxy and tool states, an interaction force is computed and limited to a predefined maximum magnitude. When contact occurs, an equal and opposite wrench command is generated and published to the physics simulation and device interface subsystems. A haptic state snapshot containing the current proxy pose, device pose, and rendered force is also published for use by visualisation or diagnostic components.
-
-\paragraph{Proxy-Based Contact Rendering}
-
-Contact handling is implemented using a proxy-based rendering approach. Each virtual object may provide a signed distance field (SDF) representation of its surface geometry. The tool position expressed in the world frame is first transformed into the local coordinate frame of each object under consideration.
-
-A signed distance value $\phi$ and corresponding surface gradient are then obtained from the SDF. A negative signed distance indicates penetration of the tool point into the object volume. In this case, the tool position is projected onto the closest point on the surface along the direction of the SDF gradient. This projection is performed in the local object frame and subsequently transformed back into world coordinates to define the proxy position.
-
-This mechanism allows arbitrary implicit or mesh-derived geometries to be rendered haptically using a unified contact model.
-
-\paragraph{Virtual Coupling Force Model}
-
-Interaction forces are generated using a virtual coupling model based on a linear spring--damper relationship between the proxy position and the actual device position. The rendered Cartesian force is given by
-
-\[
-\mathbf{F} = K \left( \mathbf{x}_{p} - \mathbf{x}_{t} \right)
-+ D \left( \mathbf{v}_{p} - \mathbf{v}_{t} \right)
-\]
-
-where $\mathbf{x}_{p}$ and $\mathbf{x}_{t}$ denote the proxy and tool positions respectively, and $\mathbf{v}_{p}$ and $\mathbf{v}_{t}$ represent the corresponding velocities.
-
-The proxy velocity is estimated using finite differences between successive proxy poses, while the tool velocity is obtained from the incoming device state message. In the present implementation the stiffness parameter is set to $K = 2000$\,N\,m$^{-1}$ and an equivalent virtual mass parameter of $M = 0.2$\,kg is used to compute the damping coefficient according to
-
-\[
-D = 0.7 \cdot 2\sqrt{KM}.
-\]
-
-To ensure safe and stable interaction behaviour, the magnitude of the rendered force is limited to a maximum allowable value of $15$\,N.
-
-\paragraph{Coupling to the Physics Simulation}
-
-When contact with a virtual object is detected, the haptic engine generates a wrench command representing the interaction force applied at the contact point. This wrench is published to the physics simulation subsystem, which applies the equal and opposite force to the corresponding dynamic actor during the next physics update step.
-
-This bidirectional coupling ensures that user interaction influences the motion of simulated objects while simultaneously providing force feedback to the user. In addition, the haptic engine publishes a structured snapshot message containing the current device pose, proxy pose, and rendered force, enabling other subsystems such as rendering or logging modules to access the current interaction state.
 
 \subsubsection{Physics Simulation Integration}
 
-Physical behaviour of virtual objects is simulated using the NVIDIA PhysX rigid body dynamics engine. The physics engine operates as a separate subsystem that advances the dynamic state of objects based on applied interaction forces and predefined physical parameters.
-
-At each external simulation update, the physics engine first checks whether the topology or physical properties of the virtual world have been modified. If changes are detected, all rigid actors are rebuilt from the current authoritative world state representation. This ensures consistency between the physics scene and the higher-level world model.
-
-Interaction forces generated by the haptic rendering engine are communicated to the physics engine via a queue-based message channel. These messages contain a wrench specification including the target object identifier, applied force vector, point of application in world coordinates, and an interaction duration. In the present implementation, forces are converted into impulses using the relation
-
+Rigid-body dynamics are simulated using NVIDIA PhysX. The physics subsystem runs on its own simulation thread and consumes wrench messages from the haptic loop. Incoming forces are converted to impulses over the effective timestep,
 \[
-\mathbf{J} = \mathbf{F} \, \Delta t
+\mathbf{J}=\mathbf{F}\,\Delta t,
 \]
+and applied at the contact point to the corresponding actor.
 
-and applied to the corresponding rigid body using PhysX impulse-based force application methods.
+A fixed-step accumulator scheme is used to decouple simulation stability from variable external loop timing. When world topology or physics properties change, actors are rebuilt from the latest authoritative world snapshot. After each simulation update, dynamic poses are written back to the world manager so subsequent rendering and haptic queries operate on consistent state.
 
-The physics engine advances the simulation using a fixed internal timestep. An accumulator-based integration strategy is employed, whereby incoming variable-duration external timesteps are accumulated until sufficient time has elapsed to perform one or more fixed simulation steps. This approach improves numerical stability and ensures deterministic solver behaviour.
+\subsection{Logging and Communication Validation}
 
-Dynamic rigid bodies are configured with linear and angular damping parameters obtained from the world model. Continuous collision detection (CCD) is enabled to improve robustness under fast contact interactions. Solver iteration counts are explicitly configured to balance computational cost against constraint resolution accuracy.
+To avoid introducing disk latency into the 1\,kHz control path, runtime logging is performed asynchronously. The device thread publishes structured timing and state messages to dedicated logging channels, and a background logger thread drains these channels into memory.
 
-Following each simulation update, the resulting poses of dynamic actors are written back into the authoritative world state maintained by the world management subsystem. This write-back mechanism ensures that subsequent rendering, collision queries, and haptic force computations operate on a consistent and up-to-date representation of the simulated environment.
-
-%\subsubsection{jacobians maybe}
-%TODO: maybe add this
-% NOTE: add subsection here explaining how Cartesian force commands are mapped to joint torques
-% NOTE: good place to include \tau = J^T(q)F and mention where it is evaluated in the loop
-% NOTE: if implemented approximately or only for planar kinematics, say that explicitly
-
-\subsubsection{Logging Framework}
-A dedicated logging and diagnostics subsystem was implemented to support timing analysis, communication validation, and offline performance evaluation without perturbing the real-time device control loop.
-
-To avoid introducing disk I/O latency into the 1 kHz communication thread, logging was implemented as an asynchronous message-passing pipeline using dedicated channels on the message bus.
-
-Two structured log message types were defined:
+At shutdown, logs are exported to CSV:
 \begin{itemize}
-	\item device state logs, capturing all successfully parsed incoming device packets
-	\item device timing logs, capturing matched receive–compute–transmit control cycles
+	\item \texttt{device\_timing.csv}: matched receive--compute--transmit cycle timing and associated signal data
+	\item \texttt{device\_state\_log.csv}: parsed incoming device state stream
 \end{itemize}
 
-These messages include host-side timestamps, device sequence counters, MCU timestamps, measured joint angles, rendered forces, and transmitted torque commands.
-
-A dedicated background logging thread continuously drains the logging channels and appends entries to in-memory buffers. At application shutdown, the captured data are exported to CSV files for offline analysis.
-
-This architecture ensures that instrumentation overhead does not affect the timing-critical haptic control path.
+A separate communication test executable (\texttt{serial\_tests}) was also implemented to characterise serial performance independently of the full application. It supports packet-rate and drop analysis, as well as round-trip-time testing, with machine-readable CSV outputs for offline analysis.

@@ -1,6 +1,6 @@
 \subsection{System Overview}
 
-The proposed system implements a bidirectional haptic interaction loop consisting of four principal layers: the haptic device hardware, embedded control firmware, host-side simulation and haptic rendering, and graphical visualisation. A conceptual overview of the bidirectional signal and force flow across the system is shown in Fig.\ref{fig:system_architecture}.
+The proposed system implements a bidirectional haptic interaction loop consisting of four principal layers: the haptic device hardware, embedded control firmware, host-side simulation and haptic rendering, and graphical visualisation. A conceptual overview of the signal and force flow is shown in Fig.~\ref{fig:system_architecture}.
 
 \begin{figure}[!ht]
 	\centering
@@ -34,103 +34,56 @@ The proposed system implements a bidirectional haptic interaction loop consistin
 	\label{fig:system_architecture}
 \end{figure}
 
-User motion is measured at the device joints and transmitted to the host simulation in real time. Based on the current virtual environment state, the host computes interaction forces which are mapped to joint torque commands and returned to the device actuators. This closed-loop structure enables simultaneous user influence on the simulated environment and force feedback from it.
+User motion is measured at the device joints and transmitted to the host in real time. The host computes interaction forces based on the virtual environment state, maps these to joint torque commands, and returns them to the device actuators, forming a closed-loop interaction.
 
-To support stable real-time interaction, the system is explicitly partitioned into time-critical and non-time-critical subsystems. Low-level torque control and safety functions are executed on the embedded controller at high frequency, while collision detection, haptic rendering, physics simulation, and visualisation are performed on the host platform.
+To support stable real-time operation, time-critical control tasks are executed on the embedded system at high frequency, while simulation, rendering, and visualisation are performed asynchronously on the host.
 
 \subsection{Design Constraints and Assumptions}
 
-The system architecture was developed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost laboratory prototype.
+The system is designed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost prototype.
 
-Stable haptic rendering typically requires servo update rates on the order of 1\,kHz and minimal end-to-end latency between user motion and actuator response. Accordingly, the design assumes high-frequency embedded torque control and asynchronous host-side computation.
+Stable haptic interaction requires high update rates (approximately 1\,kHz) and low end-to-end latency. Accordingly, the architecture assumes high-frequency embedded torque control and asynchronous host-side computation.
 
-The user is modelled as a passive element during interaction, and the virtual environment is represented using rigid-body contact dynamics. Effects such as deformable contact, high-frequency surface textures, and frictional stick–slip behaviour are considered outside the scope of this work.
-
-Mechanical workspace, actuator torque limits, and software safety bounds are selected to enable safe desktop operation while maintaining sufficient force capability for meaningful training interactions.
-
-% NOTE:
-% You may want to briefly reference the safety mechanisms here
-% (torque saturation, watchdog timeout, etc.) if they are implemented in firmware.
-
-
+Mechanical and control limits are selected to ensure safe operation while maintaining sufficient force capability for meaningful interaction.
 
 \subsection{Hardware Architecture}
 
-The haptic interface is based on a planar two-degree-of-freedom mechanism providing rotational motion about two orthogonal joint axes. This configuration offers a compromise between mechanical simplicity, workspace usability, and controllable force feedback while remaining representative of common robotic manipulator interactions.
+The haptic interface is implemented as a planar two-degree-of-freedom mechanism with orthogonal revolute joints. Each joint is actuated by a brushless motor operating in torque control mode and instrumented with absolute angular position sensing.
 
-Each joint is actuated by a brushless motor operating in torque control mode and instrumented with absolute angular position sensing. The mechanical structure is designed to be lightweight and back-drivable in order to reduce reflected inertia and improve transparency of the rendered interaction forces.
-
-% NOTE:
-% This section could benefit from:
-% - A labelled CAD diagram of the device
-% - A table summarising motors, encoders, and controller hardware.
-
-
+The structure is designed to be lightweight and back-drivable to minimise reflected inertia and improve transparency.
 
 \subsection{Embedded Control Architecture}
 
-The embedded control layer is responsible for real-time actuator torque regulation, sensor acquisition, and bidirectional communication with the host system. Torque control is implemented using field-oriented control techniques, enabling smooth force rendering across the operating range of the device.
+The embedded system performs real-time actuator control, sensor acquisition, and communication with the host. Joint states are streamed to the host at a fixed rate, while torque commands are received and applied continuously.
 
-Joint state measurements are streamed to the host at a fixed update rate, while commanded torque references are received and applied continuously. Safety mechanisms including torque limiting and communication watchdog functions are incorporated to ensure predictable behaviour under fault conditions.
-
-% NOTE:
-% You may want to explicitly state:
-% - MCU type
-% - control loop frequency
-% - communication interface (USB / UART / CAN)
-
-
+Safety mechanisms, including torque limiting and communication watchdogs, are implemented to ensure predictable behaviour under fault conditions.
 
 \subsection{Communication Architecture}
 
-A device-agnostic packet-based communication interface is used to exchange joint state and torque command data between the embedded controller and host simulation. This abstraction enables the haptic device to be integrated with different simulation environments or future physical robotic platforms without modification to the high-level control structure.
+Communication between the embedded controller and host is implemented using a packet-based interface exchanging joint state and torque command data.
 
-The protocol is designed to provide deterministic timing behaviour and low transmission overhead in order to support real-time haptic interaction requirements.
-
-% NOTE:
-% Add a packet structure table here if possible, e.g.:
-% seq | timestamp | q1 | q2 | dq1 | dq2 | tau1 | tau2
-
-
+The protocol is designed to support deterministic timing and low overhead suitable for real-time haptic interaction.
 
 \subsection{Host Software Architecture}
 
-Host-side software is organised as a modular multi-threaded framework comprising subsystems for world state management, physics simulation, haptic rendering, device communication, and graphical visualisation. Separation of these components allows different update rates to be maintained for computationally intensive tasks while preserving high-frequency force computation.
+The host system is implemented as a modular multi-threaded application comprising subsystems for world management, physics simulation, haptic rendering, device communication, and visualisation.
 
-A structured communication mechanism is employed to coordinate data exchange between subsystems and maintain a consistent representation of the simulated environment.
-
-% Add a diagram showing thread interaction if possible.
-
-
+These subsystems operate at different rates and exchange data through structured communication channels, allowing high-frequency haptic computation to be maintained independently of slower processes such as rendering.
 
 \subsection{Haptic Rendering Paradigm}
 
-Interaction forces are generated using a constraint-based haptic rendering approach derived from the virtual proxy (god-object) method. In this paradigm, the unconstrained device position is coupled to a proxy constrained by the geometry of the virtual environment, enabling stable rendering of unilateral contact conditions.
-
-A virtual coupling relationship between proxy and device states provides dynamic decoupling between the physical interface and simulated environment, supporting stable interaction under discrete-time computation.
-
+Interaction forces are generated using a proxy-based rendering approach in which the device position is coupled to a constraint-based proxy within the virtual environment. This enables stable rendering of contact interactions under discrete-time computation.
 
 \subsection{Force Transmission to the Device}
 
-For haptic force reflection, Cartesian interaction forces computed at the virtual end-effector are mapped into joint-space actuator torques using the Jacobian transpose formulation
+Cartesian interaction forces are mapped to joint torques using the Jacobian transpose formulation:
 
 \begin{equation}
 	\tau = J^{T}(q)F
 \end{equation}
 
-where $\tau$ is the joint torque vector, $J(q)$ is the manipulator Jacobian evaluated at joint configuration $q$, and $F$ is the rendered Cartesian interaction force.
-
-This relationship represents a quasi-static operational-space force mapping and is used specifically for force reflection from the virtual environment to the device actuators.
-
-It does not represent the full dynamics of the haptic device, which would additionally require consideration of link inertia, Coriolis terms, damping, and actuator dynamics.
-
-Extension toward a full dynamic operational-space formulation, following the object-space dynamics framework introduced by \cite{khatibUnifiedApproachMotion1987a}, is identified as future work.
+where $\tau$ is the joint torque vector, $J(q)$ is the manipulator Jacobian, and $F$ is the rendered force.
 
 \subsection{Visualisation Layer}
 
-A graphical visualisation subsystem provides real-time feedback of the simulated environment and device interaction state. Visual rendering is intentionally decoupled from the high-frequency haptic computation loop to prevent graphical latency from degrading interaction stability.
-
-Diagnostic overlays are incorporated to support inspection of contact conditions and system behaviour during development and testing.
-
-% NOTE:
-% Mention the rendering library used (OpenGL etc.).
+A graphical visualisation subsystem provides real-time feedback of the simulated environment. Rendering is decoupled from the haptic loop to prevent graphical latency from affecting interaction stability.
