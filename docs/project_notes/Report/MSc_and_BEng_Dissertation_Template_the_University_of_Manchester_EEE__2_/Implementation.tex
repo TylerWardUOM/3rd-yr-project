@@ -14,7 +14,7 @@ To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048) 
 
 For the belt-driven actuator, an additional AS5600 magnetic encoder is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
 
-Embedded control runs on an STM32 Nucleo-G401RE platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero.
+Embedded control runs on an STM32 Nucleo-G431RB platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero.
 
 \begin{figure}[htbp]
 	\centering
