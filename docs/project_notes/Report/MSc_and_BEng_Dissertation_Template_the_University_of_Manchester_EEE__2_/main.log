@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.17.1 (MiKTeX 24.1) (format=lualatex 2025.12.17)  18 APR 2026 15:10
+This is LuaHBTeX, Version 1.17.1 (MiKTeX 24.1) (format=lualatex 2025.12.17)  18 APR 2026 15:50
  restricted system commands enabled.
 **main.tex
 (./main.tex
@@ -1883,7 +1883,7 @@ warning  (pdf backend): ignoring duplicate destination with the name 'page.1'
 
 ]
 
-LaTeX Warning: Citation 'inproceedings' on page 2 undefined on input line 17.
+LaTeX Warning: Citation 'v' on page 2 undefined on input line 17.
 
 
 Overfull \hbox (0.2836pt too wide) in paragraph at lines 25--26
@@ -1929,154 +1929,148 @@ Overfull \hbox (0.61758pt too wide) in paragraph at lines 104--105
 -sult, the im-ple-men-ta-tion cap-tures the force- 
  []
 
-[13] [14]) (./Experimental_Methods.tex [15] [16]
-Overfull \hbox (0.78555pt too wide) in paragraph at lines 55--56
-\TU/Carlito(0)/m/n/12 In ad-di-tion to the stan-dalone se-rial com-mu-ni-ca-tion
- tests, end-to-end tim-ing of the host-side closed- 
+[13] [14])
+Overfull \hbox (1.1879pt too wide) in paragraph at lines 142--174
+\TU/Carlito(0)/m/n/12 se-rial per-for-mance in-de-pen-dently of the full ap-pli-
+ca-tion. It sup-ports two op-er-at-ing modes: a packet 
  []
 
-[17]
-Overfull \hbox (0.11954pt too wide) in paragraph at lines 79--80
-\TU/Carlito(0)/m/n/12 un-der con-trolled in-ter-ac-tion con-di-tions. Sec-ond, 
-the full sys-tem, in-clud-ing the phys-i-cal de-vice, com- 
- []
-
-
-Overfull \hbox (3.19376pt too wide) in paragraph at lines 87--88
-[]\TU/Carlito(0)/m/n/12 The test was used to as-sess both the com-puted force re
--sponse of the model and its be-haviour when 
- []
-
-[18]
-Overfull \hbox (6.41641pt too wide) in paragraph at lines 131--132
-[]\TU/Carlito(0)/m/n/12 This test demon-strated that the sys-tem could pro-vide im-plicit mo-tion guid-ance along sur-faces, which 
- []
-
-[19]
-Overfull \hbox (7.93399pt too wide) in paragraph at lines 154--155
-\TU/Carlito(0)/m/n/12 A rate lim-it-ing test was con-ducted to eval-u-ate the ef
--fect of lim-it-ing the rate of change of com-manded 
+(./Experimental_Methods.tex
+Overfull \hbox (5.29507pt too wide) in paragraph at lines 7--8
+\TU/Carlito(0)/m/n/12 Com-mu-ni-ca-tion per-for-mance was char-ac-terised us-ing
+ the ded-i-cated \TU/lmtt/m/n/12 serial_tests \TU/Carlito(0)/m/n/12 util-ity de-
+scribed 
  []
 
 
-Overfull \hbox (4.45352pt too wide) in paragraph at lines 156--157
-[]\TU/Carlito(0)/m/n/12 A slew-rate lim-iter was im-ple-mented on the mi-cro-con
--troller to con-strain the max-i-mum rate at which 
+Overfull \hbox (9.93008pt too wide) in paragraph at lines 7--8
+\TU/Carlito(0)/m/n/12 in Sec-tion 4.4. The tool sup-ports two modes: a packet ra
+te and in-tegrity mode for analysing streamed 
  []
 
-[20] [21]) (./Results.tex [22]
-Overfull \hbox (2.76602pt too wide) in paragraph at lines 17--18
+[15]
+Overfull \hbox (0.35977pt too wide) in paragraph at lines 27--28
+[]\TU/Carlito(0)/m/n/12 Tests were per-formed us-ing trans-mis-sion in-ter-vals of 1 ms, 2 ms, and 10 ms. For each test, the eval- 
+ []
+
+
+Overfull \hbox (9.06485pt too wide) in paragraph at lines 33--34
+\TU/Carlito(0)/m/n/12 In ad-di-tion to the stan-dalone com-mu-ni-ca-tion tests, end-to-end tim-ing of the host-side hap-tic pipeline 
+ []
+
+
+Overfull \hbox (30.707pt too wide) in paragraph at lines 33--34
+\TU/Carlito(0)/m/n/12 dur-ing nor-mal closed-loop op-er-a-tion and ex-ported to \TU/lmtt/m/n/12 device_timing.csv \TU/Carlito(0)/m/n/12 and \TU/lmtt/m/n/12 device_state_log.csv 
+ []
+
+[16] [17] [18] [19]) (./Results.tex [20]
+Overfull \hbox (2.76602pt too wide) in paragraph at lines 15--16
 []\TU/Carlito(0)/m/n/12 The mea-sured re-ceive rate tracked the re-quested trans
 -mis-sion rate closely across the full test range. 
  []
 
-<images/Dropped packets vs requested rate.pdf, id=268, 674.52pt x 440.64626pt>
+<images/Dropped packets vs requested rate.pdf, id=261, 674.52pt x 440.64626pt>
 File: images/Dropped packets vs requested rate.pdf Graphic file (type pdf)
 <use images/Dropped packets vs requested rate.pdf>
 Package luatex.def Info: images/Dropped packets vs requested rate.pdf  used on 
-input line 23.
+input line 21.
 (luatex.def)             Requested size: 232.17242pt x 151.66676pt.
-<images/Requested vs measured packet rate.pdf, id=269, 679.53876pt x 440.64626p
+<images/Requested vs measured packet rate.pdf, id=262, 679.53876pt x 440.64626p
 t>
 File: images/Requested vs measured packet rate.pdf Graphic file (type pdf)
 <use images/Requested vs measured packet rate.pdf>
 Package luatex.def Info: images/Requested vs measured packet rate.pdf  used on 
-input line 28.
+input line 26.
 (luatex.def)             Requested size: 232.17242pt x 150.55063pt.
-<images/Packet timing jitter vs requested rate.pdf, id=271, 663.47874pt x 440.6
+<images/Packet timing jitter vs requested rate.pdf, id=264, 663.47874pt x 440.6
 4626pt>
 File: images/Packet timing jitter vs requested rate.pdf Graphic file (type pdf)
 
 <use images/Packet timing jitter vs requested rate.pdf>
 Package luatex.def Info: images/Packet timing jitter vs requested rate.pdf  use
-d on input line 44.
+d on input line 42.
 (luatex.def)             Requested size: 386.95897pt x 256.9937pt.
-[23] [24<./images/Dropped packets vs requested rate.pdf><./images/Requested vs m
-easured packet rate.pdf><./images/Packet timing jitter vs requested rate.pdf>]
-<images/CDF of round-trip latency.pdf, id=337, 666.49pt x 440.64626pt>
+[21<./images/Dropped packets vs requested rate.pdf><./images/Requested vs measur
+ed packet rate.pdf>]
+<images/CDF of round-trip latency.pdf, id=308, 666.49pt x 440.64626pt>
 File: images/CDF of round-trip latency.pdf Graphic file (type pdf)
 <use images/CDF of round-trip latency.pdf>
 Package luatex.def Info: images/CDF of round-trip latency.pdf  used on input li
-ne 63.
+ne 59.
 (luatex.def)             Requested size: 386.95897pt x 255.83722pt.
-[25<./images/CDF of round-trip latency.pdf>]
-Overfull \hbox (4.4841pt too wide) in paragraph at lines 87--88
+ [22<./images/Packet timing jitter vs requested rate.pdf>]
+Overfull \hbox (4.4841pt too wide) in paragraph at lines 77--78
 []\TU/Carlito(0)/m/n/12 Anal-y-sis of \TU/lmtt/m/n/12 device_timing.csv \TU/Car
 lito(0)/m/n/12 showed that all recorded con-trol cy-cles were suc-cess-fully mat
 ched, 
  []
 
 
-Overfull \hbox (14.73868pt too wide) in paragraph at lines 89--90
+Overfull \hbox (14.73868pt too wide) in paragraph at lines 79--80
 \TU/Carlito(0)/m/n/12 a me-dian of 0.104 ms. The 95th per-centile la-tency was 
 0.546 ms, and the 99th per-centile was 2.04 ms, 
  []
 
 
-Overfull \hbox (0.58243pt too wide) in paragraph at lines 89--90
+Overfull \hbox (0.58243pt too wide) in paragraph at lines 79--80
 \TU/Carlito(0)/m/n/12 with a max-i-mum ob-served la-tency of 3.35 ms. As shown 
 in Fig. []8[], the dis-tri-bu-tion was con-cen-trated 
  []
 
-<images/Matched host-side end-to-end latency distribution.pdf, id=363, 669.5012
+<images/Matched host-side end-to-end latency distribution.pdf, id=334, 669.5012
 5pt x 440.64626pt>
 File: images/Matched host-side end-to-end latency distribution.pdf Graphic file
  (type pdf)
 <use images/Matched host-side end-to-end latency distribution.pdf>
 Package luatex.def Info: images/Matched host-side end-to-end latency distributi
-on.pdf  used on input line 93.
+on.pdf  used on input line 83.
 (luatex.def)             Requested size: 386.95897pt x 254.6942pt.
-[26]
-<images/Raw parsed state packet inter-arrival distribution.pdf, id=372, 661.471
+[23<./images/CDF of round-trip latency.pdf>] [24<./images/Matched host-side end-
+to-end latency distribution.pdf>]
+<images/Raw parsed state packet inter-arrival distribution.pdf, id=381, 661.471
 25pt x 440.64626pt>
 File: images/Raw parsed state packet inter-arrival distribution.pdf Graphic fil
 e (type pdf)
 <use images/Raw parsed state packet inter-arrival distribution.pdf>
 Package luatex.def Info: images/Raw parsed state packet inter-arrival distribut
-ion.pdf  used on input line 111.
+ion.pdf  used on input line 101.
 (luatex.def)             Requested size: 386.95897pt x 257.77365pt.
- [27<./images/Matched host-side end-to-end latency distribution.pdf>]
-Overfull \hbox (3.18399pt too wide) in paragraph at lines 121--122
-\TU/Carlito(0)/m/n/12 was highly reg-u-lar, packet pro-cess-ing at the host oc-c
-urred in a non-uniform burst-like pat-tern. These 
- []
-
-[28<./images/Raw parsed state packet inter-arrival distribution.pdf>]
-Overfull \hbox (1.35977pt too wide) in paragraph at lines 159--160
+ [25<./images/Raw parsed state packet inter-arrival distribution.pdf>]
+Overfull \hbox (1.35977pt too wide) in paragraph at lines 147--148
 \TU/Carlito(0)/m/n/12 in a restor-ing force that in-creased with pen-e-tra-tion depth, con-sis-tent with the im-ple-mented spring-- 
  []
 
-[29]
-Overfull \hbox (0.68594pt too wide) in paragraph at lines 175--176
+[26]
+Overfull \hbox (0.68594pt too wide) in paragraph at lines 163--164
 []\TU/Carlito(0)/m/n/12 These re-sults demon-strate that the sim-u-la-tion model
  can re-li-ably gen-er-ate con-straint forces aligned 
  []
 
 
-Overfull \hbox (0.16446pt too wide) in paragraph at lines 188--189
+Overfull \hbox (0.16446pt too wide) in paragraph at lines 176--177
 []\TU/Carlito(0)/m/n/12 With-out rate lim-it-ing, abrupt force changes re-sulted
  in no-tice-able vi-bra-tion and un-sta-ble be-haviour. 
  []
 
-[30] [31] [32]
-Overfull \hbox (1.2543pt too wide) in paragraph at lines 243--244
+[27] [28] [29]
+Overfull \hbox (1.2543pt too wide) in paragraph at lines 231--232
 []\TU/Carlito(0)/m/n/12 Un-der at-tempts to push strongly through a rigidly ren-
 dered ob-ject, trans-mis-sion non-idealities were 
  []
 
-[33] [34]) (./Discussion.tex [35]
+[30]) (./Discussion.tex [31]
 Overfull \hbox (5.67813pt too wide) in paragraph at lines 18--19
 \TU/Carlito(0)/m/n/12 De-spite the pres-ence of sig-nif-i-cant com-mu-ni-ca-tion
  la-tency and non-uniform packet ar-rival be-haviour 
  []
 
-[36] [37] [38]
-Overfull \hbox (2.19766pt too wide) in paragraph at lines 57--58
+[32] [33] [34]
+Overfull \hbox (2.19766pt too wide) in paragraph at lines 48--49
 []\TU/Carlito(0)/m/n/12 While the use of damp-ing and torque rate lim-it-ing was
  ef-fec-tive in en-sur-ing sta-ble in-ter-ac-tion, these 
  []
 
-) (./Conclusion.tex [39]
+) (./Conclusion.tex [35]
 Overfull \hbox (1.58829pt too wide) in paragraph at lines 5--6
 []\TU/Carlito(0)/m/n/12 The sys-tem suc-cess-fully achieved its pri-mary ob-jec-
 tive of en-abling bidi-rec-tional in-ter-ac-tion be-tween 
@@ -2088,13 +2082,13 @@ Overfull \hbox (1.30313pt too wide) in paragraph at lines 13--14
 ade-off be-tween sta-bil-ity and force fi-delity. While 
  []
 
-[40]
+[36]
 Overfull \hbox (0.30704pt too wide) in paragraph at lines 23--24
 \TU/Carlito(0)/m/n/12 host and em-bed-ded con-troller. In par-tic-u-lar, di-rect
  UART com-mu-ni-ca-tion via a ded-i-cated USB--UART 
  []
 
-[41]) [42]
+[37]) [38]
 Overfull \hbox (14.26694pt too wide) in paragraph at lines 199--199
 \TU/Carlito(0)/m/it/12 Robotics\TU/Carlito(0)/m/n/12 , vol. 10, no. 1, p. 29, Fe
 b. 5, 2021, ISSN: 2218-6581. DOI: []$\TU/lmtt/m/n/12 10 . 3390 / robotics1001002
@@ -2113,21 +2107,15 @@ Overfull \hbox (11.30447pt too wide) in paragraph at lines 199--199
 \TU/lmtt/m/n/12 1109 / WHC . 2017 . 7989891$[] \TU/Carlito(0)/m/n/12 Ac-cessed: Apr. 16, 2026. [On-line]. Avail-able: []$\TU/lmtt/m/n/12 https : / / ieeexplore . 
  []
 
-[43
+[39
 
 ]
-Overfull \hbox (12.64536pt too wide) in paragraph at lines 199--199
-[]\TU/Carlito(0)/m/n/12 “  Sales in-quiries,” Ac-cessed: Apr. 16, 2026. [On-
-line]. Avail-able: []$\TU/lmtt/m/n/12 https : / / www . forcedimension . 
- []
-
-
 Overfull \hbox (5.38321pt too wide) in paragraph at lines 199--199
 \TU/Carlito(0)/m/it/12 Robot In-ter-ac-tion and Co-op-er-a-tive Robots\TU/Carli
 to(0)/m/n/12 , vol. 3, Pitts-burgh, PA, USA: IEEE Com-put. Soc. Press, 
  []
 
-[44] [45
+[40] [41
 
 ] (./main.aux)
  ***********
@@ -2149,16 +2137,16 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 )
 
 Here is how much of LuaTeX's memory you used:
- 63805 strings out of 476497
+ 63784 strings out of 476497
  125161,2848258 words of node,token memory allocated
- 1031 words of node memory still in use:
-   6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 26 attribute, 128 glue_spe
-c, 26 attribute_list, 2 write, 14 pdf_action nodes
-   avail lists: 1:2,2:1642,3:1051,4:62,5:1137,6:69,7:6924,8:68,9:384,10:18,11:74
+ 1021 words of node memory still in use:
+   6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 25 attribute, 128 glue_spe
+c, 25 attribute_list, 2 write, 13 pdf_action nodes
+   avail lists: 1:2,2:1641,3:1051,4:52,5:1129,6:57,7:6924,8:68,9:384,10:18,11:74
 5
- 84533 multiletter control sequences out of 65536+600000
+ 84518 multiletter control sequences out of 65536+600000
  70 fonts using 18119191 bytes
- 104i,10n,108p,1702b,3393s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 104i,10n,108p,1702b,3422s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <//?/c:/users/tman0/appdata/local/programs/miktex/fonts/opentype/public/lm/lmmon
 o12-regular.otf><C:/Users/tman0/AppData/Local/Programs/MiKTeX/fonts/truetype/pub
 lic/simple-thesis-dissertation/carlito-italic.ttf><C:/Users/tman0/AppData/Local/
@@ -2170,9 +2158,9 @@ ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/tman0/AppData/Loca
 l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/tman0/AppDa
 ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/tma
 n0/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on main.pdf (51 pages, 569596 bytes).
+Output written on main.pdf (47 pages, 556694 bytes).
 
-PDF statistics: 879 PDF objects out of 1000 (max. 8388607)
- 161 named destinations out of 1000 (max. 131072)
+PDF statistics: 855 PDF objects out of 1000 (max. 8388607)
+ 155 named destinations out of 1000 (max. 131072)
  671 words of extra memory for PDF output out of 10000 (max. 100000000)
 

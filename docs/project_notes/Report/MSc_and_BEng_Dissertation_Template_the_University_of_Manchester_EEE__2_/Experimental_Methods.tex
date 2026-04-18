@@ -10,20 +10,11 @@ Tests were conducted across target transmission rates from 100~Hz to 2000~Hz to 
 
 \subsubsection{Packet Integrity and Rate Tests}
 
-Packet integrity and communication timing were evaluated using the dedicated rate-test mode of the communication test utility.
+Packet integrity and communication timing were evaluated using the rate-test mode of the communication test utility.
 
 For each target transmission frequency, the firmware was configured to stream fixed-format device state packets at a constant rate. Tests were performed at nominal frequencies of 100~Hz, 250~Hz, 500~Hz, 1000~Hz, 1250~Hz, and 2000~Hz.
 
-For each test condition, the host continuously received and parsed incoming packets over the USB virtual COM interface. The following performance metrics were recorded:
-
-\begin{itemize}
-	\item valid packet count
-	\item dropped packets inferred from sequence gaps
-	\item out-of-order packets
-	\item host-observed inter-arrival time
-	\item effective receive rate
-	\item inter-arrival jitter
-\end{itemize}
+For each test condition, the host continuously received and parsed incoming packets over the USB virtual COM interface. The recorded performance metrics included valid packet count, dropped packets inferred from sequence gaps, out-of-order packets, host-observed inter-arrival time, effective receive rate, and inter-arrival jitter.
 
 All results were exported to CSV format for offline statistical analysis and visualisation.
 
@@ -33,18 +24,7 @@ Round-trip latency was evaluated using a ping--echo communication test.
 
 In this test, the host transmitted timestamped ping packets to the embedded controller, which immediately returned an echo packet containing the original sequence number and timestamp.
 
-Tests were performed using transmission intervals of 1~ms, 2~ms, and 10~ms.
-
-For each test, the following metrics were computed:
-
-\begin{itemize}
-	\item mean RTT
-	\item median RTT
-	\item 95th percentile RTT
-	\item 99th percentile RTT
-	\item minimum and maximum RTT
-	\item timeout count
-\end{itemize}
+Tests were performed using transmission intervals of 1~ms, 2~ms, and 10~ms. For each test, the evaluated metrics included mean, median, 95th percentile, and 99th percentile RTT, along with minimum and maximum RTT values and timeout counts.
 
 These results were used to characterise communication latency and timing consistency under different transmission loads.
 
@@ -52,150 +32,84 @@ These results were used to characterise communication latency and timing consist
 
 In addition to the standalone communication tests, end-to-end timing of the host-side haptic pipeline was evaluated using the runtime logging framework described in Section~4.4. Logs were captured during normal closed-loop operation and exported to \texttt{device\_timing.csv} and \texttt{device\_state\_log.csv} for offline analysis in MATLAB.
 
-From these logs, the following metrics were evaluated:
-
-\begin{itemize}
-	\item host-side end-to-end latency between state-packet parsing and torque command transmission
-	\item intermediate host pipeline delays between communication, haptic processing, and transmission stages
-	\item matched state-command sequence consistency
-	\item parsed state-packet inter-arrival timing on the host
-	\item sequence gap statistics for identifying skipped packets
-	\item estimated parsed packet rate and MCU-side timing trends
-\end{itemize}
+The evaluation included host-side end-to-end latency between state-packet parsing and torque command transmission, intermediate pipeline delays between communication, haptic processing, and transmission stages, matched state-command sequence consistency, parsed state-packet inter-arrival timing, sequence gap statistics, and estimated parsed packet rate with MCU-side timing trends.
 
 Because the host and microcontroller clocks were not synchronised, the analysis was restricted to host-side timing differences and trend-based interpretation of MCU timestamps. Absolute one-way latency between host and device could therefore not be inferred directly.
-
 
 \subsection{Simulation Validation}
 
 Simulation validation tests were designed to assess both the correctness of the haptic rendering model in isolation and the stability of the integrated system during interaction.
 
-Two complementary forms of evaluation were performed. First, the behaviour of the virtual coupling and contact model was assessed by observing the computed force output of the simulation under controlled interaction conditions. Second, the full system, including the physical device, communication pipeline, and actuator feedback, was evaluated during sustained user interaction.
+Two complementary evaluations were performed. First, the behaviour of the virtual coupling and contact model was assessed by observing the computed force output under controlled interaction conditions. Second, the full system, including the physical device, communication pipeline, and actuator feedback, was evaluated during sustained user interaction.
 
 \subsubsection{Virtual Wall Test}
 
-A virtual wall test was performed to validate the basic unilateral contact behaviour of the haptic rendering engine. In this test, a simple planar contact boundary was defined in the virtual environment and the device end-effector was manually moved toward and against the wall during repeated interaction trials.
+A virtual wall test was performed to validate the basic unilateral contact behaviour of the haptic rendering engine. A planar contact boundary was defined in the virtual environment, and the device end-effector was manually moved toward and against the wall during repeated trials.
 
-The purpose of this test was to verify that the proxy-based rendering method correctly prevented penetration of the constrained proxy through the wall surface while allowing the unconstrained device position to continue moving, thereby generating a restoring virtual coupling force.
+This test verified that the proxy-based rendering method prevented penetration of the constrained proxy through the wall surface while allowing the unconstrained device position to continue moving, thereby generating a restoring virtual coupling force.
 
-The following behaviours were examined:
+The evaluation examined the absence of significant rendered force outside the wall, the increase in force with penetration depth, and qualitative agreement with the implemented spring--damper coupling model.
 
-\begin{itemize}
-	\item absence of significant rendered force when the end-effector remained outside the wall
-	\item increase in rendered force as penetration depth increased
-	\item qualitative agreement between the observed force response and the implemented spring--damper coupling model
-\end{itemize}
-
-
-
-%\subsubsection{Virtual Fixture Test}
-%TODO: do this test put two objects in sim and see if it makes me move through the gap
-% wait till ive done test or change to path along wall fixturee
-%A virtual fixture test was conducted to evaluate the ability of the haptic rendering system to provide directional guidance within the simulated workspace. In this test, a constrained path or guiding region was defined in the virtual environment, and the user manually moved the device end-effector while interacting with the imposed virtual constraint.
-%
-%Unlike the virtual wall test, which assessed unilateral contact against a rigid boundary, this test was intended to assess whether the system could render assistive or constraining forces that encouraged motion along a preferred path while resisting deviation away from it.
-%
-%The following aspects were examined qualitatively during repeated trials:
-%
-%\begin{itemize}
-%	\item ability of the rendered forces to guide motion toward or along the intended trajectory
-%	\item resistance to lateral deviation from the constraint
-%	\item smoothness of force transitions during entry to and exit from the constrained region
-%	\item stability of user interaction while following the fixture
-%\end{itemize}
-%
-%This test was used to verify that the implemented proxy and force-rendering framework could support constrained guidance behaviour relevant to manipulator training scenarios.
 \subsubsection{Constrained Motion Along a Virtual Surface}
 
-In addition to evaluating normal contact behaviour, the system was tested for its ability to support constrained motion along a virtual surface.
+The system was further evaluated for its ability to support constrained motion along a virtual surface.
 
-During this test, the device end-effector was brought into contact with a planar virtual wall and allowed to move freely along the surface while maintaining contact. This behaviour arises naturally from the proxy-based rendering method, in which motion normal to the surface is resisted while tangential motion remains unconstrained.
+During this test, the end-effector was brought into contact with a planar wall and allowed to move along the surface while maintaining contact. This behaviour arises naturally from the proxy-based rendering method, where motion normal to the surface is resisted while tangential motion remains unconstrained.
 
-The following aspects were assessed qualitatively:
-
-\begin{itemize}
-	\item ability to maintain contact with the surface while moving along it
-	\item absence of significant resistance to tangential motion
-	\item stability of motion during sustained sliding contact
-	\item smoothness of transitions between free-space and constrained motion
-\end{itemize}
+The evaluation assessed the ability to maintain contact during motion, the absence of resistance to tangential movement, stability during sustained sliding interaction, and smooth transitions between free-space and constrained motion.
 
 \subsection{Safety Validation}
-Safety validation tests were conducted to ensure that the system remained bounded and behaved predictably under both normal and fault conditions. These tests focused on verifying the effectiveness of software and embedded safety mechanisms, including torque saturation, rate limiting, and watchdog-based fail-safe behaviour.
+
+Safety validation tests ensured that the system remained bounded and behaved predictably under both normal and fault conditions. These tests focused on verifying torque saturation, rate limiting, and watchdog-based fail-safe behaviour.
+
 \subsubsection{Torque Saturation Test}
 
-A torque saturation test was performed to verify that actuator command limits were correctly enforced across both the host and embedded control layers.
+A torque saturation test verified that actuator command limits were correctly enforced across both host and embedded layers.
 
-Force outputs generated by the haptic rendering engine were limited on the host side to a predefined maximum value. In addition, the embedded controller applied a secondary torque clamp to ensure that actuator commands remained within safe operating bounds regardless of incoming data.
-
-During testing, interaction scenarios producing large virtual forces were introduced, and the resulting actuator commands were observed to confirm that:
+Force outputs were limited on the host side to a predefined maximum, and the embedded controller applied an additional clamp to ensure commands remained within safe bounds. Testing confirmed that:
 
 \begin{itemize}
-	\item force commands were correctly limited on the host side
+	\item host-side force commands were correctly limited
 	\item transmitted torque commands were further bounded by the embedded controller
-	\item actuator output remained within safe and predictable limits under all conditions
+	\item actuator output remained within safe and predictable limits
 \end{itemize}
 
 \subsubsection{Rate Limiting Test}
 
-A rate limiting test was conducted to evaluate the effect of limiting the rate of change of commanded torque at the embedded controller level.
+A rate limiting test evaluated the effect of constraining the rate of change of commanded torque at the embedded controller level.
 
-A slew-rate limiter was implemented on the microcontroller to constrain the maximum rate at which actuator torque commands could change. This was introduced to reduce high-frequency oscillations and improve stability during rapid contact transitions.
-
-During testing, interaction scenarios involving abrupt changes in virtual force were generated, and the resulting actuator behaviour was observed to determine whether:
+A slew-rate limiter was implemented to reduce high-frequency oscillations and improve stability during rapid contact transitions. Testing verified that:
 
 \begin{itemize}
 	\item rapid command changes were smoothed into bounded torque ramps
 	\item high-frequency oscillations were reduced during contact events
-	\item overall system stability was improved during interaction
+	\item overall system stability improved during interaction
 \end{itemize}
 
 \subsubsection{Watchdog Timeout Test}
 
-A watchdog timeout test was performed to verify safe system behaviour under loss of communication between the host and embedded controller. In this test, the stream of valid incoming torque commands was intentionally interrupted during operation.
+A watchdog timeout test verified safe system behaviour under communication loss by interrupting the incoming command stream during operation.
 
-The response of the embedded controller was then observed to confirm that actuator torque commands were reset to zero after the predefined timeout interval.
-
-The following conditions were checked:
+The embedded controller response confirmed that:
 
 \begin{itemize}
-	\item whether the watchdog triggered reliably when command updates ceased
-	\item whether commanded torque was removed within the intended timeout window
-	\item whether the device returned to a safe passive state after communication loss
+	\item the watchdog triggered reliably when command updates ceased
+	\item commanded torque was removed within the intended timeout window
+	\item the device returned to a safe passive state
 \end{itemize}
 
 \subsection{Hardware Validation}
-Hardware validation tests were performed to assess the behaviour of the physical actuation system and the overall device during interaction. These tests focused on qualitative evaluation of actuator responsiveness and the stability of sustained user interaction with the haptic interface.
+
+Hardware validation assessed the behaviour of the physical actuation system and overall device interaction, focusing on qualitative evaluation of responsiveness and stability.
+
 \subsubsection{Actuator Torque Response Characterisation}
 
-Basic actuator response behaviour was assessed using a standalone motor test prior to full system integration. In this test, step changes in commanded torque were applied to an individual actuator, and the resulting mechanical response was evaluated qualitatively.
+Basic actuator response behaviour was evaluated using standalone motor testing prior to system integration. Step changes in commanded torque were applied, and the resulting mechanical response was assessed qualitatively.
 
-The purpose of this test was to verify that the motor and control hardware could produce responsive and stable torque output suitable for subsequent use in the haptic interface.
-
-The evaluation focused on:
-
-\begin{itemize}
-	\item qualitative responsiveness to changes in commanded torque
-	\item presence of oscillatory or unstable behaviour
-	\item smoothness of the resulting motion and resistive feel
-	\item repeatability across repeated command inputs
-\end{itemize}
-
-The assessment was performed through direct observation and manual interaction with the actuator, and therefore represents a qualitative validation of actuator behaviour rather than a precise quantitative characterisation.
+The evaluation examined responsiveness to torque changes, presence of oscillatory behaviour, smoothness of motion, and repeatability across repeated inputs. This represents qualitative validation rather than precise quantitative characterisation.
 
 \subsubsection{Stable Contact Test}
 
-A stable contact test was conducted to evaluate the behaviour of the full closed-loop system during sustained interaction with a virtual surface.
+A stable contact test evaluated the behaviour of the full closed-loop system during sustained interaction with a virtual surface.
 
-In this test,the device end-effector was brought into contact with a virtual object and maintained contact while observing the resulting force feedback behaviour.
-
-Unlike the virtual wall test, which focuses primarily on validating the contact model, this test evaluates the stability and usability of the integrated system under continuous interaction conditions.
-
-The following aspects were examined:
-
-\begin{itemize}
-	\item ability to maintain continuous contact without runaway motion
-	\item presence of oscillation, chatter, or instability
-	\item consistency of the rendered resistive force
-	\item qualitative usability of the interaction
-\end{itemize}
+The end-effector was brought into contact with a virtual object and maintained in contact while observing the resulting force feedback behaviour. The evaluation assessed the ability to maintain continuous contact without instability, the presence of oscillation or chatter, consistency of the rendered resistive force, and overall usability of the interaction.

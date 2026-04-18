@@ -478,27 +478,6 @@
       \verb https://shop.gomeasure3d.com/products/geomagic-touch-x-haptic-device
       \endverb
     \endentry
-    \entry{forceDimensionSales}{online}{}
-      \list{publisher}{1}{%
-        {Force Dimension}%
-      }
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labeltitlesource}{title}
-      \field{title}{Sales Inquiries}
-      \field{urlday}{16}
-      \field{urlmonth}{4}
-      \field{urlyear}{2026}
-      \field{year}{2026}
-      \field{dateera}{ce}
-      \field{urldateera}{ce}
-      \verb{urlraw}
-      \verb https://www.forcedimension.com/contact/sales
-      \endverb
-      \verb{url}
-      \verb https://www.forcedimension.com/contact/sales
-      \endverb
-    \endentry
     \entry{zillesConstraintbasedGodobjectMethod1995}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=6f0da45b73c619f55a548cfae8e12c2c}{%
@@ -556,54 +535,6 @@
       \verb http://ieeexplore.ieee.org/document/525876/
       \endverb
     \endentry
-    \entry{khatibUnifiedApproachMotion1987a}{article}{}
-      \name{author}{1}{}{%
-        {{hash=0a9bcb07c557a30beb3c13b8fab1ad99}{%
-           family={Khatib},
-           familyi={K\bibinitperiod},
-           given={O.},
-           giveni={O\bibinitperiod}}}%
-      }
-      \strng{namehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{fullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{bibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{authorbibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{authornamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \strng{authorfullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{shorttitle}
-      \field{abstract}{A framework for the analysis and control of manipulator systems with respect to the dynamic behavior of their end-effectors is developed. First, issues related to the description of end-effector tasks that involve constrained motion and active force control are discussed. The fundamentals of the operational space formulation are then presented, and the unified approach for motion and force control is developed. The extension of this formulation to redundant manipulator systems is also presented, constructing the end-effector equations of motion and describing their behavior with respect to joint forces. These results are used in the development of a new and systematic approach for dealing with the problems arising at kinematic singularities. At a singular configuration, the manipulator is treated as a mechanism that is redundant with respect to the motion of the end-effector in the subspace of operational space orthogonal to the singular direction.}
-      \field{issn}{2374-8710}
-      \field{journaltitle}{IEEE Journal on Robotics and Automation}
-      \field{month}{2}
-      \field{number}{1}
-      \field{shorttitle}{A Unified Approach for Motion and Force Control of Robot Manipulators}
-      \field{title}{A Unified Approach for Motion and Force Control of Robot Manipulators: {{The}} Operational Space Formulation}
-      \field{urlday}{16}
-      \field{urlmonth}{4}
-      \field{urlyear}{2026}
-      \field{volume}{3}
-      \field{year}{1987}
-      \field{dateera}{ce}
-      \field{urldateera}{ce}
-      \field{pages}{43\bibrangedash 53}
-      \range{pages}{11}
-      \verb{doi}
-      \verb 10.1109/JRA.1987.1087068
-      \endverb
-      \verb{file}
-      \verb C:\Users\tman0\Zotero\storage\JRVBVLHG\Khatib - 1987 - A unified approach for motion and force control of robot manipulators The operational space formula.pdf
-      \endverb
-      \verb{urlraw}
-      \verb https://ieeexplore.ieee.org/abstract/document/1087068
-      \endverb
-      \verb{url}
-      \verb https://ieeexplore.ieee.org/abstract/document/1087068
-      \endverb
-      \keyw{Control system analysis,Control systems,Equations,Force control,Kinematics,Manipulator dynamics,Motion analysis,Motion control,Orbital robotics,Robot sensing systems}
-    \endentry
     \entry{lavatelliDesignOpenSource2014}{inproceedings}{}
       \name{author}{3}{}{%
         {{hash=f7001987e44010db59abf9de42873de6}{%
@@ -628,8 +559,8 @@
       \strng{authorbibnamehash}{0dd29712141115405d1cb142bc9c6a7b}
       \strng{authornamehash}{a97a1fd03ae67baf4c891c4985db32cd}
       \strng{authorfullhash}{0dd29712141115405d1cb142bc9c6a7b}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{month}{9}
@@ -680,8 +611,8 @@
       \strng{authorbibnamehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
       \strng{authornamehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
       \strng{authorfullhash}{dfcd1c9e447d66a9ea248cc3efb390bc}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Open Source Software}
@@ -722,8 +653,8 @@
       \strng{authorbibnamehash}{b31eef85c811a251c7186ca8015ca7b0}
       \strng{authornamehash}{b31eef85c811a251c7186ca8015ca7b0}
       \strng{authorfullhash}{b31eef85c811a251c7186ca8015ca7b0}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{This is the first comprehensive book on sensor less high performance a.c. drives. It is essential reading for anyone interested in acquiring a solid background on sensor less torque-controlled drives. It presents a detailed and unified treatment of sensor less vector-controlled and direct-torque controlled drive systems. It also discusses the applications of artificial intelligence to drives. Where possible, space vector theory is used and emphasis is laid on detailed mathematical and physical analysis. Sensorless drive schemes for different types of permanent magnet synchronous motors, synchronous reluctance motors, and induction motors are also presented. These include more than twenty vector drives e.g. five types of MRAS-based vector drives, and eleven types of direct-torque-controlled (DTC) drives, e.g. the ABB DTC drive. However, torque-controlled switched reluctance motor drives are also discussed due to their emerging importance. The book also covers various drive applications using artificial intelligence (fuzzy logic, neural networks, fuzzy-neural networks) and AI-based modelling of electrical machines. Finally, self-commissioning techniques are also discussed. This is a comprehensive thoroughly up-to-date, and self-contained book suitable for students at various levels, teachers, and industrial readership. Peter Vas is a Professor at the Department of Engineering at the University of Aberdeen, UK, where he is also the Head of the Intelligent Motion Control Group. His previous books published by Oxford University Press are extensively used worldwide.}
