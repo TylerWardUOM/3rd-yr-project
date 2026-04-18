@@ -1,63 +1,26 @@
 %Discussion section 
 \subsection{Communication and Latency Constraints}
-The experimental results presented in Section 6.1 demonstrate that system performance is fundamentally constrained by communication latency rather than computational limitations. Although the system achieves high update rates of approximately 1 kHz and low host-side processing latency (sub-millisecond, as shown in Section 6.1.3), the measured round-trip communication delay of approximately 15--16 ms (Section 6.1.2) dominates the closed-loop response.
+Section 6.1 shows that the dominant system constraint is communication delay, not host computation. The measured round-trip delay is much larger than the nominal 1~ms haptic update period, so loop delay rather than processing speed sets the practical limit on achievable stiffness.
 
-In haptic rendering systems, achievable virtual stiffness is strongly limited by loop delay. Prior work typically assumes servo update rates on the order of 1 kHz with minimal latency in order to render stiff contact interactions. However, the results presented here show that even when high update rates are maintained, the presence of significant communication delay imposes a practical upper bound on stable stiffness. Given a nominal update period of approximately 1 ms, the measured round-trip delay is more than an order of magnitude larger than the control timestep, introducing substantial phase lag into the feedback loop.
+This is consistent with delay-limited haptic behaviour: added phase lag reduces stability margins and increases sensitivity to oscillation. The burst-like host packet timing and fixed-latency RTT profile also suggest that transport and scheduling overhead in the communication stack are likely major contributors.
 
-This limitation arises because delayed force feedback introduces phase lag into the closed-loop system, reducing stability margins and increasing the risk of oscillatory behaviour during contact. As a result, the system cannot safely render very high stiffness values without additional stabilisation mechanisms.
-
-Nevertheless, the results demonstrate that stable haptic interaction remains achievable despite this latency, provided that appropriate architectural and control strategies are employed. This reflects a practical distinction between theoretical haptic rendering assumptions and real-world system constraints, where communication delays are often unavoidable.
-
-A likely contributing factor to the observed communication delay is the use of the ST-Link virtual COM interface for host--device communication. This interface was selected due to its simplicity and ease of integration during development, allowing rapid prototyping without requiring additional hardware or low-level USB implementation. However, the burst-like packet delivery observed in Section 6.1.3, together with the approximately 15--16~ms round-trip latency, suggests that this interface introduces buffering and scheduling overhead that is significant relative to the 1~kHz control timestep.
-
-While the present work does not isolate the exact contribution of each component in the communication stack, it is likely that a substantial portion of the measured latency arises from the virtual COM transport layer rather than host-side computation or control loop execution. Alternative communication approaches, such as direct UART communication via a dedicated USB--UART bridge or lower-latency interfaces, could therefore potentially reduce the round-trip delay and improve achievable haptic stiffness.
-
-These results highlight that, in practical haptic systems, communication architecture can be a dominant performance constraint, and must be considered alongside control and mechanical design when targeting high-fidelity interaction.
+The implication is that communication architecture should be treated as a first-order design variable in low-cost haptic systems, alongside control and mechanics.
 
 \subsection{Stability of the Haptic Interaction}
-Despite the presence of significant communication latency and non-uniform packet arrival behaviour observed in Section 6.1.3, the system was able to maintain stable haptic interaction under a wide range of operating conditions. This stability can be attributed to several key design choices in the system architecture.
+Despite delay and bursty packet timing, stable interaction was achieved in Section 6 through architectural decoupling and conservative control shaping.
 
-Firstly, the use of snapshot-based communication channels ensures that the haptic rendering loop always operates on the most recent available device state, rather than processing queued historical data. This effectively mitigates the impact of burst-like packet delivery observed in the communication results, preventing outdated state information from introducing additional delay or instability into the control loop.
+Snapshot-based state exchange prevented the control loop from acting on stale queued data, while separate communication, rendering, and simulation threads reduced timing interference across subsystems. At the actuator level, damping and torque rate limiting suppressed sharp force transients that previously drove oscillation.
 
-Secondly, the separation of communication, haptic rendering, and physics simulation into independent threads allows each subsystem to operate at an appropriate rate without blocking time-critical operations. This decoupling reduces the propagation of timing variability between subsystems.
-
-In addition, stability was significantly improved through the use of damping and torque rate limiting at the embedded control level, as evidenced by the reduction in oscillatory behaviour observed during hardware validation (Section 6.3.1). The virtual coupling model introduces dissipative behaviour that helps to counteract the destabilising effects of delayed feedback, while the slew-rate limiter constrains rapid changes in commanded torque. This prevents abrupt force discontinuities that could otherwise excite oscillations in the system.
-
-Together, these mechanisms enable the system to maintain stable and controllable interaction despite communication delays that would otherwise limit performance in a purely high-stiffness haptic rendering framework.
+Together, these choices favoured robust behaviour over aggressive stiffness, enabling repeatable and controllable contact interaction under non-ideal timing conditions.
 
 \subsection{Hardware Limitations}
+Section 6.4 indicates that hardware limitations were a second major constraint after communication delay.
 
-The performance and evaluation of the system were subject to several hardware-related limitations arising from practical integration challenges and resource constraints during development. These limitations are directly reflected in the qualitative interaction behaviour observed during hardware validation (Section 6.4), including the presence of compliant contact behaviour and variation in rendered force.
+First, torque control remained qualitative because the final motor driver path did not include current sensing, so commanded torque could not be mapped to calibrated physical torque. Second, the transmission introduced high-load non-idealities (including belt slip), reducing force consistency near the upper operating range. Third, final validation used partial actuation after loss of one actuator, reducing full 2-DOF force-feedback capability during physical testing.
 
-A primary limitation was the absence of current sensing in the actuator control system. The initial design intended to utilise integrated motor driver solutions based on the STM32 B-G431-ESC1 platform, which provide built-in current sensing capabilities suitable for accurate torque control. However, significant integration challenges were encountered when attempting to interface these drivers with the selected magnetic encoders, particularly in achieving reliable and stable operation within the required control framework.
-
-Due to the increased implementation complexity and project time constraints, a design decision was made to adopt SimpleFOC Mini driver modules, which provided a more straightforward and reliable integration pathway with the STM32 Nucleo development board. This allowed development effort to be focused on the embedded control and host-side software architecture, which formed a central objective of the project.
-
-However, the use of SimpleFOC Mini drivers without current sensing introduces an important limitation: commanded torque cannot be interpreted as a calibrated physical torque output. Instead, torque control operates effectively open-loop with respect to current, making the output dependent on motor characteristics, supply conditions, and load variations. As a result, the system provides qualitative rather than quantitatively accurate force feedback.
-
-Despite this limitation, the force feedback was sufficient to convey relative interaction forces and contact conditions to the user. For the intended application as a training and prototyping interface, this qualitative behaviour was considered an acceptable trade-off.
-
-A second limitation arises from the mechanical transmission used to increase actuator torque. A GT2 timing belt reduction was implemented on the base joint to compensate for the limited torque output of the selected low-cost gimbal motors. While effective in increasing available torque, this transmission introduced non-ideal behaviour under high load conditions.
-
-During interaction with large rendered forces, the belt was observed to slip when the applied load exceeded the transmission capability. An adjustable idler pulley was introduced to increase belt tension and reduce slip; however, this did not fully eliminate the issue. Residual slip is likely due to the use of 3D-printed pulleys, which do not achieve the same tooth profile precision and engagement as manufactured components.
-
-This behaviour limits the maximum renderable force and introduces non-linearities into the transmission, reducing the consistency of force feedback under high load conditions.
-
-In addition, the overall torque capability of the selected motors was found to be insufficient for rendering very stiff virtual environments. Even in the absence of belt slip, the actuators were unable to generate sufficiently large torques to convincingly simulate hard contact conditions. As observed in Section 6.4.2, this results in noticeable compliance during interaction with virtual walls, where force increases gradually rather than instantaneously.
-
-A further limitation arose from the failure of one actuator during development. The exact cause of this failure could not be determined, and the actuator was not replaced within the available project timeframe and budget. Consequently, final hardware validation was conducted using a single actuated joint, while the second joint remained available for position sensing only, as described in Section 6.4.
-
-Although this did not affect the system architecture or communication framework, it reduced the system from full two-degree-of-freedom force feedback to partial actuation during physical testing.
-
-Overall, these results demonstrate that, in addition to communication latency, actuator capability and transmission design impose significant constraints on achievable haptic performance in low-cost systems.
+These factors explain the observed compliant contact feel and finite maximum practical stiffness.
 
 \subsection{Design Trade-Offs}
-The design of the system reflects a set of trade-offs between stability, responsiveness, and achievable force fidelity.
+The final design prioritised stability and safety over maximum rigidity. Damping and rate limiting improved controllability and prevented unstable contact events, but they also softened sharp contact transients and reduced apparent stiffness.
 
-While the use of damping and torque rate limiting was effective in ensuring stable interaction, these mechanisms introduce a reduction in perceived stiffness and responsiveness. In particular, the rate limiting of actuator torque results in a finite rise time when contact forces are applied. This leads to a short delay between initial contact and the development of the full resistive force, which reduces the sharpness of hard contact interactions such as collisions with rigid virtual walls, as observed during hardware validation (Section 6.4.2).
-
-As a result, high-speed interactions and abrupt contacts are not rendered with the same fidelity as would be expected in systems with lower latency and higher achievable stiffness. Instead, contact forces are perceived as gradually increasing rather than instantaneous, which can affect realism in scenarios involving rigid constraints.
-
-However, this trade-off is necessary to ensure stable behaviour in the presence of communication delay. Without rate limiting and damping, the system exhibited oscillatory and unstable behaviour during contact, particularly under high stiffness settings, as demonstrated in Section 6.3.1. The implemented approach therefore prioritises stability and controllability over maximum stiffness, which is appropriate for a low-cost prototype system.
-
-These results highlight a key design consideration in practical haptic systems: achieving stable interaction under real-world constraints often requires compromising on ideal force rendering performance.
+For this prototype, that trade-off was appropriate: reliable, safe interaction was achieved within low-cost hardware constraints, while clearly identifying where future improvements should focus (lower-latency communication and higher-fidelity actuation).

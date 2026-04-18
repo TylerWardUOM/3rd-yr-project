@@ -1,6 +1,6 @@
-This chapter describes the experimental procedures used to evaluate the communication performance, closed-loop timing behaviour, simulation fidelity, and safety behaviour of the proposed haptic rendering system.
+This chapter defines the test procedures used to evaluate communication performance, closed-loop timing behaviour, simulation fidelity, safety behaviour, and hardware interaction characteristics of the proposed haptic rendering system.
 
-The evaluation was designed to assess whether the implemented architecture satisfies the real-time requirements necessary for stable haptic interaction, with particular focus on communication reliability, timing determinism, and force-feedback safety.
+The chapter focuses on what was tested and how measurements were collected; quantitative outcomes are reported in Chapter 6 and interpreted in Chapter 7.
 
 \subsection{Communication Performance Tests}
 
@@ -84,8 +84,6 @@ A virtual wall test was performed to validate the basic unilateral contact behav
 
 The purpose of this test was to verify that the proxy-based rendering method correctly prevented penetration of the constrained proxy through the wall surface while allowing the unconstrained device position to continue moving, thereby generating a restoring virtual coupling force.
 
-The test was used to assess both the computed force response of the model and its behaviour when coupled to the physical device.
-
 The following behaviours were examined:
 
 \begin{itemize}
@@ -128,9 +126,6 @@ The following aspects were assessed qualitatively:
 	\item smoothness of transitions between free-space and constrained motion
 \end{itemize}
 
-This test demonstrated that the system could provide implicit motion guidance along surfaces, which is relevant for tasks involving contact-based manipulation and training scenarios.
-
-
 \subsection{Safety Validation}
 Safety validation tests were conducted to ensure that the system remained bounded and behaved predictably under both normal and fault conditions. These tests focused on verifying the effectiveness of software and embedded safety mechanisms, including torque saturation, rate limiting, and watchdog-based fail-safe behaviour.
 \subsubsection{Torque Saturation Test}
@@ -147,8 +142,6 @@ During testing, interaction scenarios producing large virtual forces were introd
 	\item actuator output remained within safe and predictable limits under all conditions
 \end{itemize}
 
-This layered saturation approach provided robustness against both software and communication-related anomalies.
-
 \subsubsection{Rate Limiting Test}
 
 A rate limiting test was conducted to evaluate the effect of limiting the rate of change of commanded torque at the embedded controller level.
@@ -163,8 +156,6 @@ During testing, interaction scenarios involving abrupt changes in virtual force 
 	\item overall system stability was improved during interaction
 \end{itemize}
 
-This mechanism was introduced as a stability enhancement to mitigate oscillatory behaviour in the haptic feedback loop.
-
 \subsubsection{Watchdog Timeout Test}
 
 A watchdog timeout test was performed to verify safe system behaviour under loss of communication between the host and embedded controller. In this test, the stream of valid incoming torque commands was intentionally interrupted during operation.
@@ -178,10 +169,6 @@ The following conditions were checked:
 	\item whether commanded torque was removed within the intended timeout window
 	\item whether the device returned to a safe passive state after communication loss
 \end{itemize}
-
-This test was used to validate the fail-safe behaviour of the embedded control layer in the event of communication interruption or host-side failure.
-
-
 
 \subsection{Hardware Validation}
 Hardware validation tests were performed to assess the behaviour of the physical actuation system and the overall device during interaction. These tests focused on qualitative evaluation of actuator responsiveness and the stability of sustained user interaction with the haptic interface.
@@ -202,8 +189,6 @@ The evaluation focused on:
 
 The assessment was performed through direct observation and manual interaction with the actuator, and therefore represents a qualitative validation of actuator behaviour rather than a precise quantitative characterisation.
 
-The behaviour observed during this standalone test was consistent with the actuator performance required for stable force rendering in the integrated haptic system.
-
 \subsubsection{Stable Contact Test}
 
 A stable contact test was conducted to evaluate the behaviour of the full closed-loop system during sustained interaction with a virtual surface.
@@ -220,5 +205,3 @@ The following aspects were examined:
 	\item consistency of the rendered resistive force
 	\item qualitative usability of the interaction
 \end{itemize}
-
-This test served as an integrated validation of the practical haptic stability of the prototype under representative user interaction conditions.
