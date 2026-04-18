@@ -72,21 +72,13 @@ Due to hardware constraints, no direct force sensing or current measurement was 
 
 \subsection{Communication Protocol and Device Interface}
 
-Host--device communication uses fixed-format binary packets over a USB virtual serial link at high update rate (target 1\,kHz exchange). Two packet families are used:
-\begin{itemize}
-	\item device state packets (firmware \(\rightarrow\) host), containing sequence number, MCU timestamp, and joint angles
-	\item torque command packets (host \(\rightarrow\) firmware), containing command sequence, referenced state sequence, and commanded joint torques
-\end{itemize}
+Host--device communication uses fixed-format binary packets over a USB virtual serial link at high update rate (target 1\,kHz exchange). Two packet families are used: device state packets (firmware \(\rightarrow\) host), containing sequence number, MCU timestamp, and joint angles; and torque command packets (host \(\rightarrow\) firmware), containing command sequence, referenced state sequence, and commanded joint torques.
 
 Sequence numbers enable detection of dropped or out-of-order packets, while MCU timestamps provide a reference for timing analysis and latency measurement.
 
 Both packet types include a two-byte header for stream re-synchronisation and a checksum for integrity checks.
 
-On the host, serial I/O and protocol handling are split across two layers:
-\begin{itemize}
-	\item \textit{SerialLink}: low-level COM read/write abstraction
-	\item \textit{DeviceAdapter}: packet parsing, forward kinematics, Cartesian force-to-joint torque mapping, and message-bus integration
-\end{itemize}
+On the host, serial I/O and protocol handling are split across two layers: \textit{SerialLink} providing a low-level COM read/write abstraction, and \textit{DeviceAdapter} handling packet parsing, forward kinematics, Cartesian force-to-joint torque mapping, and message-bus integration.
 
 The device adapter runs in a dedicated 1\,kHz loop. At each cycle, it retains the newest valid state packet, publishes tool pose and velocity to the haptic engine, consumes the latest wrench command, computes joint torques using the planar Jacobian transpose relation \(\tau = J^{T}F\), and transmits the resulting torque command packet.
 
@@ -110,11 +102,7 @@ This ensures that control decisions are always based on the most recent availabl
 
 The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
 
-Inter-thread communication is implemented through a message bus with two channel types:
-\begin{itemize}
-	\item queue channels for discrete commands/events (e.g., world edits, wrench messages)
-	\item snapshot channels for latest-value shared state (e.g., world snapshots)
-\end{itemize}
+Inter-thread communication is implemented through a message bus with two channel types: queue channels for discrete commands and events (e.g., world edits, wrench messages), and snapshot channels for latest-value shared state (e.g., world snapshots).
 
 This separation allows command traffic to be drained in batches while continuous state can be accessed with low latency.
 
@@ -134,10 +122,7 @@ Force output is generated using a proxy-based virtual coupling model, in which a
 \[
 \mathbf{F} = K\left(\mathbf{x}_{p}-\mathbf{x}_{t}\right) + D\left(\mathbf{v}_{p}-\mathbf{v}_{t}\right)
 \]
-where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and
-\[
-D = 0.7\cdot 2\sqrt{KM}.
-\]
+where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and \(D = 0.7\cdot 2\sqrt{KM}\).
 
 This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a constrained dynamic system. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford.
 
@@ -159,11 +144,7 @@ To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N b
 
 \subsubsection{Physics Simulation Integration}
 
-Rigid-body dynamics are simulated using NVIDIA PhysX. The physics subsystem runs on its own simulation thread and consumes wrench messages from the haptic loop. Incoming forces are converted to impulses over the effective timestep,
-\[
-\mathbf{J}=\mathbf{F}\,\Delta t,
-\]
-and applied at the contact point to the corresponding actor.
+Rigid-body dynamics are simulated using NVIDIA PhysX. The physics subsystem runs on its own simulation thread and consumes wrench messages from the haptic loop. Incoming forces are converted to impulses \(\mathbf{J}=\mathbf{F}\,\Delta t\) over the effective timestep and applied at the contact point to the corresponding actor.
 
 A fixed-step accumulator scheme is used to decouple simulation stability from variable external loop timing. When world topology or physics properties change, actors are rebuilt from the latest authoritative world snapshot. After each simulation update, dynamic poses are written back to the world manager so subsequent rendering and haptic queries operate on consistent state.
 
@@ -171,10 +152,6 @@ A fixed-step accumulator scheme is used to decouple simulation stability from va
 
 To avoid introducing disk latency into the 1\,kHz control path, runtime logging is performed asynchronously. The device thread publishes structured timing and state messages to dedicated logging channels, and a background logger thread drains these channels into memory.
 
-At shutdown, logs are exported to two CSV files:
-\begin{itemize}
-	\item \texttt{device\_timing.csv}: matched state-command timing records for closed-loop control cycles, including host-side timestamps associated with packet parsing, tool-state publication, wrench consumption, and torque command transmission
-	\item \texttt{device\_state\_log.csv}: a record of every valid parsed incoming state packet, including host receive timestamps, packet sequence identifiers, MCU timestamps, and measured joint angles
-\end{itemize}
+At shutdown, logs are exported to two CSV files: \texttt{device\_timing.csv}, containing matched state-command timing records for closed-loop control cycles including host-side timestamps associated with packet parsing, tool-state publication, wrench consumption, and torque command transmission; and \texttt{device\_state\_log.csv}, containing a record of every valid parsed incoming state packet including host receive timestamps, packet sequence identifiers, MCU timestamps, and measured joint angles.
 
 A separate communication test executable (\texttt{serial\_tests}) was also implemented to characterise serial performance independently of the full application. It supports two operating modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. In both modes, incoming serial data are processed using a buffered parser with explicit packet header search, checksum validation, and byte-wise re-synchronisation to ensure robustness to fragmented or corrupted input. Results are exported to machine-readable CSV files for offline analysis.
