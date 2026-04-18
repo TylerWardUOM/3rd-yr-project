@@ -4,11 +4,9 @@ The chapter focuses on what was tested and how measurements were collected; quan
 
 \subsection{Communication Performance Tests}
 
-To evaluate serial communication performance independently of the main application, a dedicated command-line test utility was developed. The tool provided two operating modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency.
+Communication performance was characterised using the dedicated \texttt{serial\_tests} utility described in Section~4.4. The tool supports two modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. Both modes export CSV files for offline statistical analysis.
 
-In both modes, incoming serial data were processed using a buffered parser with explicit packet header search, checksum validation, and byte-wise re-synchronisation to ensure robustness to fragmented or corrupted input. Test outputs were written to CSV files for offline statistical analysis, including effective receive rate, inter-arrival jitter, packet drops, out-of-order events, and RTT percentile metrics.
-
-The communication tests were conducted across a range of target transmission rates from 100~Hz to 2000~Hz in order to assess the effect of increasing packet frequency on communication reliability and timing performance.
+Tests were conducted across target transmission rates from 100~Hz to 2000~Hz to assess the effect of increasing packet frequency on reliability and timing performance.
 
 \subsubsection{Packet Integrity and Rate Tests}
 
@@ -52,11 +50,7 @@ These results were used to characterise communication latency and timing consist
 
 \subsubsection{End-to-End Host-Side Timing Test}
 
-In addition to the standalone serial communication tests, end-to-end timing of the host-side closed-loop haptic pipeline was evaluated using a dedicated runtime logging framework integrated into the main application.
-
-During normal operation of the haptic system, the device communication thread published structured timing and state log messages to a dedicated logging subsystem. To avoid perturbing the real-time control path, log messages were transferred asynchronously to a separate logging thread and buffered in memory during execution. After the application was stopped, the captured logs were exported to CSV files for offline analysis in MATLAB.
-
-Two primary log files were generated. The first, \texttt{device\_timing.csv}, contained matched state-command timing records for closed-loop control cycles, including host-side timestamps associated with packet parsing, tool-state publication, wrench consumption, and torque command transmission. The second, \texttt{device\_state\_log.csv}, contained a record of every valid parsed incoming state packet, including host receive timestamps, packet sequence identifiers, MCU timestamps, and measured joint angles.
+In addition to the standalone communication tests, end-to-end timing of the host-side haptic pipeline was evaluated using the runtime logging framework described in Section~4.4. Logs were captured during normal closed-loop operation and exported to \texttt{device\_timing.csv} and \texttt{device\_state\_log.csv} for offline analysis in MATLAB.
 
 From these logs, the following metrics were evaluated:
 
