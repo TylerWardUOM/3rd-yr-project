@@ -2,26 +2,58 @@ This section describes the practical realisation of the proposed haptic interfac
 
 The implementation was designed to balance low-cost hardware selection with sufficient dynamic performance to enable stable real-time bidirectional haptic interaction.
 
+%TODO mention why no force sensor was included why current-sense-free FOC was used the actuator failure if it materially changed the final test setup
+
 \subsection{Mechanical Design of the Haptic Device}
 
-The haptic device was realised as a planar two degree-of-freedom serial mechanism providing rotational motion about two orthogonal revolute joints. This configuration was selected as it enables intuitive user interaction, allowing the end-effector to be freely positioned within a planar workspace.
+The haptic device was realised as a planar two degree-of-freedom serial mechanism providing rotational motion about two orthogonal revolute joints. This configuration enables intuitive user interaction, allowing the end-effector to be positioned freely within a planar workspace.
 
-A two degree-of-freedom architecture was chosen in preference to higher degree-of-freedom alternatives in order to reduce mechanical complexity and minimise the number of required actuators. This was an important design consideration to maintain the overall system within the project budget while still demonstrating meaningful bidirectional haptic interaction capabilities.
+A two degree-of-freedom architecture was selected in preference to higher degree-of-freedom alternatives in order to reduce mechanical complexity and minimise the number of required actuators. This was an important design consideration for maintaining the system within the project budget while still demonstrating meaningful bidirectional haptic interaction.
 
 The structural components of the device were predominantly fabricated using additive manufacturing techniques. This enabled rapid iteration of mechanical designs and reduced moving mass, improving the perceived backdrivability of the interface.
 
-The mechanism consists of two rigid links. The link geometries and overall workspace are illustrated in Figure~\textbf{X}.
-% NOTE: replace with final figure reference once CAD render / dimensioned sketch is inserted
+The mechanism consists of two rigid links, with geometries and workspace illustrated in Fig.~\ref{fig:mechanical_diagram}.
+\begin{figure}[htbp]
+	\centering
+	\fbox{%
+		\parbox[c][6cm][c]{0.8\textwidth}{%
+			\centering
+			\textbf{PLACEHOLDER FIGURE}\\[6pt]
+			Mechanical Diagram to be added here\\
+			(showing: joints,link lengths, belt reduction, motors, encoders)
+		}
+	}
+	\caption{Placeholder for Mechanical diagram.}
+	\label{fig:mechanical_diagram}
+\end{figure}
+%TODO: — Mechanical Diagram (Annotated)
 
-The link lengths were selected to provide a sufficient reachable workspace at the end-effector while ensuring that adequate torque could be delivered by the selected motors throughout the range of motion.
+The link lengths were selected to provide a sufficient reachable workspace while ensuring that adequate torque could be delivered throughout the range of motion.
 
-Actuation is provided by brushless gimbal motors (T-Motor GB2208). Each motor is mounted offset from the corresponding joint axis and torque is transmitted via a timing belt reduction stage providing an approximate transmission ratio of $3{:}1$.
-% NOTE: if possible later replace "approximate" with pulley tooth counts for each stage
+Actuation is provided by brushless gimbal motors (T-Motor GB2208). Due to the limited torque output of these low-cost motors, a torque amplification mechanism was required for effective operation. A GT2 timing belt transmission was therefore implemented on the base joint, providing an approximate reduction ratio of $3{:}1$. This allowed the actuator to generate sufficient torque to support both its own link and the mass of the subsequent joint and actuator.
+%TODO verify ratio
 
-Adjustable belt tensioning mechanisms were incorporated in order to minimise backlash and compensate for belt compliance.
+The second joint was not equipped with a transmission stage, resulting in lower available torque at that joint. This reflects a design trade-off between mechanical complexity and performance within the constraints of the project.
 
-Each joint rotates about an 8\,mm diameter steel shaft supported by rolling element bearings to reduce friction and radial play. The corresponding link is attached to the shaft via a friction fit interface within the printed component, supplemented by a radial set screw to prevent slip under load.
+Adjustable belt tensioning was incorporated via an idler pulley mechanism to reduce backlash and compensate for belt compliance. However, as discussed in Section~7.3, the transmission exhibits non-ideal behaviour under high load conditions.
+%TODO: Do i need the as disccused
 
+Each joint rotates about an 8\,mm diameter steel shaft supported by rolling element bearings to minimise friction and radial play. The corresponding links are attached via a friction fit interface within the printed components, supplemented by radial set screws to prevent slip under load.
+
+To ensure accurate joint position measurement, absolute magnetic encoders were mounted directly on the joint axes rather than relying solely on motor-side sensing. This was particularly important for the belt-driven joint, where compliance and potential slip in the transmission would otherwise introduce errors in joint angle estimation.
+%TODO: Add picture of the final build maybe insetad of the figure above or both depends on pages i thinlk this one more important
+\begin{figure}[htbp]
+	\centering
+	\fbox{%
+		\parbox[c][6cm][c]{0.8\textwidth}{%
+			\centering
+			\textbf{PLACEHOLDER FIGURE}\\[6pt]
+			Final build pic to be added here
+		}
+	}
+	\caption{Placeholder for Final build pic.}
+	\label{fig:final_build}
+\end{figure}
 \subsection{Embedded Firmware}
 
 The embedded control system is implemented using an STM32 Nucleo-G401RE development board.
@@ -59,6 +91,27 @@ Upon reception of incoming data, packet headers are validated before the payload
 \subsection{Host Software Architecture}
 
 The host-side software is implemented as a multithreaded C++ application composed of several modular subsystems responsible for world state management, physics simulation, haptic rendering, device communication, and graphical rendering.
+%TODO: Software Architecture Diagram
+\begin{figure}[htbp]
+	\centering
+	\fbox{%
+		\parbox[c][6cm][c]{0.8\textwidth}{%
+			\centering
+			\textbf{PLACEHOLDER FIGURE}\\[6pt]
+			Software architecture diagram to be added here\\
+			(showing 	
+				threads:
+						rendering
+						physics
+						haptics
+						device comms
+				message channels:
+					queue vs snapshot)
+		}
+	}
+	\caption{Placeholder for software architecture diagram.}
+	\label{fig:software_architecture}
+\end{figure}
 
 \subsubsection{Inter-Thread Communication Architecture}
 
@@ -106,7 +159,24 @@ An ImGui-based graphical user interface is layered on top of the rendered scene 
 This architecture ensures that rendering remains decoupled from both the physics and haptic subsystems while still providing a responsive visual and interactive front-end for simulation control and debugging.
 
 \subsubsection{Haptic Rendering Engine}
-
+\begin{figure}[htbp]
+	\centering
+	\fbox{%
+		\parbox[c][6cm][c]{0.8\textwidth}{%
+			\centering
+			\textbf{PLACEHOLDER FIGURE}\\[6pt]
+			Haptic Rendering Diagram to be added here\\
+			(Show:
+				tool position
+				proxy position
+				surface
+				force vector)
+		}
+	}
+	\caption{Placeholder for Haptic Rendering Diagram.}
+	\label{fig:haptic_rendering}
+\end{figure}
+%TODO: Haptic Rendering Diagram
 The haptic rendering engine is responsible for computing interaction forces between the user-controlled device and virtual objects in the simulated environment. The engine operates in a dedicated high-frequency loop and exchanges information with other subsystems using the message bus communication architecture described previously.
 
 \paragraph{Real-Time Haptic Interaction Loop}
@@ -174,8 +244,8 @@ Dynamic rigid bodies are configured with linear and angular damping parameters o
 
 Following each simulation update, the resulting poses of dynamic actors are written back into the authoritative world state maintained by the world management subsystem. This write-back mechanism ensures that subsequent rendering, collision queries, and haptic force computations operate on a consistent and up-to-date representation of the simulated environment.
 
-\subsubsection{jacobians maybe}
-
+%\subsubsection{jacobians maybe}
+%TODO: maybe add this
 % NOTE: add subsection here explaining how Cartesian force commands are mapped to joint torques
 % NOTE: good place to include \tau = J^T(q)F and mention where it is evaluated in the loop
 % NOTE: if implemented approximately or only for planar kinematics, say that explicitly

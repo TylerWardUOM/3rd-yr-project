@@ -49,6 +49,7 @@ private:
     ToolStateMsg currentIn_;
     HapticWrenchCmd lastOut_;
 
+    uint64_t lastChunkReadNs_ = 0;
     uint32_t nextCmdSeq_ = 1;
     uint32_t latestStateSeq_ = 0;
     uint32_t latestStateMcuUs_ = 0;

@@ -131,6 +131,7 @@ void DeviceAdapter::update(double timeNow) {
     std::vector<uint8_t> chunk;
     size_t n = link_.readAvailable(chunk);
     if (n > 0) {
+        lastChunkReadNs_ = nowNs();
         incomingBuffer_.insert(incomingBuffer_.end(), chunk.begin(), chunk.end());
     }
 
@@ -144,6 +145,7 @@ void DeviceAdapter::update(double timeNow) {
     while (tryParseOnePacket(pkt)) {
         uint64_t parseNs = nowNs();
         DeviceStateLogMsg stateMsg{};
+        stateMsg.t_chunk_read_ns = lastChunkReadNs_;
         stateMsg.t_rx_parse_ns = parseNs;
         stateMsg.rx_state_seq = pkt.state_seq;
         stateMsg.state_mcu_us = pkt.t_mcu_us;

@@ -1,16 +1,42 @@
 \subsection{System Overview}
 
-The proposed system implements a bidirectional haptic interaction loop consisting of four principal layers: the haptic device hardware, embedded control firmware, host-side simulation and haptic rendering, and graphical visualisation. A conceptual overview of the signal and force flow across these layers is illustrated in Figure ??.
+The proposed system implements a bidirectional haptic interaction loop consisting of four principal layers: the haptic device hardware, embedded control firmware, host-side simulation and haptic rendering, and graphical visualisation. A conceptual overview of the bidirectional signal and force flow across the system is shown in Fig.\ref{fig:system_architecture}.
+
+\begin{figure}[!ht]
+	\centering
+	\resizebox{1\textwidth}{!}{%
+		\begin{circuitikz}
+			\tikzstyle{every node}=[font=\fontsize{11.9pt}{15.5pt}\selectfont]
+			\draw [ rounded corners = 6.0] (2.125,13.375) rectangle (4.25,12.875);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (3.1875,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont User};
+			\draw [ rounded corners = 6.0] (11.25,13.5) rectangle (14.25,12.75);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (12.75,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont Host Interface};
+			\draw [ rounded corners = 6.0] (15,11.375) rectangle (18,10.625);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (16.5,11) {\fontsize{11.9pt}{15.5pt}\selectfont visualisation};
+			\draw [ rounded corners = 6.0] (14.75,15.625) rectangle (18.375,14.875);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (16.5625,15.25) {\fontsize{11.9pt}{15.5pt}\selectfont Haptic Rendering};
+			\draw [ rounded corners = 6.0] (18.625,13.5) rectangle (22.625,12.75);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (20.625,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont Physics Simulation};
+			\draw [-{Stealth[scale=1.5]}, ] (4.125,13.375) arc[start angle=121.85, end angle=64.88, radius=2.2317]node[pos=0.48,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{motion};
+			\draw [ rounded corners = 6.0] (6.125,13.5) rectangle (9.125,12.75);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (7.625,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont Haptic Device};
+			\draw [-{Stealth[scale=1.5]}, ] (6.25,12.75) arc[start angle=-59.83, end angle=-126.90, radius=1.9265]node[pos=0.48,below, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{haptic feedback};
+			\draw [-{Stealth[scale=1.5]}, ] (9,13.5) arc[start angle=122.06, end angle=57.94, radius=2.2368]node[pos=0.48,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{state packets};
+			\draw [-{Stealth[scale=1.5]}, ] (11.375,12.75) arc[start angle=-52.24, end angle=-127.76, radius=1.9390]node[pos=0.48,below, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{torque commands};
+			\draw [-{Stealth[scale=1.5]}, ] (12.875,13.5) arc[start angle=-173.12, end angle=-280.83, radius=1.5881]node[pos=0.3,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{joint state};
+			\draw [-{Stealth[scale=1.5]}, ] (15.25,14.875) arc[start angle=24.32, end angle=-83.81, radius=1.2447]node[pos=0.15,below, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{force command};
+			\draw [{Stealth[scale=1.5]}-, ] (15,11) -- (13,12.75)node[pos=0.31,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{joint state};
+			\draw [-{Stealth[scale=1.5]}, ] (17.125,14.875) -- (17.125,11.375)node[pos=0.73,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{proxy state};
+			\draw [-{Stealth[scale=1.5]}, ] (18.25,14.875) -- (19.125,13.5)node[pos=0.85,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{interaction force};
+		\end{circuitikz}
+	}%
+	\caption{High-level architecture of the proposed haptic system. User motion is measured by the haptic device and transmitted to the host interface. The host distributes state information to the haptic rendering and visualisation subsystems, while the haptic rendering module computes interaction forces, updates the simulation, and generates feedback commands that are returned to the device as actuator torque commands.}
+	\label{fig:system_architecture}
+\end{figure}
 
 User motion is measured at the device joints and transmitted to the host simulation in real time. Based on the current virtual environment state, the host computes interaction forces which are mapped to joint torque commands and returned to the device actuators. This closed-loop structure enables simultaneous user influence on the simulated environment and force feedback from it.
 
 To support stable real-time interaction, the system is explicitly partitioned into time-critical and non-time-critical subsystems. Low-level torque control and safety functions are executed on the embedded controller at high frequency, while collision detection, haptic rendering, physics simulation, and visualisation are performed on the host platform.
-
-% NOTE:
-% Insert a system architecture block diagram here.
-% Recommended diagram: User → Device → MCU → Host → Simulation → Torque → Device.
-% This figure will make the architecture much clearer to the reader.
-
 
 \subsection{Design Constraints and Assumptions}
 

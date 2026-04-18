@@ -31,11 +31,11 @@ GlSceneRenderer      WorldManager          HapticEngine         DeviceAdapter
 
 ## Notes
 
-- [[Rendering Engine]] — OpenGL renderer, window, shaders, camera, UI
-- [[World System]] — WorldManager, objects, commands, snapshots, geometry
-- [[Physics Engine]] — PhysX integration, actors, step pipeline
-- [[Haptic Engine]] — contact search (SDF), proxy projection, virtual coupling
-- [[Hardware Interface]] — SerialLink, DeviceAdapter, packets, kinematics/torques
+- [[Rendering_Engine]] — OpenGL renderer, window, shaders, camera, UI
+- [[World_System]] — WorldManager, objects, commands, snapshots, geometry
+- [[Physics_Engine]] — PhysX integration, actors, step pipeline
+- [[Haptic_Engine]] — contact search (SDF), proxy projection, virtual coupling
+- [[Hardware_Interface]] — SerialLink, DeviceAdapter, packets, kinematics/torques
 - [[Messaging]] — Channel, SnapshotChannel, MessageBus
 - [[Logging]] — log channels, log thread, CSV export pipeline
 - [[Communication Tests]] — serial rate/RTT test harness and CSV metrics

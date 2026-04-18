@@ -11,16 +11,14 @@
             "id": "a28236a57c0ca6be",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "Sources/Salisbury1997.pdf",
-                "page": 1,
-                "left": -8,
-                "top": 796,
-                "zoom": 1.8676470588235294
+                "file": "implementation/Logging.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-file-text",
-              "title": "Salisbury1997"
+              "icon": "lucide-file",
+              "title": "Logging"
             }
           },
           {
@@ -110,17 +108,17 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Progress logs.md",
-                "collapseAll": false,
+                "file": "implementation/Logging.md",
+                "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
                 "searchQuery": "",
-                "backlinkCollapsed": true,
+                "backlinkCollapsed": false,
                 "unlinkedCollapsed": false
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Progress logs"
+              "title": "Backlinks for Logging"
             }
           },
           {
@@ -171,8 +169,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -191,18 +188,25 @@
   },
   "active": "a28236a57c0ca6be",
   "lastOpenFiles": [
-    "Report/MSc_and_BEng_Dissertation_Template_the_University_of_Manchester_EEE__2_.zip",
-    "Sources/Toward_Transparent_Virtual_Coupling_for_Haptic_Interaction_during_Contact_Tasks.pdf",
-    "Sources/Stable_haptic_interaction_with_virtual_environments.pdf",
-    "Sources/Haptic_Feedback_for_Virtual_Reality.pdf",
-    "Sources/Khatib_1987_RA.pdf",
+    "Report/MSc_and_BEng_Dissertation_Template_the_University_of_Manchester_EEE__2_/main.synctex(busy)",
+    "implementation/Haptic_Engine.md",
+    "implementation/Hardware_Interface.md",
+    "implementation/Communication_Tests.md",
+    "implementation/Physics_Engine.md",
+    "implementation/Logging.md",
+    "implementation/Messaging.md",
+    "implementation/Implementation_Index.md",
     "Sources/A_constraint-based_god-object_method_for_haptic_display.pdf",
-    "Sources/Haptic Rendering Book.md",
-    "Sources/Salisbury1997.pdf",
-    "Sources/s41598-023-46641-8.pdf",
+    "Sources/Capstan Drive.pdf",
+    "Sources/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf",
     "Sources/Ruspini_1997_SIGGRAPH.pdf",
     "Sources/robotics-10-00029-v2.pdf",
-    "Sources/Quizzes 2.pdf",
+    "Sources/s41598-023-46641-8.pdf",
+    "Report/MSc_and_BEng_Dissertation_Template_the_University_of_Manchester_EEE__2_/3rd Yr Project.rtf",
+    "implementation/Rendering_Engine.md",
+    "Sources/Salisbury1997.pdf",
+    "Report/MSc_and_BEng_Dissertation_Template_the_University_of_Manchester_EEE__2_.zip",
+    "Sources/Haptic Rendering Book.md",
     "Sources/rotary bearings _ McMaster-Carr_files/Pressure-and-Temperature-Control-Catalog.png",
     "Sources/rotary bearings _ McMaster-Carr_files/Power-Transmission-Catalog.png",
     "Sources/rotary bearings _ McMaster-Carr_files/Hand-Tools-Catalog.png",
@@ -223,15 +227,7 @@
     "Project Architecture/Subsystems/RenderMeshRegistry.md",
     "Project Architecture/Subsystems/GeometryDatabase.md",
     "Project Architecture/Subsystems/GeometryFactory.md",
-    "ARCHITECTURE.md",
-    "Haptics/Haptic Dataflow.md",
-    "Haptics/Haptic Equation.md",
     "Haptics/image.png",
-    "Haptics/Virtual Coupling.md",
-    "modules/env.md",
-    "Project Architecture/DataStructures/Signed Distance Field (SDF).md",
-    "Project Architecture/DataStructures/WorldSnapshot.md",
-    "Project Architecture/DataStructures/GeometryID.md",
     "Project Architecture/Untitled.canvas"
   ]
 }

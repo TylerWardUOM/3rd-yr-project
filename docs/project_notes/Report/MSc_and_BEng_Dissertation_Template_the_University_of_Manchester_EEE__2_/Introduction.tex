@@ -1,62 +1,68 @@
 \subsection{Background and Motivation}
 
-Robotic manipulators are increasingly deployed in domains such as industrial automation, teleoperation, and robot-assisted surgery. In many of these applications, operator training is essential to ensure safe and efficient task execution. While visual feedback provides global situational awareness, it is often insufficient for developing fine motor skills, accurate force regulation, and intuitive understanding of interaction constraints.
+Robotic manipulators are increasingly used in domains such as industrial automation, teleoperation, and robot-assisted surgery, where safe and effective interaction with physical environments is essential. In many of these contexts, operator training plays a critical role in determining task quality, safety, and efficiency. Although visual feedback provides important global information about the workspace, it is often insufficient for developing fine motor control, accurate force regulation, and intuitive understanding of contact conditions.
 
-Haptic interfaces enable bidirectional physical interaction between a human operator and a robotic or simulated environment. By rendering interaction forces to the user, such systems can improve perception of contact conditions, enhance motor learning, and support safer manipulation strategies during training tasks. As robotic systems become more widely adopted in both research and educational settings, there is increasing motivation to develop accessible haptic training platforms that allow users to experience realistic interaction dynamics without requiring direct access to expensive physical manipulators.
+Haptic interfaces address this limitation by enabling bidirectional physical interaction between a user and a virtual or remote environment. By rendering forces back to the operator, such systems can communicate contact, constraint, and interaction information that is difficult to convey visually alone \cite{giriApplicationBasedReviewHaptics2021}. In robotic manipulation tasks, this is particularly valuable for training applications, where users must learn not only where to move, but also how to regulate force and respond to contact conditions. Prior work has shown that haptic feedback can improve task performance and reduce excessive applied force, particularly for less experienced users \cite{bergholzBenefitsHapticFeedback2023}.
 
-Despite these motivations, many existing haptic training solutions remain costly, proprietary, and tightly coupled to specific software ecosystems. This limits transparency of the control architecture and restricts the ability of researchers and students to experiment with alternative control strategies, custom simulation environments, or novel hardware configurations. There is therefore a practical need for modular and low-cost haptic interface systems that enable real-time bidirectional interaction with robotic manipulation simulations while remaining flexible and extensible.
+Despite these benefits, access to haptic systems remains limited. Commercial haptic interfaces provide mature and high-performance force feedback, but they are typically expensive and frequently tied to proprietary hardware and software ecosystems. This can restrict accessibility, reduce architectural transparency, and make it difficult for researchers and students to experiment with alternative control strategies, custom simulation environments, or modified hardware configurations. As a result, there is strong practical motivation for low-cost and modular haptic platforms that are suitable for prototyping, experimentation, and robotics training research.
 
-% NOTE: keep this section conceptual and problem-driven.
-% Detailed discussion of prior work and specific rendering methods
-% has been intentionally moved to the literature review.
+At the same time, achieving stable and convincing haptic interaction is technically challenging. Real-time haptic rendering commonly requires update rates on the order of 1~kHz together with low latency and carefully designed control structure in order to render contact stably and responsively \cite{ruspiniHapticDisplayComplex1997}. The stability of haptic interaction is particularly sensitive to delay in the feedback loop, since communication and computation delays introduce phase lag and reduce the maximum achievable virtual stiffness \cite{adamsStableHapticInteraction1999}. Consequently, the design of a practical haptic system is not simply a matter of adding actuators to an input device: it requires coordinated consideration of mechanical design, embedded control, communication architecture, simulation coupling, and force rendering strategy.
 
-\subsection{Research Gap}
+\subsection{Problem Definition}
 
-While prior work has addressed either high-fidelity commercial haptic interfaces or low-cost robotic hardware in isolation, there remains limited work integrating low-cost actuated haptic devices with transparent and modular software architectures suitable for rapid prototyping and educational use.
+This dissertation addresses the problem of how to realise a \emph{low-cost, modular, real-time haptic interface system} suitable for robotic manipulation training and experimentation, while explicitly accounting for the practical constraints that arise in implementation.
 
-In particular, there is a practical need for systems that combine:
-\begin{enumerate}
-	\item Low-cost hardware, with total prototype costs significantly below commercial systems that typically exceed £5{,}000--£20{,}000.
-	\item A modular communication and software architecture capable of supporting integration with multiple simulation backends.
-	\item Explicit control over latency, stability, and force rendering behaviour.
-	\item A software framework that can be extended toward physical robotic manipulators in future work.
-\end{enumerate}
+The specific challenge is not merely to construct a haptic input device, but to integrate multiple subsystems into a stable bidirectional interaction loop: user motion must be sensed at the device, transmitted to a host system, interpreted within a simulated environment, converted into interaction forces, mapped back into actuator commands, and rendered to the user in real time. In practice, each stage of this loop introduces constraints. Limited actuator capability affects the achievable force output, communication delay limits responsiveness and stable virtual stiffness, and software architecture determines whether the system remains extensible and maintainable.
 
-\subsection{Aims and Objectives}
+Existing work demonstrates the value of haptic feedback and the feasibility of low-cost haptic hardware, but there remains a practical gap between simple hardware demonstrations and fully integrated systems that combine low-cost actuation, real-time communication, physics-based simulation, and explicit treatment of latency and stability. Educational and open-source devices have shown that affordable haptic hardware is possible \cite{martinez3DPrintedHaptic2016,martinezOpenSourceModular2017}, and low-cost 2-DOF academic systems have also been demonstrated \cite{inproceedings}. However, comparatively less emphasis is placed on complete end-to-end architectures in which hardware, embedded control, host-side simulation, rendering, and communication are developed together and evaluated as an integrated real-time system.
 
-The aim of this project is to design, implement, and evaluate a low-cost, open-architecture two-degree-of-freedom (2-DOF) haptic interface and simulation framework capable of delivering real-time, stable force feedback for robotic manipulator training.
+The problem addressed in this project is therefore defined as follows: \emph{to design, implement, and evaluate a low-cost haptic rendering system that is sufficiently modular for experimentation, sufficiently responsive for real-time interaction, and sufficiently stable to demonstrate practical bidirectional haptic coupling with a simulated robotic environment}.
 
-The specific objectives are to:
+\subsection{Aim and Scope of This Dissertation}
+
+The aim of this project is to design, implement, and evaluate a modular low-cost haptic rendering system integrating a two-degree-of-freedom input device with a custom real-time simulation and visualisation framework.
+
+The project focuses on demonstrating the feasibility of an end-to-end architecture rather than on producing a commercial-grade haptic product. More specifically, the dissertation is concerned with:
+
 \begin{itemize}
-	\item Design and construct a 2-DOF haptic input device using low-cost BLDC actuators and magnetic rotary encoders.
-	\item Develop embedded firmware implementing field-oriented motor control, encoder acquisition, and real-time bidirectional communication.
-	\item Define and implement a device-agnostic packet-based communication protocol for streaming joint states and receiving force or torque commands.
-	\item Develop a custom host-side real-time software framework built around NVIDIA PhysX and OpenGL, supporting collision detection, virtual proxy methods, and real-time force computation.
-	\item Implement Jacobian-based mappings from end-effector interaction forces to joint-space actuator torques.
-	\item Evaluate system performance in terms of latency, stability, and force fidelity against established haptic rendering requirements.
-	\item Demonstrate an architecture designed to support future integration with external simulation environments such as NVIDIA Isaac Sim or MATLAB/Simulink.
+	\item the design and construction of a low-cost actuated 2-DOF haptic device,
+	\item the development of embedded firmware for sensing, communication, and actuator control,
+	\item the implementation of a host-side software framework supporting simulation, haptic rendering, and visualisation,
+	\item the integration of these components into a real-time bidirectional interaction loop, and
+	\item the experimental evaluation of communication performance, timing behaviour, stability, and qualitative interaction characteristics.
+\end{itemize}
+
+The scope of the work is intentionally limited. The dissertation does not attempt to demonstrate fully calibrated force output, high-fidelity commercial-level rendering, or a formal user study of training effectiveness. In addition, while the device was designed as a 2-DOF haptic interface, final hardware validation was performed with force feedback available on only one joint due to actuator failure during development. Accordingly, the main contribution of the work lies in the \emph{system-level design, integration, and evaluation of a modular real-time prototype}, together with analysis of the practical factors that limit its performance.
+
+This framing is important because the value of the dissertation lies not only in demonstrating that low-cost haptic interaction is possible, but also in identifying the architectural and hardware constraints that dominate performance in practice. As the results later show, the principal limitation of the implemented system is not host-side computational speed, but communication latency and the resulting constraint it imposes on achievable haptic stiffness and responsiveness.
+
+\subsection{Objectives}
+
+To achieve this aim, the project pursued the following objectives:
+
+\begin{itemize}
+	\item to design and construct a 2-DOF haptic device using low-cost brushless actuators, magnetic encoders, and lightweight fabricated structural components;
+	\item to implement embedded firmware for encoder acquisition, actuator control, and bidirectional packet-based communication;
+	\item to develop a modular host-side software architecture supporting world management, physics simulation, haptic rendering, and graphical visualisation;
+	\item to implement proxy-based contact rendering and Jacobian-based force-to-torque mapping for haptic feedback generation;
+	\item to evaluate the resulting system in terms of communication behaviour, closed-loop timing, stability, safety, and qualitative force-feedback performance; and
+	\item to assess the practical limitations of the architecture and identify directions for future improvement.
 \end{itemize}
 
 \subsection{Contributions of This Work}
 
-This work presents the design and implementation of a modular real-time haptic rendering system integrating a low-cost actuated input device with a custom multi-threaded host-side software framework.
-
-The complete hardware prototype was realised at an estimated cost of approximately £180, substantially below the cost of commercial haptic devices such as the Geomagic Touch, Touch X, and Force Dimension systems, which typically range from several thousand to tens of thousands of pounds.
-
-The software architecture was designed to be simulation-backend-independent through the use of a device-agnostic messaging interface and modular subsystem separation, enabling future integration with external platforms such as MATLAB/Simulink or NVIDIA Isaac Sim.
-
-The principal contributions of this work are:
+The work presented in this dissertation makes the following principal contributions:
 
 \begin{itemize}
-	\item Design and construction of a low-cost 2-DOF actuated haptic interface.
-	\item Development of a custom message-passing architecture for deterministic inter-thread communication.
-	\item Development of a custom proxy-based haptic rendering engine using signed distance field collision queries.
-	\item Integration of rigid body simulation using NVIDIA PhysX through a custom wrapper layer.
-	\item Development of a custom OpenGL-based rendering and visualisation framework.
-	\item Explicit consideration of latency, stability, and safety mechanisms for real-time haptic interaction.
+	\item the design and implementation of a low-cost actuated haptic interface prototype based on a 2-DOF mechanical architecture;
+	\item the development of a custom modular host-side software framework integrating haptic rendering, rigid-body simulation, and OpenGL-based visualisation;
+	\item the implementation of a bidirectional real-time interaction pipeline linking the physical device to the simulated environment;
+	\item an experimental evaluation showing that the system can achieve stable real-time interaction at high update rates, while also revealing communication latency as the dominant limitation on performance; and
+	\item a critical analysis of the trade-offs between cost, modularity, stability, and achievable haptic fidelity in a student-scale prototype system.
 \end{itemize}
 
-% NOTE: refine contributions AFTER results section is complete.
-% Add quantitative achievements here later (latency, force bandwidth, etc).
-
-% NOTE: also add a short "Report Structure" paragraph at the end of the intro.
+%\subsection{Structure of the Dissertation}
+%
+%The remainder of this dissertation is organised as follows.
+%
+%Chapter~2 reviews relevant literature on haptic interfaces, haptic rendering methods, stability considerations, and low-cost haptic hardware. Chapter~3 presents the overall system architecture. Chapter~4 describes the practical implementation of the hardware, firmware, communication protocol, and host-side software. Chapter~5 outlines the experimental methodology used for evaluation. Chapter~6 presents the results. Chapter~7 discusses the implications of these results, with particular focus on latency, stability, and hardware limitations. Finally, Chapter~8 concludes the dissertation and outlines opportunities for future work.

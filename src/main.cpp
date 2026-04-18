@@ -271,12 +271,12 @@ int main() {
 
     {
         std::ofstream csv("device_state_log.csv");
-        csv << "rx_state_seq,state_mcu_us,t_rx_parse_ns,q1,q2\n";
-
+        csv << "t_chunk_read_ns,t_rx_parse_ns,rx_state_seq,state_mcu_us,q1,q2\n";
         for (const auto& x : stateLogs) {
-            csv << x.rx_state_seq << ","
-                << x.state_mcu_us << ","
+            csv << x.t_chunk_read_ns << ","
                 << x.t_rx_parse_ns << ","
+                << x.rx_state_seq << ","
+                << x.state_mcu_us << ","
                 << x.q1 << ","
                 << x.q2 << "\n";
         }
