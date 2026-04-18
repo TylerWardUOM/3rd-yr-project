@@ -1,17 +1,17 @@
 [0] Config.pm:307> INFO - This is Biber 2.19
-[1] Config.pm:310> INFO - Logfile is 'main.blg'
-[159] biber-MSWIN64:340> INFO - === 
-[214] Biber.pm:419> INFO - Reading 'main.bcf'
-[323] Biber.pm:979> INFO - Found 17 citekeys in bib section 0
-[342] Biber.pm:4419> INFO - Processing section 0
-[357] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
-[436] bibtex.pm:1713> INFO - LaTeX decoding ...
-[486] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[613] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[613] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[613] Biber.pm:4239> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
-[613] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
-[628] bbl.pm:660> INFO - Writing 'main.bbl' with encoding 'UTF-8'
-[639] bbl.pm:763> INFO - Output to main.bbl
-[640] Biber.pm:131> WARN - I didn't find a database entry for 'inproceedings' (section 0)
-[640] Biber.pm:133> INFO - WARNINGS: 1
+[0] Config.pm:310> INFO - Logfile is 'main.blg'
+[209] biber-MSWIN64:340> INFO - === 
+[299] Biber.pm:419> INFO - Reading 'main.bcf'
+[400] Biber.pm:979> INFO - Found 15 citekeys in bib section 0
+[415] Biber.pm:4419> INFO - Processing section 0
+[447] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
+[502] bibtex.pm:1713> INFO - LaTeX decoding ...
+[551] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[729] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[729] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[730] Biber.pm:4239> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
+[730] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[751] bbl.pm:660> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[761] bbl.pm:763> INFO - Output to main.bbl
+[761] Biber.pm:131> WARN - I didn't find a database entry for 'inproceedings' (section 0)
+[761] Biber.pm:133> INFO - WARNINGS: 1
