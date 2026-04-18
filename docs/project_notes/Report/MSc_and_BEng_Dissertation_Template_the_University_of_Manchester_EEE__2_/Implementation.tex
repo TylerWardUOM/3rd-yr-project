@@ -133,10 +133,10 @@ A fixed-step accumulator scheme is used to decouple simulation stability from va
 
 To avoid introducing disk latency into the 1\,kHz control path, runtime logging is performed asynchronously. The device thread publishes structured timing and state messages to dedicated logging channels, and a background logger thread drains these channels into memory.
 
-At shutdown, logs are exported to CSV:
+At shutdown, logs are exported to two CSV files:
 \begin{itemize}
-	\item \texttt{device\_timing.csv}: matched receive--compute--transmit cycle timing and associated signal data
-	\item \texttt{device\_state\_log.csv}: parsed incoming device state stream
+	\item \texttt{device\_timing.csv}: matched state-command timing records for closed-loop control cycles, including host-side timestamps associated with packet parsing, tool-state publication, wrench consumption, and torque command transmission
+	\item \texttt{device\_state\_log.csv}: a record of every valid parsed incoming state packet, including host receive timestamps, packet sequence identifiers, MCU timestamps, and measured joint angles
 \end{itemize}
 
-A separate communication test executable (\texttt{serial\_tests}) was also implemented to characterise serial performance independently of the full application. It supports packet-rate and drop analysis, as well as round-trip-time testing, with machine-readable CSV outputs for offline analysis.
+A separate communication test executable (\texttt{serial\_tests}) was also implemented to characterise serial performance independently of the full application. It supports two operating modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. In both modes, incoming serial data are processed using a buffered parser with explicit packet header search, checksum validation, and byte-wise re-synchronisation to ensure robustness to fragmented or corrupted input. Results are exported to machine-readable CSV files for offline analysis.
