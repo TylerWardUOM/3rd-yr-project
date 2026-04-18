@@ -1,13 +1,11 @@
-This chapter presents the results obtained from the communication, simulation, safety, and hardware validation tests described in Chapter 5. The results are used to assess whether the implemented system achieved sufficiently reliable and stable real-time performance for low-cost haptic interaction.
+This chapter reports the measured outcomes of the Chapter 5 tests. It presents communication timing, simulation behaviour, safety outcomes, and hardware interaction observations.
 
-Particular attention is given to packet timing behaviour, round-trip communication latency, host-side closed-loop timing, and qualitative stability and force feel during sustained interaction with virtual constraints.
+Interpretation of these findings and their design implications is deferred to Chapter 7.
 
 \subsection{Communication Performance}
-Communication performance was evaluated using both standalone serial tests and runtime logging of the integrated haptic application. The standalone tests were used to characterise packet delivery behaviour and round-trip latency under controlled conditions, while the runtime logs were used to assess host-side timing behaviour of the closed-loop haptic pipeline during normal operation.
+Communication performance was evaluated using standalone serial tests and runtime logging of the integrated haptic application.
 
 \subsubsection{Packet Rate and Integrity Results}
-The results presented in this section correspond to the packet integrity and rate tests described in Section 5.1.1.
-
 Packet rate testing showed that communication performance remained stable over a wide range of requested transmission frequencies, although the behaviour was not uniform across all tested rates.
 
 At lower requested rates of 100~Hz and 250~Hz, packet loss was observed, with drop fractions of approximately 20.3\% and 8.5\% respectively. In contrast, for requested rates of 500~Hz and above, no dropped packets were observed in the recorded data, as shown in Fig.~\ref{fig:comm_overview}(a), where packet loss occurs only at the lowest transmission rates. Out-of-order packets were extremely rare across all higher-rate tests, with only a single out-of-order event recorded in each case.
@@ -49,11 +47,9 @@ Inter-arrival jitter, defined in Section 5.1.1 as the standard deviation of pack
 	\label{fig:jitter}
 \end{figure}
 
-Overall, these results indicate that the serial communication link is capable of supporting packet rates at or above 1~kHz with negligible packet loss in the tested configuration. This is sufficient to support stable haptic feedback loops operating at approximately 1~kHz, a typical requirement for high-fidelity force rendering.
+Overall, the serial link supported packet rates at or above 1~kHz with negligible packet loss in the tested configuration.
 
 \subsubsection{Round-Trip Latency Results}
-The following results correspond to the round-trip latency test described in Section 5.1.2.
-
 Round-trip latency results were highly consistent across all tested ping intervals. For nominal transmission intervals of 1~ms, 2~ms, and 10~ms, the success rate was 100\% in all cases, with no timeouts observed over 1000 samples per test.
 
 The mean measured round-trip latency remained approximately constant across all three test conditions, with values of 15.60~ms, 15.64~ms, and 15.67~ms respectively. Similarly, the 95th and 99th percentile RTT values were tightly grouped around 16.2--16.4~ms, indicating stable and predictable timing behaviour across repeated measurements. This behaviour is further illustrated in Fig.~\ref{fig:rtt_cdf}, where the cumulative distributions for all three tests overlap closely and rise sharply at approximately 15--16~ms, indicating that RTT is largely independent of the selected ping interval.
@@ -70,18 +66,12 @@ The mean measured round-trip latency remained approximately constant across all 
 
 The standard deviation of RTT remained below 0.52~ms in all cases, suggesting relatively low variability in round-trip timing. Minimum and maximum observed RTT values showed occasional larger deviations from the typical latency range, particularly in the 1~ms test, but these did not significantly affect the overall distribution.
 
-These results indicate that round-trip communication delay in the tested system is dominated by a relatively fixed latency component rather than by the selected transmission interval. In other words, increasing the ping frequency does not significantly reduce the measured latency, implying that the dominant delay arises from the serial communication stack, USB virtual COM interface, or host-side scheduling behaviour.
-
-From a system perspective, this indicates that while the system is capable of sustaining high update rates with low host-side processing delay, overall responsiveness is limited by communication latency rather than computational performance. In particular, the observed round-trip latency of approximately 15--16~ms is significantly larger than the nominal 1~ms update period associated with 1~kHz haptic rendering, meaning that communication delay dominates the closed-loop response. As a result, achievable virtual stiffness is constrained more strongly by communication delay than by control loop execution speed.
-
-Nevertheless, the low variability and high reliability of the measured RTT indicate that the delay is predictable, which is beneficial for maintaining stability in the haptic feedback loop when combined with appropriate damping and rate-limiting strategies.
+These results indicate that RTT was dominated by a largely fixed delay component and changed little with ping interval. The measured delay remained predictable due to low variability and zero observed timeouts.
 
 % TODO: Repeat RTT testing with final MCU firmware and optimised serial configuration.
 % Preliminary investigation suggests that the measured latency may be influenced by USB CDC implementation and host-side buffering behaviour. A refined setup may reduce the observed round-trip delay.
 
 \subsubsection{End-to-End Host-Side Timing Results}
-These results correspond to the end-to-end host-side timing test described in Section 5.1.3.
-
 End-to-end timing behaviour of the integrated haptic pipeline was evaluated using runtime logging of matched state-command cycles and raw parsed state packets.
 
 Analysis of \texttt{device\_timing.csv} showed that all recorded control cycles were successfully matched, with a matched fraction of 1.000, indicating consistent correspondence between received state packets and transmitted torque commands.
@@ -118,9 +108,7 @@ Analysis of host-side parsed-packet inter-arrival timing revealed significant va
 
 Despite this non-uniform host-side processing pattern, analysis of MCU-side timestamps showed that the embedded system maintained a stable and consistent update rate. The effective MCU period per state was approximately 1.00~ms, corresponding to an update rate of 1000~Hz, with very low variability.
 
-Taken together, these results indicate that while packet generation on the embedded controller was highly regular, packet processing at the host occurred in a non-uniform burst-like pattern. These observations strongly suggest that buffering and scheduling effects within the USB virtual COM interface and host operating system are the primary causes of the observed burst-like packet delivery behaviour, although the current instrumentation cannot fully separate chunk delivery timing from parser timing.
-
-Importantly, the host-side processing pipeline was sufficiently fast to handle this behaviour, resulting in low end-to-end latency and stable closed-loop operation. Overall, the integrated system achieved high update rates with low host-side processing latency despite non-uniform packet processing at the host. This supports the feasibility of the proposed architecture for real-time haptic interaction, with the primary limitation arising from communication latency rather than host-side computation, as also reflected in the round-trip latency measurements.
+Taken together, packet generation on the embedded controller was highly regular, while host-side packet processing was non-uniform and burst-like. Despite this, host-side processing latency remained low.
 
 % TODO: Repeat this analysis after adding t_chunk_read_ns to DeviceStateLogMsg.
 % The updated instrumentation should log:
@@ -175,7 +163,7 @@ When the end-effector was moved along the virtual wall surface, the computed for
 These results demonstrate that the simulation model can reliably generate constraint forces aligned with surface geometry, supporting its suitability for guidance and training-based interaction tasks.
 
 \subsection{Safety Validation Results}
-The safety mechanisms were evaluated primarily as functional pass/fail protections, since their purpose was to enforce bounded behaviour under fault or extreme-input conditions rather than to optimise a continuous performance metric.
+Safety mechanisms were evaluated primarily as functional pass/fail protections.
 
 \subsubsection{Torque Saturation and Rate Limiting}
 %TODO Split to match section 5
@@ -187,7 +175,7 @@ In addition, the implemented slew-rate limiter on the microcontroller significan
 
 Without rate limiting, abrupt force changes resulted in noticeable vibration and unstable behaviour. The inclusion of the rate limiter reduced these effects and contributed to stable sustained interaction.
 
-Overall, the layered safety approach of force clamping and torque rate limiting was found to be essential for achieving stable and controllable haptic feedback.
+Overall, force clamping and torque rate limiting maintained bounded and stable actuator behaviour in the tested conditions.
 
 \subsubsection{Watchdog Timeout Behaviour}
 
@@ -200,7 +188,7 @@ This resulted in the device returning to a passive, unpowered state without exhi
 
 The watchdog behaviour was observed to be consistent and repeatable across multiple trials, providing a robust safeguard against communication failure or host-side faults.
 
-These results confirm that the embedded safety mechanisms are effective in preventing unsafe actuator behaviour in the presence of communication disruption.
+These results confirm effective fail-safe behaviour during communication disruption.
 
 \subsection{Hardware Validation Results}
 
@@ -232,11 +220,11 @@ Some low-level vibration and noise were present during contact, particularly und
 
 The system remained responsive to user input while maintaining a stable resistive force, indicating that the closed-loop architecture is suitable for practical haptic interaction scenarios.
 
-These results demonstrate that the prototype can achieve stable contact interaction under real-time conditions, despite communication variability and non-uniform packet arrival behaviour.
+These results demonstrate stable contact interaction under real-time conditions despite communication variability.
 
 It is noted that the large penetration effects observed during simulation validation were less prominent during physical interaction. In practice, the rendered contact force limits penetration depth by opposing user motion. However, due to the finite torque output of the actuators and the achievable virtual stiffness, some penetration still occurs during contact.
 
-This effect is more pronounced when interacting with small or thin virtual objects, where relatively small physical displacements may correspond to significant penetration in the virtual model. As a result, the limitations of the projection-based contact formulation may still influence force consistency under certain conditions.
+This effect is more pronounced with small or thin virtual objects, where small physical displacements can correspond to significant virtual penetration.
 
 Although stable contact behaviour was achieved, the rendered force did not exhibit perfectly rigid characteristics. The interaction was observed to have a degree of compliance, with force increasing gradually rather than instantaneously. This behaviour reflects limitations in actuator torque capability, control fidelity, and transmission behaviour, which are discussed further in Section 7.3.
 
@@ -254,16 +242,12 @@ This behaviour demonstrates that the system is capable of producing physically i
 
 The guidance behaviour was effective but not perfectly rigid, with some compliance and variation in constraint force observed during motion. This was consistent with the limited actuator stiffness and partial actuation available in the final hardware configuration.
 
-These results confirm that the prototype can produce stable and physically intuitive constraint interactions under real-time conditions, despite communication variability and actuator limitations.
+These results confirm stable and intuitive constraint interaction under real-time conditions.
 
 \subsection{Summary of Results}
 
-Overall, the results demonstrate that the proposed system is capable of achieving stable and reliable real-time haptic interaction within the constraints of a low-cost hardware platform.
+Overall, the system achieved stable real-time interaction on a low-cost platform.
 
-Communication performance supports high update rates with low packet loss, although a fixed round-trip latency of approximately 15--16~ms imposes a fundamental limitation on achievable responsiveness and virtual stiffness. Despite this, host-side processing latency remains negligible, and the system maintains stable closed-loop behaviour under realistic operating conditions.
+The main measured constraints were fixed communication latency (approximately 15--16~ms), finite actuator capability, partial actuation in final testing, and transmission non-idealities under high load.
 
-Simulation validation and partial hardware validation confirm that the haptic rendering model produces physically consistent contact and constraint forces, while embedded safety mechanisms ensure robust and predictable behaviour under fault conditions. However, the hardware results also show that the rendered interaction is not perfectly rigid: actuator torque limits, partial actuation, and transmission non-idealities introduce compliance and reduce force consistency under high-load contact conditions.
-
-Across all tests, a consistent pattern emerges in which system performance is limited primarily by communication latency rather than computational or control-loop execution speed, with additional practical limitations arising from actuator force capability and transmission behaviour.
-
-Taken together, these results indicate that the system meets its core design objectives, with primary limitations arising from communication latency and actuator force constraints rather than computational performance.
+Within these constraints, the tests showed low packet loss at high update rates, low host-side processing latency, consistent safety behaviour, and stable qualitative contact/constraint interaction.
