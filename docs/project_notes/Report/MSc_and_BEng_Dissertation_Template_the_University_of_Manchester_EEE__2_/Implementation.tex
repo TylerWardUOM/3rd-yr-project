@@ -44,15 +44,15 @@ User motion is measured at the device joints and transmitted to the host in real
 
 The physical interface is a planar two degree-of-freedom serial mechanism designed for low-cost fabrication and straightforward maintenance. A two-link layout was selected to provide a usable workspace while keeping actuator count, wiring complexity, and control overhead manageable.
 
-The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208). The base joint incorporates a GT2 belt reduction stage (approximately 3:1) to increase available output torque, while the distal joint is direct-drive to minimise mechanical complexity.
+The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208)\cite{tmotor_gb2208}. The base joint incorporates a 3:1 GT2 belt reduction stage to increase available output torque, while the elbow joint is direct-drive to minimise mechanical complexity.
 
 An adjustable idler pulley is integrated into the belt stage to enable tensioning and reduce backlash. Despite this, non-ideal behaviour such as compliance and occasional slip under high load was observed, as discussed in Section~\ref{sec:discussion}.
 
-To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048) are mounted directly on the joint axes and interfaced via SPI. This is particularly important for the belt-driven joint, where transmission compliance would otherwise introduce discrepancies between motor-side and output angles.
+To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048)\cite{ams_as5048_2018} are mounted directly on the joint axes and interfaced via SPI. This is particularly important for the belt-driven joint, where transmission compliance would otherwise introduce discrepancies between motor-side and output angles.
 
-For the belt-driven actuator, an additional AS5600 magnetic encoder is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
+For the belt-driven actuator, an additional AS5600 magnetic encoder\cite{ams_as5600_2018} is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
 
-Embedded control runs on an STM32 Nucleo-G431RB platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero.
+Embedded control runs on an STM32 Nucleo-G431RB\cite{NUCLEOG431RBProductSTMicroelectronics} platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero. %Mention torque skew rate limiter here?
 
 \begin{figure}[htbp]
 	\centering
@@ -125,6 +125,9 @@ Force output is generated using a proxy-based virtual coupling model, in which a
 where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and \(D = 0.7\cdot 2\sqrt{KM}\).
 
 This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a constrained dynamic system. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford.
+
+As a result, stability in the implemented system is not guaranteed by formal passivity conditions, but is instead achieved through a combination of virtual coupling, damping, and conservative actuator-side constraints. These mechanisms act to limit energy injection arising from delay and discretisation, providing practical stability despite the absence of a formally passive design.
+%TODO: Check that this as a result paragraph should be here could maybe be moved into discussion
 
 To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N before publication.
 

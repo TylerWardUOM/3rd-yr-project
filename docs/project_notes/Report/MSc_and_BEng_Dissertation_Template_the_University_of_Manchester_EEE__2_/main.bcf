@@ -2368,24 +2368,32 @@
     <bcf:citekey order="4" intorder="1">adamsStableHapticInteraction1999</bcf:citekey>
     <bcf:citekey order="5" intorder="1">martinez3DPrintedHaptic2016</bcf:citekey>
     <bcf:citekey order="5" intorder="2">martinezOpenSourceModular2017</bcf:citekey>
-    <bcf:citekey order="6" intorder="1">v</bcf:citekey>
+    <bcf:citekey order="6" intorder="1">lavatelliDesignOpenSource2014</bcf:citekey>
     <bcf:citekey order="7" intorder="1">giriApplicationBasedReviewHaptics2021</bcf:citekey>
     <bcf:citekey order="8" intorder="1">bergholzBenefitsHapticFeedback2023</bcf:citekey>
-    <bcf:citekey order="9" intorder="1">haplyInverse3X</bcf:citekey>
+    <bcf:citekey order="9" intorder="1">giriApplicationBasedReviewHaptics2021</bcf:citekey>
     <bcf:citekey order="10" intorder="1">geomagicTouchPrice</bcf:citekey>
     <bcf:citekey order="10" intorder="2">geomagicTouchXPrice</bcf:citekey>
-    <bcf:citekey order="11" intorder="1">zillesConstraintbasedGodobjectMethod1995</bcf:citekey>
-    <bcf:citekey order="11" intorder="2">ruspiniHapticDisplayComplex1997</bcf:citekey>
-    <bcf:citekey order="12" intorder="1">ruspiniHapticDisplayComplex1997</bcf:citekey>
-    <bcf:citekey order="13" intorder="1">adamsStableHapticInteraction1999</bcf:citekey>
-    <bcf:citekey order="14" intorder="1">giriApplicationBasedReviewHaptics2021</bcf:citekey>
-    <bcf:citekey order="15" intorder="1">martinez3DPrintedHaptic2016</bcf:citekey>
-    <bcf:citekey order="16" intorder="1">martinezOpenSourceModular2017</bcf:citekey>
-    <bcf:citekey order="17" intorder="1">lavatelliDesignOpenSource2014</bcf:citekey>
-    <bcf:citekey order="18" intorder="1">simplefoc2022</bcf:citekey>
-    <bcf:citekey order="19" intorder="1">vasSensorlessVectorDirect1998</bcf:citekey>
-    <bcf:citekey order="20" intorder="1">ericsonRealTimeCollisionDetection2004</bcf:citekey>
-    <bcf:citekey order="21" intorder="1">adamsStableHapticInteraction1999</bcf:citekey>
+    <bcf:citekey order="11" intorder="1">forceDimensionSales</bcf:citekey>
+    <bcf:citekey order="11" intorder="2">haplyInverse3X</bcf:citekey>
+    <bcf:citekey order="12" intorder="1">zillesConstraintbasedGodobjectMethod1995</bcf:citekey>
+    <bcf:citekey order="12" intorder="2">ruspiniHapticDisplayComplex1997</bcf:citekey>
+    <bcf:citekey order="13" intorder="1">ruspiniHapticDisplayComplex1997</bcf:citekey>
+    <bcf:citekey order="14" intorder="1">khatibUnifiedApproachMotion1987a</bcf:citekey>
+    <bcf:citekey order="15" intorder="1">adamsStableHapticInteraction1999</bcf:citekey>
+    <bcf:citekey order="16" intorder="1">colgatePassivityClassSampleddata1997</bcf:citekey>
+    <bcf:citekey order="17" intorder="1">giriApplicationBasedReviewHaptics2021</bcf:citekey>
+    <bcf:citekey order="18" intorder="1">martinez3DPrintedHaptic2016</bcf:citekey>
+    <bcf:citekey order="19" intorder="1">martinezOpenSourceModular2017</bcf:citekey>
+    <bcf:citekey order="20" intorder="1">lavatelliDesignOpenSource2014</bcf:citekey>
+    <bcf:citekey order="21" intorder="1">tmotor_gb2208</bcf:citekey>
+    <bcf:citekey order="22" intorder="1">ams_as5048_2018</bcf:citekey>
+    <bcf:citekey order="23" intorder="1">ams_as5600_2018</bcf:citekey>
+    <bcf:citekey order="24" intorder="1">NUCLEOG431RBProductSTMicroelectronics</bcf:citekey>
+    <bcf:citekey order="25" intorder="1">simplefoc2022</bcf:citekey>
+    <bcf:citekey order="26" intorder="1">vasSensorlessVectorDirect1998</bcf:citekey>
+    <bcf:citekey order="27" intorder="1">ericsonRealTimeCollisionDetection2004</bcf:citekey>
+    <bcf:citekey order="28" intorder="1">adamsStableHapticInteraction1999</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

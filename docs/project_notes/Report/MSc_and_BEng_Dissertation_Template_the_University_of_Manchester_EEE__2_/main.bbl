@@ -415,25 +415,43 @@
       \endverb
       \keyw{Haptic interfaces,Hardware,Kinematics,Printing,Software,Tools,Virtual environments}
     \endentry
-    \entry{haplyInverse3X}{online}{}
-      \list{publisher}{1}{%
-        {Haply Robotics}%
+    \entry{lavatelliDesignOpenSource2014}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=f7001987e44010db59abf9de42873de6}{%
+           family={Lavatelli},
+           familyi={L\bibinitperiod},
+           given={Alberto},
+           giveni={A\bibinitperiod}}}%
+        {{hash=cca311dea56f279b2ec8ed08dad63089}{%
+           family={Bordegoni},
+           familyi={B\bibinitperiod},
+           given={Monica},
+           giveni={M\bibinitperiod}}}%
+        {{hash=c1c698b5a19eb5720d8876338e9fa368}{%
+           family={Ferrise},
+           familyi={F\bibinitperiod},
+           given={Francesco},
+           giveni={F\bibinitperiod}}}%
       }
-      \field{sortinit}{9}
-      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \strng{namehash}{a97a1fd03ae67baf4c891c4985db32cd}
+      \strng{fullhash}{0dd29712141115405d1cb142bc9c6a7b}
+      \strng{bibnamehash}{0dd29712141115405d1cb142bc9c6a7b}
+      \strng{authorbibnamehash}{0dd29712141115405d1cb142bc9c6a7b}
+      \strng{authornamehash}{a97a1fd03ae67baf4c891c4985db32cd}
+      \strng{authorfullhash}{0dd29712141115405d1cb142bc9c6a7b}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{title}{Inverse3 {{X}}}
-      \field{urlday}{16}
-      \field{urlmonth}{4}
-      \field{urlyear}{2026}
-      \field{year}{2026}
+      \field{month}{9}
+      \field{title}{Design of an Open-Source Low Cost {{2DOF}} Haptic Device}
+      \field{year}{2014}
       \field{dateera}{ce}
-      \field{urldateera}{ce}
-      \verb{urlraw}
-      \verb https://www.haply.co/inverse3x
+      \verb{doi}
+      \verb 10.1109/MESA.2014.6935574
       \endverb
-      \verb{url}
-      \verb https://www.haply.co/inverse3x
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\HM6A8XT3\Lavatelli et al. - 2014 - Design of an open-source low cost 2DOF haptic device.pdf
       \endverb
     \endentry
     \entry{geomagicTouchPrice}{online}{}
@@ -476,6 +494,48 @@
       \endverb
       \verb{url}
       \verb https://shop.gomeasure3d.com/products/geomagic-touch-x-haptic-device
+      \endverb
+    \endentry
+    \entry{forceDimensionSales}{online}{}
+      \list{publisher}{1}{%
+        {Force Dimension}%
+      }
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{Sales Inquiries}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.forcedimension.com/contact/sales
+      \endverb
+      \verb{url}
+      \verb https://www.forcedimension.com/contact/sales
+      \endverb
+    \endentry
+    \entry{haplyInverse3X}{online}{}
+      \list{publisher}{1}{%
+        {Haply Robotics}%
+      }
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{Inverse3 {{X}}}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.haply.co/inverse3x
+      \endverb
+      \verb{url}
+      \verb https://www.haply.co/inverse3x
       \endverb
     \endentry
     \entry{zillesConstraintbasedGodobjectMethod1995}{inproceedings}{}
@@ -535,43 +595,231 @@
       \verb http://ieeexplore.ieee.org/document/525876/
       \endverb
     \endentry
-    \entry{lavatelliDesignOpenSource2014}{inproceedings}{}
-      \name{author}{3}{}{%
-        {{hash=f7001987e44010db59abf9de42873de6}{%
-           family={Lavatelli},
-           familyi={L\bibinitperiod},
-           given={Alberto},
-           giveni={A\bibinitperiod}}}%
-        {{hash=cca311dea56f279b2ec8ed08dad63089}{%
-           family={Bordegoni},
-           familyi={B\bibinitperiod},
-           given={Monica},
-           giveni={M\bibinitperiod}}}%
-        {{hash=c1c698b5a19eb5720d8876338e9fa368}{%
-           family={Ferrise},
-           familyi={F\bibinitperiod},
-           given={Francesco},
-           giveni={F\bibinitperiod}}}%
+    \entry{khatibUnifiedApproachMotion1987a}{article}{}
+      \name{author}{1}{}{%
+        {{hash=0a9bcb07c557a30beb3c13b8fab1ad99}{%
+           family={Khatib},
+           familyi={K\bibinitperiod},
+           given={O.},
+           giveni={O\bibinitperiod}}}%
       }
-      \strng{namehash}{a97a1fd03ae67baf4c891c4985db32cd}
-      \strng{fullhash}{0dd29712141115405d1cb142bc9c6a7b}
-      \strng{bibnamehash}{0dd29712141115405d1cb142bc9c6a7b}
-      \strng{authorbibnamehash}{0dd29712141115405d1cb142bc9c6a7b}
-      \strng{authornamehash}{a97a1fd03ae67baf4c891c4985db32cd}
-      \strng{authorfullhash}{0dd29712141115405d1cb142bc9c6a7b}
+      \strng{namehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{fullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{bibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authorbibnamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authornamehash}{0a9bcb07c557a30beb3c13b8fab1ad99}
+      \strng{authorfullhash}{0a9bcb07c557a30beb3c13b8fab1ad99}
       \field{sortinit}{1}
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{month}{9}
-      \field{title}{Design of an Open-Source Low Cost {{2DOF}} Haptic Device}
-      \field{year}{2014}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{A framework for the analysis and control of manipulator systems with respect to the dynamic behavior of their end-effectors is developed. First, issues related to the description of end-effector tasks that involve constrained motion and active force control are discussed. The fundamentals of the operational space formulation are then presented, and the unified approach for motion and force control is developed. The extension of this formulation to redundant manipulator systems is also presented, constructing the end-effector equations of motion and describing their behavior with respect to joint forces. These results are used in the development of a new and systematic approach for dealing with the problems arising at kinematic singularities. At a singular configuration, the manipulator is treated as a mechanism that is redundant with respect to the motion of the end-effector in the subspace of operational space orthogonal to the singular direction.}
+      \field{issn}{2374-8710}
+      \field{journaltitle}{IEEE Journal on Robotics and Automation}
+      \field{month}{2}
+      \field{number}{1}
+      \field{shorttitle}{A Unified Approach for Motion and Force Control of Robot Manipulators}
+      \field{title}{A Unified Approach for Motion and Force Control of Robot Manipulators: {{The}} Operational Space Formulation}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{volume}{3}
+      \field{year}{1987}
       \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{43\bibrangedash 53}
+      \range{pages}{11}
       \verb{doi}
-      \verb 10.1109/MESA.2014.6935574
+      \verb 10.1109/JRA.1987.1087068
       \endverb
       \verb{file}
-      \verb C:\Users\tman0\Zotero\storage\HM6A8XT3\Lavatelli et al. - 2014 - Design of an open-source low cost 2DOF haptic device.pdf
+      \verb C:\Users\tman0\Zotero\storage\JRVBVLHG\Khatib - 1987 - A unified approach for motion and force control of robot manipulators The operational space formula.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://ieeexplore.ieee.org/abstract/document/1087068
+      \endverb
+      \verb{url}
+      \verb https://ieeexplore.ieee.org/abstract/document/1087068
+      \endverb
+      \keyw{Control system analysis,Control systems,Equations,Force control,Kinematics,Manipulator dynamics,Motion analysis,Motion control,Orbital robotics,Robot sensing systems}
+    \endentry
+    \entry{colgatePassivityClassSampleddata1997}{article}{}
+      \name{author}{2}{}{%
+        {{hash=e686efe156b7d973c12b05e0ab58fbf8}{%
+           family={Colgate},
+           familyi={C\bibinitperiod},
+           given={J.\bibnamedelimi Edward},
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+        {{hash=7fc5842950a5e35c5d578fd4fd4afafe}{%
+           family={Schenkel},
+           familyi={S\bibinitperiod},
+           given={Gerd\bibnamedelima G.},
+           giveni={G\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+      }
+      \strng{namehash}{e0bb91bbb650c9dcbd72c76d4b11605f}
+      \strng{fullhash}{e0bb91bbb650c9dcbd72c76d4b11605f}
+      \strng{bibnamehash}{e0bb91bbb650c9dcbd72c76d4b11605f}
+      \strng{authorbibnamehash}{e0bb91bbb650c9dcbd72c76d4b11605f}
+      \strng{authornamehash}{e0bb91bbb650c9dcbd72c76d4b11605f}
+      \strng{authorfullhash}{e0bb91bbb650c9dcbd72c76d4b11605f}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{Passivity of systems comprising a continuous time plant and discrete time controller is considered. This topic is motivated by stability considerations arising in the control of robots and force-reflecting human interfaces (“haptic interfaces”). Necessary conditions for passivity are found via a small gain condition, and sufficient conditions are found via an application of Parseval's theorem and a sequence of frequency domain manipulations. An example—implementation of a “virtual wall” via a one degree-of-freedom haptic interface—is given and discussed in some detail. © 1997 John Wiley \& Sons, Inc.}
+      \field{issn}{1097-4563}
+      \field{journaltitle}{Journal of Robotic Systems}
+      \field{langid}{english}
+      \field{number}{1}
+      \field{shorttitle}{Passivity of a Class of Sampled-Data Systems}
+      \field{title}{Passivity of a Class of Sampled-Data Systems: {{Application}} to Haptic Interfaces}
+      \field{urlday}{18}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{volume}{14}
+      \field{year}{1997}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{37\bibrangedash 47}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1002/(SICI)1097-4563(199701)14:1<37::AID-ROB4>3.0.CO;2-V
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\tman0\\Zotero\\storage\\I448W6S3\\Colgate and Schenkel - 1997 - Passivity of a class of sampled-data systems Application to haptic interfaces.pdf;C\:\\Users\\tman0\\Zotero\\storage\\YLR5RGM6\\(SICI)1097-4563(199701)14137AID-ROB43.0.html
+      \endverb
+      \verb{urlraw}
+      \verb https://onlinelibrary.wiley.com/doi/abs/10.1002/%28SICI%291097-4563%28199701%2914%3A1%3C37%3A%3AAID-ROB4%3E3.0.CO%3B2-V
+      \endverb
+      \verb{url}
+      \verb https://onlinelibrary.wiley.com/doi/abs/10.1002/%28SICI%291097-4563%28199701%2914%3A1%3C37%3A%3AAID-ROB4%3E3.0.CO%3B2-V
+      \endverb
+    \endentry
+    \entry{tmotor_gb2208}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=c40004fe32aa39c9151868d472bdca1c}{%
+           family={{T-Motor}},
+           familyi={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{c40004fe32aa39c9151868d472bdca1c}
+      \strng{fullhash}{c40004fe32aa39c9151868d472bdca1c}
+      \strng{bibnamehash}{c40004fe32aa39c9151868d472bdca1c}
+      \strng{authorbibnamehash}{c40004fe32aa39c9151868d472bdca1c}
+      \strng{authornamehash}{c40004fe32aa39c9151868d472bdca1c}
+      \strng{authorfullhash}{c40004fe32aa39c9151868d472bdca1c}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{{GB2208}} Gimbal Type Brushless Motor}
+      \field{year}{2026}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://store.tmotor.com/product/gb2208-gimbal-type.html
+      \endverb
+      \verb{url}
+      \verb https://store.tmotor.com/product/gb2208-gimbal-type.html
+      \endverb
+    \endentry
+    \entry{ams_as5048_2018}{manual}{}
+      \name{author}{1}{}{%
+        {{hash=4b417ee6c16a1fe6d5eaba487634b3d1}{%
+           family={{ams AG}},
+           familyi={a\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {ams AG}%
+      }
+      \strng{namehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{fullhash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{bibnamehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{authorbibnamehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{authornamehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{authorfullhash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \field{extraname}{1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{v1-11}
+      \field{month}{1}
+      \field{title}{{{AS5048A}}/{{AS5048B}} Magnetic Rotary Encoder (14-Bit Angular Position Sensor)}
+      \field{type}{manual}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2018}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\869M47JL\ams AG - 2018 - AS5048AAS5048B magnetic rotary encoder (14-bit angular position sensor).pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://ams-osram.com/products/sensors/position-sensors/ams-as5048a-high-resolution-position-sensor
+      \endverb
+      \verb{url}
+      \verb https://ams-osram.com/products/sensors/position-sensors/ams-as5048a-high-resolution-position-sensor
+      \endverb
+    \endentry
+    \entry{ams_as5600_2018}{manual}{}
+      \name{author}{1}{}{%
+        {{hash=4b417ee6c16a1fe6d5eaba487634b3d1}{%
+           family={{ams AG}},
+           familyi={a\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {ams AG}%
+      }
+      \strng{namehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{fullhash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{bibnamehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{authorbibnamehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{authornamehash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \strng{authorfullhash}{4b417ee6c16a1fe6d5eaba487634b3d1}
+      \field{extraname}{2}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{v1-06}
+      \field{month}{6}
+      \field{title}{{{AS5600}} 12-Bit Programmable Contactless Potentiometer}
+      \field{type}{manual}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2018}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{file}
+      \verb C:\Users\tman0\Zotero\storage\9JVPTEH7\ams AG - 2018 - AS5600 12-bit programmable contactless potentiometer.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://ams-osram.com/products/sensor-solutions/position-sensors/ams-as5600-position-sensor
+      \endverb
+      \verb{url}
+      \verb https://ams-osram.com/products/sensor-solutions/position-sensors/ams-as5600-position-sensor
+      \endverb
+    \endentry
+    \entry{NUCLEOG431RBProductSTMicroelectronics}{online}{}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The STM32 Nucleo-64 board provides an affordable and flexible way for users to try out new concepts and build prototypes by choosing from the various...}
+      \field{langid}{english}
+      \field{title}{{{NUCLEO-G431RB}} | {{Product}} - {{STMicroelectronics}}}
+      \field{urlday}{16}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{urldateera}{ce}
+      \verb{file}
+      \verb C\:\\Users\\tman0\\Zotero\\storage\\QCKFA286\\NUCLEO-G431RB Product - STMicroelectronics.pdf;C\:\\Users\\tman0\\Zotero\\storage\\ZE5ASGE3\\nucleo-g431rb.html
+      \endverb
+      \verb{urlraw}
+      \verb https://www.st.com/en/evaluation-tools/nucleo-g431rb.html
+      \endverb
+      \verb{url}
+      \verb https://www.st.com/en/evaluation-tools/nucleo-g431rb.html
       \endverb
     \endentry
     \entry{simplefoc2022}{article}{}
@@ -611,8 +859,8 @@
       \strng{authorbibnamehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
       \strng{authornamehash}{aca4f7d36c0dc3678949dbce1d6ebbdd}
       \strng{authorfullhash}{dfcd1c9e447d66a9ea248cc3efb390bc}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Open Source Software}
@@ -653,8 +901,8 @@
       \strng{authorbibnamehash}{b31eef85c811a251c7186ca8015ca7b0}
       \strng{authornamehash}{b31eef85c811a251c7186ca8015ca7b0}
       \strng{authorfullhash}{b31eef85c811a251c7186ca8015ca7b0}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{This is the first comprehensive book on sensor less high performance a.c. drives. It is essential reading for anyone interested in acquiring a solid background on sensor less torque-controlled drives. It presents a detailed and unified treatment of sensor less vector-controlled and direct-torque controlled drive systems. It also discusses the applications of artificial intelligence to drives. Where possible, space vector theory is used and emphasis is laid on detailed mathematical and physical analysis. Sensorless drive schemes for different types of permanent magnet synchronous motors, synchronous reluctance motors, and induction motors are also presented. These include more than twenty vector drives e.g. five types of MRAS-based vector drives, and eleven types of direct-torque-controlled (DTC) drives, e.g. the ABB DTC drive. However, torque-controlled switched reluctance motor drives are also discussed due to their emerging importance. The book also covers various drive applications using artificial intelligence (fuzzy logic, neural networks, fuzzy-neural networks) and AI-based modelling of electrical machines. Finally, self-commissioning techniques are also discussed. This is a comprehensive thoroughly up-to-date, and self-contained book suitable for students at various levels, teachers, and industrial readership. Peter Vas is a Professor at the Department of Engineering at the University of Aberdeen, UK, where he is also the Head of the Intelligent Motion Control Group. His previous books published by Oxford University Press are extensively used worldwide.}
@@ -725,7 +973,6 @@
       \endverb
     \endentry
   \enddatalist
-  \missing{inproceedings}
 \endrefsection
 \endinput
 
