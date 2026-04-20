@@ -52,6 +52,12 @@
 \usepackage{tikz}
 \usepackage{circuitikz}
 \usetikzlibrary{arrows.meta, positioning, fit, calc}
+\let\oldcomment\comment
+\let\endoldcomment\endcomment
+
+\usepackage{easyReview}
+\let\comment\comments
+\let\endcomment\endcomments
 % Custom commands
 \newcommand{\degree}{\ensuremath{^\circ}}
 \newcommand{\sus}[1]{$^{\mbox{\scriptsize #1}}$} % superscript in text (e.g. 1st)

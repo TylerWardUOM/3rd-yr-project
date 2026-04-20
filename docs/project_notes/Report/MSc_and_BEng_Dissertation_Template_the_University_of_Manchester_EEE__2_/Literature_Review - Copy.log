@@ -1,0 +1,1091 @@
+This is LuaHBTeX, Version 1.17.1 (MiKTeX 24.1) (format=lualatex 2025.12.17)  18 APR 2026 18:35
+ restricted system commands enabled.
+**"Literature_Review - Copy.tex"
+("./Literature_Review - Copy.tex"
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+Lua module: luaotfload 2023-08-31 3.26 Lua based OpenType font support
+Lua module: lualibs 2023-07-13 2.76 ConTeXt Lua standard libraries.
+Lua module: lualibs-extended 2023-07-13 2.76 ConTeXt Lua libraries -- extended c
+ollection.
+luaotfload | conf : Root cache directory is "C:/Users/tman0/AppData/Local/MiKTeX
+/luatex-cache/generic/names".
+luaotfload | init : Loading fontloader "fontloader-2023-08-19.lua" from kpse-res
+olved path "C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/luatex/luaotfload/f
+ontloader-2023-08-19.lua".
+Lua-only attribute luaotfload@noligature = 1
+luaotfload | init : Context OpenType loader version 3.133
+Inserting `luaotfload.node_processor' in `pre_linebreak_filter'.
+Inserting `luaotfload.node_processor' in `hpack_filter'.
+Inserting `luaotfload.glyph_stream' in `glyph_stream_provider'.
+Inserting `luaotfload.define_font' in `define_font'.
+Lua-only attribute luaotfload_color_attribute = 2
+luaotfload | conf : Root cache directory is "C:/Users/tman0/AppData/Local/MiKTeX
+/luatex-cache/generic/names".
+Inserting `luaotfload.harf.strip_prefix' in `find_opentype_file'.
+Inserting `luaotfload.harf.strip_prefix' in `find_truetype_file'.
+Removing  `luaotfload.glyph_stream' from `glyph_stream_provider'.
+Inserting `luaotfload.harf.glyphstream' in `glyph_stream_provider'.
+Inserting `luaotfload.harf.finalize_vlist' in `post_linebreak_filter'.
+Inserting `luaotfload.harf.finalize_hlist' in `hpack_filter'.
+Inserting `luaotfload.cleanup_files' in `wrapup_run'.
+Inserting `luaotfload.harf.finalize_unicode' in `finish_pdffile'.
+Inserting `luaotfload.glyphinfo' in `glyph_info'.
+Lua-only attribute luaotfload.letterspace_done = 3
+Inserting `luaotfload.aux.set_sscale_dimens' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.set_font_index' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.patch_cambria_domh' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.fixup_fontdata' in `luaotfload.patch_font_unsafe'.
+Inserting `luaotfload.aux.set_capheight' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.set_xheight' in `luaotfload.patch_font'.
+Inserting `luaotfload.rewrite_fontname' in `luaotfload.patch_font'.
+Inserting `tracingstacklevels' in `input_level_string'.
+! Undefined control sequence.
+l.1 \subsection
+             {Haptic Interfaces for Robotics}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1 \subsection{H
+               aptic Interfaces for Robotics}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 1--2
+[]Haptic
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.3 H
+   aptic interfaces play a central role in teleoperation, robot-assisted sur...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{giriApplicationBasedReviewHaptics2021}
+luaotfload | db : Font names database loaded from C:/Users/tman0/AppData/Local/M
+iKTeX/luatex-cache/generic/names/luaotfload-names.luc.gz
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.3 ... \cite{giriApplicationBasedReviewHaptics2021}
+                                                  . A large body of empirica...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `giriApplicationBasedReviewHaptics2021' on page  undefi
+ned on input line 3.
+
+\citation{bergholzBenefitsHapticFeedback2023}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.3 ...ers \cite{bergholzBenefitsHapticFeedback2023}
+                                                  .
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `bergholzBenefitsHapticFeedback2023' on page  undefined
+ on input line 3.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 3--4
+[]Haptic
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 3--4
+[[]].
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 3--4
+[[]]. 
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.5 C
+   ommercial haptic devices remain widely used in research, training, and si...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{haplyInverse3X}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.5 ...fic software ecosystems \cite{haplyInverse3X}
+                                                  .
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `haplyInverse3X' on page  undefined on input line 5.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 5--6
+[]Commercial
+ []
+
+
+Overfull \hbox (15.92001pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 Ge-
+ []
+
+
+Overfull \hbox (8.69pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 o-
+ []
+
+
+Overfull \hbox (25.56001pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 magic
+ []
+
+
+Overfull \hbox (26.58pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 Touch
+ []
+
+
+Overfull \hbox (26.58pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 Touch
+ []
+
+
+Overfull \hbox (7.43pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 X\nullfont ,
+ []
+
+
+Overfull \hbox (23.27002pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 Force
+ []
+
+
+Overfull \hbox (14.20001pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 Di-
+ []
+
+
+Overfull \hbox (21.98pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 men-
+ []
+
+
+Overfull \hbox (17.89pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 sion
+ []
+
+
+Overfull \hbox (52.48001pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 omega\nullfont /\TU/lmr/m/it/10 sigma
+ []
+
+
+Overfull \hbox (13.06pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 In-
+ []
+
+
+Overfull \hbox (27.22002pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 verse3
+ []
+
+
+Overfull \hbox (7.43pt too wide) in paragraph at lines 5--6
+\TU/lmr/m/it/10 X\nullfont .
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 5--6
+[[]]. 
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.7 S
+   uch constraints can limit adaptability, reduce transparency of the contro...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 7--8
+[]Such
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.9 P
+   ublic vendor and reseller sources indicate that commercial systems typica...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{geomagicTouchPrice}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.9 ...\cite{geomagicTouchPrice,geomagicTouchXPrice}
+                                                  , while systems from \emph...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `geomagicTouchPrice' on page  undefined on input line 9
+.
+
+\citation{geomagicTouchXPrice}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.9 ...\cite{geomagicTouchPrice,geomagicTouchXPrice}
+                                                  , while systems from \emph...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `geomagicTouchXPrice' on page  undefined on input line 
+9.
+
+\citation{forceDimensionSales}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.9 ...els \cite{forceDimensionSales,haplyInverse3X}
+                                                  . This places the proposed...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `forceDimensionSales' on page  undefined on input line 
+9.
+
+\citation{haplyInverse3X}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.9 ...els \cite{forceDimensionSales,haplyInverse3X}
+                                                  . This places the proposed...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `haplyInverse3X' on page  undefined on input line 9.
+
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 9
+.
+(C:/Users/tman0/AppData/Local/Programs/MiKTeX/tex/latex/lm/ot1lmr.fd
+File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for +lmr on input line 9.
+LaTeX Font Info:    No file lmr.fd. on input line 9.
+LaTeX Font Info:    Trying to load font information for +cmr on input line 9.
+LaTeX Font Info:    No file cmr.fd. on input line 9.
+
+
+LaTeX Font Warning: Font shape `/lmr/m/n' undefined
+(Font)              using `/cmr/m/n' instead on input line 9.
+
+
+LaTeX Font Warning: Font shape `/cmr/m/n' undefined
+(Font)              using `/cmr/m/n' instead on input line 9.
+
+! Corrupted NFSS tables.
+wrong@fontshape ...message {Corrupted NFSS tables}
+                                                  error@fontshape else let f...
+l.9 ...osed system, at approximately \textasciitilde
+                                                  £180, substantially below...
+This error message was generated by an \errmessage
+command, so I can't give any explicit help.
+Pretend that you're Hercule Poirot: Examine all clues,
+and deduce the truth by order and method.
+
+
+LaTeX Font Warning: Font shape `/cmr/m/n' undefined
+(Font)              using `OT1/cmr/m/n' instead on input line 9.
+
+
+LaTeX Font Warning: Font shape `/lmr/m/n' undefined
+(Font)              using `/cmr/m/n' instead on input line 9.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 9--10
+[]Public
+ []
+
+
+Overfull \hbox (15.92001pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 Ge-
+ []
+
+
+Overfull \hbox (8.69pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 o-
+ []
+
+
+Overfull \hbox (25.56001pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 magic
+ []
+
+
+Overfull \hbox (26.58pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 Touch
+ []
+
+
+Overfull \hbox (26.58pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 Touch
+ []
+
+
+Overfull \hbox (7.43pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 X
+ []
+
+
+Overfull \hbox (5.0pt too wide) in paragraph at lines 9--10
+US\TS1/lmr/m/n/10 $\nullfont 3,400
+ []
+
+
+Overfull \hbox (5.0pt too wide) in paragraph at lines 9--10
+US\TS1/lmr/m/n/10 $\nullfont 13,400
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 9--10
+[[],
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 9--10
+[]],
+ []
+
+
+Overfull \hbox (23.27002pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 Force
+ []
+
+
+Overfull \hbox (14.20001pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 Di-
+ []
+
+
+Overfull \hbox (21.98pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 men-
+ []
+
+
+Overfull \hbox (17.89pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 sion
+ []
+
+
+Overfull \hbox (13.06pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 In-
+ []
+
+
+Overfull \hbox (27.22002pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 verse3
+ []
+
+
+Overfull \hbox (7.43pt too wide) in paragraph at lines 9--10
+\TU/lmr/m/it/10 X
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 9--10
+[[],
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 9--10
+[]].
+ []
+
+
+Overfull \hbox (5.0pt too wide) in paragraph at lines 9--10
+\OT1/lmr/m/n/10 ~\nullfont £180,
+ []
+
+
+! LaTeX Error: Environment table undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.11 \begin{table}
+                [h]
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.11 \begin{table}[
+                 h]
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+! LaTeX Error: \caption outside float.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.13 	\caption
+            {Indicative cost comparison of haptic interface systems from pub...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 14.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 14.
+
+! LaTeX Error: \begin{document} ended by \end{table}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.25 \end{table}
+              
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 11--26
+[][h]
+ []
+
+
+Overfull \hbox (5.00003pt too wide) in paragraph at lines 11--26
+[]
+ []
+
+! Undefined control sequence.
+l.27 \subsection
+              {Haptic Rendering Techniques}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.27 \subsection{H
+                aptic Rendering Techniques}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 27--28
+[]Haptic
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.29 R
+    esearch in real-time haptic simulation has advanced substantially over r...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{zillesConstraintbasedGodobjectMethod1995}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.29 ...tMethod1995,ruspiniHapticDisplayComplex1997}
+                                                  .
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `zillesConstraintbasedGodobjectMethod1995' on page  und
+efined on input line 29.
+
+\citation{ruspiniHapticDisplayComplex1997}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.29 ...tMethod1995,ruspiniHapticDisplayComplex1997}
+                                                  .
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `ruspiniHapticDisplayComplex1997' on page  undefined on
+ input line 29.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 29--30
+[]Research
+ []
+
+
+Overfull \hbox (7.92001pt too wide) in paragraph at lines 29--30
+\TU/lmr/m/it/10 et
+ []
+
+
+Overfull \hbox (10.74pt too wide) in paragraph at lines 29--30
+\TU/lmr/m/it/10 al.
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 29--30
+[[],
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 29--30
+[]]. 
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.31 T
+    hese approaches rely on high servo-loop update rates, typically on the o...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{ruspiniHapticDisplayComplex1997}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.31 ...rques \cite{ruspiniHapticDisplayComplex1997}
+                                                  . In robotic systems, such...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `ruspiniHapticDisplayComplex1997' on page  undefined on
+ input line 31.
+
+\citation{khatibUnifiedApproachMotion1987a}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.31 ...orks \cite{khatibUnifiedApproachMotion1987a}
+                                                  .
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `khatibUnifiedApproachMotion1987a' on page  undefined o
+n input line 31.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 31--32
+[]These
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 31--32
+[[]].
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 31--32
+[[]]. 
+ []
+
+! Undefined control sequence.
+l.33 \subsection
+              {Stability in Haptic Systems}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.33 \subsection{S
+                tability in Haptic Systems}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 33--34
+[]Stability
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.35 E
+    nsuring stable haptic interaction places strict requirements on system l...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{adamsStableHapticInteraction1999}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.35 ...ions \cite{adamsStableHapticInteraction1999}
+                                                  .
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `adamsStableHapticInteraction1999' on page  undefined o
+n input line 35.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 35--36
+[]Ensuring
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 35--36
+[[]]. 
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.37 T
+    hese principles underpin many modern haptic rendering systems and highli...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 37--38
+[]These
+ []
+
+! Undefined control sequence.
+l.39 \subsection
+              {Low-Cost Haptic Hardware}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.39 \subsection{L
+                ow-Cost Haptic Hardware}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 39--40
+[]Low-
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.41 R
+    ecent advances in low-cost hardware---including 3D-printed structures, c...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{giriApplicationBasedReviewHaptics2021}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.41 ...\cite{giriApplicationBasedReviewHaptics2021}
+                                                  .
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `giriApplicationBasedReviewHaptics2021' on page  undefi
+ned on input line 41.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 41--42
+[]Recent
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 41--42
+[[]]. 
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.43 A
+     prominent example is the \emph{Hapkit} platform presented by Martinez \...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{martinez3DPrintedHaptic2016}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.43 ...lications \cite{martinez3DPrintedHaptic2016}
+                                                  . Their later 3D-printed i...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `martinez3DPrintedHaptic2016' on page  undefined on inp
+ut line 43.
+
+\citation{martinez3DPrintedHaptic2016}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.43 ...eployment \cite{martinez3DPrintedHaptic2016}
+                                                  . This work is important i...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `martinez3DPrintedHaptic2016' on page  undefined on inp
+ut line 43.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 43--44
+[]A
+ []
+
+
+Overfull \hbox (21.23pt too wide) in paragraph at lines 43--44
+\TU/lmr/m/it/10 Hap-
+ []
+
+
+Overfull \hbox (10.99002pt too wide) in paragraph at lines 43--44
+\TU/lmr/m/it/10 kit
+ []
+
+
+Overfull \hbox (7.92001pt too wide) in paragraph at lines 43--44
+\TU/lmr/m/it/10 et
+ []
+
+
+Overfull \hbox (10.74pt too wide) in paragraph at lines 43--44
+\TU/lmr/m/it/10 al.\nullfont ,
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 43--44
+[[]].
+ []
+
+
+Overfull \hbox (5.0pt too wide) in paragraph at lines 43--44
+US\TS1/lmr/m/n/10 $\nullfont 50,
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 43--44
+[[]].
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.45 M
+    artinez \emph{et al.} subsequently extended this line of work by proposi...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{martinezOpenSourceModular2017}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.45 ...layouts \cite{martinezOpenSourceModular2017}
+                                                  . This demonstrates that l...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `martinezOpenSourceModular2017' on page  undefined on i
+nput line 45.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 45--46
+[]Martinez
+ []
+
+
+Overfull \hbox (7.92001pt too wide) in paragraph at lines 45--46
+\TU/lmr/m/it/10 et
+ []
+
+
+Overfull \hbox (10.74pt too wide) in paragraph at lines 45--46
+\TU/lmr/m/it/10 al.
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 45--46
+[[]].
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.47 B
+    eyond educational hardware, Lavatelli \emph{et al.} proposed an open-sou...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\citation{lavatelliDesignOpenSource2014}
+! Undefined control sequence.
+<write> ... Warning: Citation `\@citeb ' on page \thepage 
+                                                  \space undefined\on@line .
+l.47 ...ponents \cite{lavatelliDesignOpenSource2014}
+                                                  . Their work is particular...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+LaTeX Warning: Citation `lavatelliDesignOpenSource2014' on page  undefined on i
+nput line 47.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 47--48
+[]Beyond
+ []
+
+
+Overfull \hbox (7.92001pt too wide) in paragraph at lines 47--48
+\TU/lmr/m/it/10 et
+ []
+
+
+Overfull \hbox (10.74pt too wide) in paragraph at lines 47--48
+\TU/lmr/m/it/10 al.
+ []
+
+
+Overfull \hbox (5.43pt too wide) in paragraph at lines 47--48
+[[]].
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.49 T
+    aken together, these studies demonstrate that low-cost and open-source h...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 49--50
+[]Taken
+ []
+
+! Undefined control sequence.
+l.53 \subsection
+              {Summary of Literature}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.53 \subsection{S
+                ummary of Literature}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 53--54
+[]Summary
+ []
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.55 O
+    verall, the literature demonstrates clear benefits of haptic feedback fo...
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 55--56
+[]Overall,
+ []
+
+)
+! Emergency stop.
+<*> "Literature_Review - Copy.tex"
+                               
+*** (job aborted, no legal \end found)
+
+
+
+Here is how much of LuaTeX's memory you used:
+ 80 strings out of 476497
+ 100000,1977958 words of node,token memory allocated 56940 words of node memory still in use:
+   182 hlist, 1 vlist, 9 rule, 65 disc, 20 local_par, 1 dir, 2 math, 1214 glue, 
+26 kern, 66 penalty, 6373 glyph, 165 attribute, 39 glue_spec, 165 attribute_list
+ nodes
+   avail lists: 2:4,4:72,5:7,7:59,8:1,10:71
+ 22239 multiletter control sequences out of 65536+600000
+ 29 fonts using 1754431 bytes
+ 23i,7n,32p,859b,174s stack positions out of 10000i,1000n,20000p,200000b,200000s
+!  ==> Fatal error occurred, no output PDF file produced!

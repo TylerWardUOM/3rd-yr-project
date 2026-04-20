@@ -3,6 +3,7 @@
 The communication results indicate that the dominant limitation in closed-loop performance is transport delay, not host-side computation. In practical terms, this means the control architecture can execute quickly, but interaction fidelity is ultimately set by how quickly information and commands traverse the host--device link.
 
 In haptic rendering systems, achievable virtual stiffness is strongly limited by loop delay. The findings therefore imply that increasing local processing speed alone is insufficient to improve hard-contact rendering if communication latency remains high. Delay management must be treated as a first-order design requirement rather than a secondary implementation detail.
+%TODO: Dont like this paragraph it doesnt read very well and confusing talking about loop delay first feels weird when that is not pirmary issue and is infact something that is within standard for good haptics i think wheras the latency the main issue that should be center of this paragraph should be mnetiond first maybe 
 
 This limitation arises because delayed force feedback introduces phase lag into the closed-loop system, reducing stability margins and increasing the risk of oscillatory behaviour during contact. As a result, very high virtual stiffness cannot be safely used without additional stabilisation mechanisms.
 
@@ -15,13 +16,16 @@ While the present work does not isolate the exact contribution of each stage in 
 These results highlight that, in practical haptic systems, communication architecture can be a dominant performance constraint, and must be considered alongside control and mechanical design when targeting high-fidelity interaction.
 
 \subsection{Stability of the Haptic Interaction}
-Although communication timing was imperfect, the system maintained stable interaction across tested conditions. The key point is that stability resulted from architectural choices that reduced the control impact of transport irregularities.
+
+Although communication timing was imperfect, the system maintained stable interaction across tested conditions. The key point is that stability resulted from architectural choices that reduced the control impact of transport irregularities rather than from a formally guaranteed passive interconnection.
 
 Firstly, snapshot-based communication channels ensured that the haptic loop operated on the most recent available state rather than queued historical samples. This design choice limited the destabilising effect of burst delivery by preventing stale data from accumulating in the feedback path.
 
 Secondly, the separation of communication, haptic rendering, and physics simulation into independent threads allows each subsystem to operate at an appropriate rate without blocking time-critical operations. This decoupling reduces the propagation of timing variability between subsystems.
 
 In addition, damping and torque rate limiting at the embedded level were central to maintaining controllable contact. The virtual coupling introduced dissipation to counter delayed feedback effects, while the slew-rate limiter prevented abrupt torque transitions that can excite oscillations.
+
+These stabilisation mechanisms can be interpreted within a passivity-based framework, in which communication delay and discrete-time effects introduce artificial energy into the feedback loop. The addition of damping and rate limiting acts to dissipate this energy, helping to preserve stable interaction despite the presence of significant communication latency. However, it is important to note that this behaviour reflects practical or empirical stability rather than a formally derived passivity condition.
 
 Together, these mechanisms enable the system to maintain stable and controllable interaction despite communication delays that would otherwise limit performance in a purely high-stiffness haptic rendering framework.
 

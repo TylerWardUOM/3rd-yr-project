@@ -16,8 +16,6 @@ For each target transmission frequency, the firmware was configured to stream fi
 
 For each test condition, the host continuously received and parsed incoming packets over the USB virtual COM interface. The recorded performance metrics included valid packet count, dropped packets inferred from sequence gaps, out-of-order packets, host-observed inter-arrival time, effective receive rate, and inter-arrival jitter.
 
-All results were exported to CSV format for offline statistical analysis and visualisation.
-
 \subsubsection{Round-Trip Latency Test}
 
 Round-trip latency was evaluated using a ping--echo communication test.
@@ -41,6 +39,7 @@ Because the host and microcontroller clocks were not synchronised, the analysis 
 Simulation validation tests were designed to assess both the correctness of the haptic rendering model in isolation and the stability of the integrated system during interaction.
 
 Two complementary evaluations were performed. First, the behaviour of the virtual coupling and contact model was assessed by observing the computed force output under controlled interaction conditions. Second, the full system, including the physical device, communication pipeline, and actuator feedback, was evaluated during sustained user interaction.
+%The second test is the stable force in hardware validation and maybe should be moved
 
 \subsubsection{Virtual Wall Test}
 
