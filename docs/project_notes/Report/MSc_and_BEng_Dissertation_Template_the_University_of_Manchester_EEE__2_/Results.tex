@@ -1,7 +1,7 @@
 This chapter reports the measured outcomes of the Chapter 5 tests. It presents communication timing, simulation behaviour, safety outcomes, and hardware interaction observations.
 
 Interpretation of these findings and their design implications is deferred to Chapter 7.
-
+%o DO NOT duplicate Results in Discussion. DO NOT duplicate Discussion in Conclusion. is what it says in handboox so make sure all discussion stuff not in here and left for discussion
 \subsection{Communication Performance}
 Communication performance was evaluated using standalone serial tests and runtime logging of the integrated haptic application.
 
@@ -35,7 +35,7 @@ The measured receive rate tracked the requested transmission rate closely across
 	\label{fig:comm_overview}
 \end{figure}
 
-Inter-arrival jitter, defined in Section 5.1.1 as the standard deviation of packet inter-arrival time, was present in all tests, with standard deviation decreasing as the requested rate increased, as shown in Fig.~\ref{fig:jitter}. However, percentile analysis revealed that occasional large timing excursions persisted even at higher rates, indicating the presence of intermittent latency spikes. This suggests that while average jitter decreases with increasing rate, worst-case timing behaviour remains non-negligible, which is relevant for haptic stability.
+Inter-arrival jitter, defined in Section 5.1.1 as the standard deviation of packet inter-arrival time, was present in all tests, with standard deviation decreasing as the requested rate increased, as shown in Fig.~\ref{fig:jitter}. However, percentile analysis revealed that occasional large timing excursions persisted even at higher rates, indicating intermittent latency spikes. While average jitter decreased with increasing rate, worst-case timing excursions remained present.
 
 \begin{figure}[htbp]
 	\centering
@@ -151,7 +151,7 @@ However, this behaviour degraded under conditions of large penetration. In these
 This behaviour is consistent with known limitations of simplified proxy-based implementations, in which the proxy is directly projected from the current tool position without enforcing continuous constraint satisfaction across timesteps. %Like mentioned in Constrain based god object and adams stable interaction
 
 This limitation is particularly relevant for haptic stability, as discontinuities in the estimated contact normal can introduce non-physical force variations, degrading perceived stiffness and smoothness during interaction.
-
+%Those last 2 paragraphs might more belong in Discussion
 Overall, this test confirms that the contact model produces physically consistent behaviour under typical interaction conditions, while highlighting limitations under extreme penetration scenarios.
 
 \subsubsection{Constrained Motion Model Behaviour}
@@ -179,8 +179,7 @@ Overall, force clamping and torque rate limiting maintained bounded and stable a
 
 \subsubsection{Watchdog Timeout Behaviour}
 
-The watchdog was triggered consistently when command updates were absent for longer than the configured timeout interval of X~ms.
-%TODO add value 
+The watchdog was triggered consistently when command updates were absent for longer than the configured timeout interval of 10ms.
 
 When the stream of incoming torque commands from the host was interrupted, the embedded controller detected the absence of updates and reset actuator torque commands to zero after the predefined timeout interval.
 
@@ -226,7 +225,7 @@ It is noted that the large penetration effects observed during simulation valida
 
 This effect is more pronounced with small or thin virtual objects, where small physical displacements can correspond to significant virtual penetration.
 
-Although stable contact behaviour was achieved, the rendered force did not exhibit perfectly rigid characteristics. The interaction was observed to have a degree of compliance, with force increasing gradually rather than instantaneously. This behaviour reflects limitations in actuator torque capability, control fidelity, and transmission behaviour, which are discussed further in Section 7.3.
+Although stable contact behaviour was achieved, the rendered force did not exhibit perfectly rigid characteristics. The interaction was observed to have a degree of compliance, with force increasing gradually rather than instantaneously. This behaviour reflects limitations in actuator torque capability, control fidelity, and transmission behaviour, which are discussed further in Section 7.3. %also result of ramp up due to skew rate limiter
 
 Under attempts to push strongly through a rigidly rendered object, transmission non-idealities were also observed at the base joint. In particular, belt slip occurred under sufficiently high load, leading to a reduction in perceived resistance and a loss of consistency in the rendered force during extreme contact conditions. Although this behaviour was not dominant during typical interaction, it became apparent during aggressive push-through attempts and further limited the maximum practically renderable stiffness.
 
@@ -243,6 +242,7 @@ This behaviour demonstrates that the system is capable of producing physically i
 The guidance behaviour was effective but not perfectly rigid, with some compliance and variation in constraint force observed during motion. This was consistent with the limited actuator stiffness and partial actuation available in the final hardware configuration.
 
 These results confirm stable and intuitive constraint interaction under real-time conditions.
+%TODO add a section in methodoly for this
 
 \subsection{Summary of Results}
 

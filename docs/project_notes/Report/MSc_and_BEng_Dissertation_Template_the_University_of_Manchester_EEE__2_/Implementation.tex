@@ -1,20 +1,58 @@
-This section describes the realised haptic system implementation, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
+This section describes the system design and realised implementation, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
 
-The system prioritises modularity and deterministic timing: each major subsystem runs on its own thread and exchanges data through explicit message channels. This design reflects a trade-off between cost, achievable force fidelity, and system stability, with particular emphasis on maintaining stable interaction under non-negligible communication latency.
+The system is designed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost prototype. Stable haptic interaction requires high update rates (approximately 1\,kHz) and low end-to-end latency; accordingly, the architecture assumes high-frequency embedded torque control and asynchronous host-side computation. Each major subsystem runs on its own thread and exchanges data through explicit message channels, reflecting a trade-off between cost, achievable force fidelity, and system stability, with particular emphasis on maintaining stable interaction under non-negligible communication latency.
+
+\subsection{System Overview}
+
+The proposed system implements a bidirectional haptic interaction loop consisting of four principal layers: the haptic device hardware, embedded control firmware, host-side simulation and haptic rendering, and graphical visualisation. A conceptual overview of the signal and force flow is shown in Fig.~\ref{fig:system_architecture}.
+
+\begin{figure}[!ht]
+	\centering
+	\resizebox{1\textwidth}{!}{%
+		\begin{circuitikz}
+			\tikzstyle{every node}=[font=\fontsize{11.9pt}{15.5pt}\selectfont]
+			\draw [ rounded corners = 6.0] (2.125,13.375) rectangle (4.25,12.875);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (3.1875,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont User};
+			\draw [ rounded corners = 6.0] (11.25,13.5) rectangle (14.25,12.75);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (12.75,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont Host Interface};
+			\draw [ rounded corners = 6.0] (15,11.375) rectangle (18,10.625);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (16.5,11) {\fontsize{11.9pt}{15.5pt}\selectfont visualisation};
+			\draw [ rounded corners = 6.0] (14.75,15.625) rectangle (18.375,14.875);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (16.5625,15.25) {\fontsize{11.9pt}{15.5pt}\selectfont Haptic Rendering};
+			\draw [ rounded corners = 6.0] (18.625,13.5) rectangle (22.625,12.75);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (20.625,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont Physics Simulation};
+			\draw [-{Stealth[scale=1.5]}, ] (4.125,13.375) arc[start angle=121.85, end angle=64.88, radius=2.2317]node[pos=0.48,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{motion};
+			\draw [ rounded corners = 6.0] (6.125,13.5) rectangle (9.125,12.75);
+			\node[anchor=center, align=center, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm] at (7.625,13.125) {\fontsize{11.9pt}{15.5pt}\selectfont Haptic Device};
+			\draw [-{Stealth[scale=1.5]}, ] (6.25,12.75) arc[start angle=-59.83, end angle=-126.90, radius=1.9265]node[pos=0.48,below, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{haptic feedback};
+			\draw [-{Stealth[scale=1.5]}, ] (9,13.5) arc[start angle=122.06, end angle=57.94, radius=2.2368]node[pos=0.48,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{state packets};
+			\draw [-{Stealth[scale=1.5]}, ] (11.375,12.75) arc[start angle=-52.24, end angle=-127.76, radius=1.9390]node[pos=0.48,below, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{torque commands};
+			\draw [-{Stealth[scale=1.5]}, ] (12.875,13.5) arc[start angle=-173.12, end angle=-280.83, radius=1.5881]node[pos=0.3,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{joint state};
+			\draw [-{Stealth[scale=1.5]}, ] (15.25,14.875) arc[start angle=24.32, end angle=-83.81, radius=1.2447]node[pos=0.15,below, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{force command};
+			\draw [{Stealth[scale=1.5]}-, ] (15,11) -- (13,12.75)node[pos=0.31,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{joint state};
+			\draw [-{Stealth[scale=1.5]}, ] (17.125,14.875) -- (17.125,11.375)node[pos=0.73,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{proxy state};
+			\draw [-{Stealth[scale=1.5]}, ] (18.25,14.875) -- (19.125,13.5)node[pos=0.85,above, fill={rgb,255:red,255; green,255; blue,255}, fill opacity=1, text opacity=1, inner xsep=0.080cm, inner ysep=0.085cm, rounded corners=0.020cm]{interaction force};
+		\end{circuitikz}
+	}%
+	\caption{High-level architecture of the proposed haptic system. User motion is measured by the haptic device and transmitted to the host interface. The host distributes state information to the haptic rendering and visualisation subsystems, while the haptic rendering module computes interaction forces, updates the simulation, and generates feedback commands that are returned to the device as actuator torque commands.}
+	\label{fig:system_architecture}
+\end{figure}
+
+User motion is measured at the device joints and transmitted to the host in real time. The host computes interaction forces based on the virtual environment state, maps these to joint torque commands, and returns them to the device actuators, forming a closed-loop interaction. Time-critical control tasks are executed on the embedded system at high frequency, while simulation, rendering, and visualisation are performed asynchronously on the host.
 
 \subsection{Mechanical and Embedded Platform}
 
 The physical interface is a planar two degree-of-freedom serial mechanism designed for low-cost fabrication and straightforward maintenance. A two-link layout was selected to provide a usable workspace while keeping actuator count, wiring complexity, and control overhead manageable.
 
-The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208). The base joint incorporates a GT2 belt reduction stage (approximately 3:1) to increase available output torque, while the distal joint is direct-drive to minimise mechanical complexity.
+The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208)\cite{tmotor_gb2208}. The base joint incorporates a 3:1 GT2 belt reduction stage to increase available output torque, while the elbow joint is direct-drive to minimise mechanical complexity.
 
 An adjustable idler pulley is integrated into the belt stage to enable tensioning and reduce backlash. Despite this, non-ideal behaviour such as compliance and occasional slip under high load was observed, as discussed in Section~\ref{sec:discussion}.
 
-To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048) are mounted directly on the joint axes and interfaced via SPI. This is particularly important for the belt-driven joint, where transmission compliance would otherwise introduce discrepancies between motor-side and output angles.
+To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048)\cite{ams_as5048_2018} are mounted directly on the joint axes and interfaced via SPI. This is particularly important for the belt-driven joint, where transmission compliance would otherwise introduce discrepancies between motor-side and output angles.
 
-For the belt-driven actuator, an additional AS5600 magnetic encoder is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
+For the belt-driven actuator, an additional AS5600 magnetic encoder\cite{ams_as5600_2018} is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
 
-Embedded control runs on an STM32 Nucleo-G401RE platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero.
+Embedded control runs on an STM32 Nucleo-G431RB\cite{NUCLEOG431RBProductSTMicroelectronics} platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero. %Mention torque skew rate limiter here?
 
 \begin{figure}[htbp]
 	\centering
@@ -34,21 +72,13 @@ Due to hardware constraints, no direct force sensing or current measurement was 
 
 \subsection{Communication Protocol and Device Interface}
 
-Host--device communication uses fixed-format binary packets over a USB virtual serial link at high update rate (target 1\,kHz exchange). Two packet families are used:
-\begin{itemize}
-	\item device state packets (firmware \(\rightarrow\) host), containing sequence number, MCU timestamp, and joint angles
-	\item torque command packets (host \(\rightarrow\) firmware), containing command sequence, referenced state sequence, and commanded joint torques
-\end{itemize}
+Host--device communication uses fixed-format binary packets over a USB virtual serial link at high update rate (target 1\,kHz exchange). Two packet families are used: device state packets (firmware \(\rightarrow\) host), containing sequence number, MCU timestamp, and joint angles; and torque command packets (host \(\rightarrow\) firmware), containing command sequence, referenced state sequence, and commanded joint torques.
 
 Sequence numbers enable detection of dropped or out-of-order packets, while MCU timestamps provide a reference for timing analysis and latency measurement.
 
 Both packet types include a two-byte header for stream re-synchronisation and a checksum for integrity checks.
 
-On the host, serial I/O and protocol handling are split across two layers:
-\begin{itemize}
-	\item \textit{SerialLink}: low-level COM read/write abstraction
-	\item \textit{DeviceAdapter}: packet parsing, forward kinematics, Cartesian force-to-joint torque mapping, and message-bus integration
-\end{itemize}
+On the host, serial I/O and protocol handling are split across two layers: \textit{SerialLink} providing a low-level COM read/write abstraction, and \textit{DeviceAdapter} handling packet parsing, forward kinematics, Cartesian force-to-joint torque mapping, and message-bus integration.
 
 The device adapter runs in a dedicated 1\,kHz loop. At each cycle, it retains the newest valid state packet, publishes tool pose and velocity to the haptic engine, consumes the latest wrench command, computes joint torques using the planar Jacobian transpose relation \(\tau = J^{T}F\), and transmits the resulting torque command packet.
 
@@ -72,11 +102,7 @@ This ensures that control decisions are always based on the most recent availabl
 
 The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
 
-Inter-thread communication is implemented through a message bus with two channel types:
-\begin{itemize}
-	\item queue channels for discrete commands/events (e.g., world edits, wrench messages)
-	\item snapshot channels for latest-value shared state (e.g., world snapshots)
-\end{itemize}
+Inter-thread communication is implemented through a message bus with two channel types: queue channels for discrete commands and events (e.g., world edits, wrench messages), and snapshot channels for latest-value shared state (e.g., world snapshots).
 
 This separation allows command traffic to be drained in batches while continuous state can be accessed with low latency.
 
@@ -96,12 +122,12 @@ Force output is generated using a proxy-based virtual coupling model, in which a
 \[
 \mathbf{F} = K\left(\mathbf{x}_{p}-\mathbf{x}_{t}\right) + D\left(\mathbf{v}_{p}-\mathbf{v}_{t}\right)
 \]
-where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and
-\[
-D = 0.7\cdot 2\sqrt{KM}.
-\]
+where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and \(D = 0.7\cdot 2\sqrt{KM}\).
 
 This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a constrained dynamic system. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford.
+
+As a result, stability in the implemented system is not guaranteed by formal passivity conditions, but is instead achieved through a combination of virtual coupling, damping, and conservative actuator-side constraints. These mechanisms act to limit energy injection arising from delay and discretisation, providing practical stability despite the absence of a formally passive design.
+%TODO: Check that this as a result paragraph should be here could maybe be moved into discussion
 
 To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N before publication.
 
@@ -121,11 +147,7 @@ To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N b
 
 \subsubsection{Physics Simulation Integration}
 
-Rigid-body dynamics are simulated using NVIDIA PhysX. The physics subsystem runs on its own simulation thread and consumes wrench messages from the haptic loop. Incoming forces are converted to impulses over the effective timestep,
-\[
-\mathbf{J}=\mathbf{F}\,\Delta t,
-\]
-and applied at the contact point to the corresponding actor.
+Rigid-body dynamics are simulated using NVIDIA PhysX. The physics subsystem runs on its own simulation thread and consumes wrench messages from the haptic loop. Incoming forces are converted to impulses \(\mathbf{J}=\mathbf{F}\,\Delta t\) over the effective timestep and applied at the contact point to the corresponding actor.
 
 A fixed-step accumulator scheme is used to decouple simulation stability from variable external loop timing. When world topology or physics properties change, actors are rebuilt from the latest authoritative world snapshot. After each simulation update, dynamic poses are written back to the world manager so subsequent rendering and haptic queries operate on consistent state.
 
@@ -133,10 +155,6 @@ A fixed-step accumulator scheme is used to decouple simulation stability from va
 
 To avoid introducing disk latency into the 1\,kHz control path, runtime logging is performed asynchronously. The device thread publishes structured timing and state messages to dedicated logging channels, and a background logger thread drains these channels into memory.
 
-At shutdown, logs are exported to two CSV files:
-\begin{itemize}
-	\item \texttt{device\_timing.csv}: matched state-command timing records for closed-loop control cycles, including host-side timestamps associated with packet parsing, tool-state publication, wrench consumption, and torque command transmission
-	\item \texttt{device\_state\_log.csv}: a record of every valid parsed incoming state packet, including host receive timestamps, packet sequence identifiers, MCU timestamps, and measured joint angles
-\end{itemize}
+At shutdown, logs are exported to two CSV files: \texttt{device\_timing.csv}, containing matched state-command timing records for closed-loop control cycles including host-side timestamps associated with packet parsing, tool-state publication, wrench consumption, and torque command transmission; and \texttt{device\_state\_log.csv}, containing a record of every valid parsed incoming state packet including host receive timestamps, packet sequence identifiers, MCU timestamps, and measured joint angles.
 
 A separate communication test executable (\texttt{serial\_tests}) was also implemented to characterise serial performance independently of the full application. It supports two operating modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. In both modes, incoming serial data are processed using a buffered parser with explicit packet header search, checksum validation, and byte-wise re-synchronisation to ensure robustness to fragmented or corrupted input. Results are exported to machine-readable CSV files for offline analysis.
