@@ -1,0 +1,58 @@
+\subsection{Haptic Interfaces for Robotics}
+
+Haptic interfaces play a central role in teleoperation, robot-assisted surgery, training, and interactive virtual environments, where visual feedback alone is often insufficient for the development of accurate motor skills, force regulation, and intuitive understanding of contact conditions \cite{giriApplicationBasedReviewHaptics2021}. A large body of empirical evidence demonstrates that the inclusion of haptic feedback improves task performance across a wide range of robotic manipulation tasks. For example, a recent meta-analysis of robot-assisted surgery systems reports significant reductions in applied forces, task completion time, and error rates when haptic feedback is present, particularly for inexperienced and novice users \cite{bergholzBenefitsHapticFeedback2023}.
+
+Commercial haptic devices remain widely used in research, training, and simulation environments due to their maturity, force-feedback fidelity, and established software support. Common examples include the 3D Systems \emph{Geomagic Touch} and \emph{Touch X}, the \emph{Force Dimension} \emph{omega}/\emph{sigma} product range, and more recent systems such as the Haply \emph{Inverse3 X}. These devices offer high-performance kinesthetic feedback and robust integration pathways, but are typically associated with substantially higher cost than low-cost academic prototypes and often rely on proprietary or vendor-specific software ecosystems \cite{haplyInverse3X}.
+
+Such constraints can limit adaptability, reduce transparency of the control loop, and complicate integration with custom simulation frameworks, experimental hardware platforms, or educational prototyping environments. This motivates interest in lower-cost and more open alternatives that preserve sufficient force-feedback capability while improving architectural transparency and extensibility.
+
+Public vendor and reseller sources indicate that commercial systems typically occupy a substantially higher price range than academic low-cost prototypes. For example, the 3D Systems \emph{Geomagic Touch} and \emph{Touch X} are publicly listed at approximately US\$3{,}400 and US\$13{,}400 respectively \cite{geomagicTouchPrice,geomagicTouchXPrice}, while systems from \emph{Force Dimension} and Haply’s \emph{Inverse3 X} are generally sold via quotation or direct sales channels \cite{forceDimensionSales,haplyInverse3X}. This places the proposed system, at approximately \textasciitilde£180, substantially below the cost of established commercial alternatives.
+
+\begin{table}[h]
+	\centering
+	\caption{Indicative cost comparison of haptic interface systems from public vendor and reseller sources}
+	\begin{tabular}{l c}
+		\hline
+		System & Indicative Price / Availability \\
+		\hline
+		3D Systems Geomagic Touch & US\$3{,}400 \\
+		3D Systems Touch X & US\$13{,}400 \\
+		Force Dimension (omega/sigma range) & Quote on request \\
+		Haply Inverse3 X & Quote on request \\
+		Proposed system & \textasciitilde£180 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{Haptic Rendering Techniques}
+
+Research in real-time haptic simulation has advanced substantially over recent decades, particularly in collision-based interaction models. Methods such as virtual coupling and the virtual proxy (or ``god-object'') approach introduced by Zilles and Salisbury and later extended by Ruspini \emph{et al.} are widely adopted due to their robustness and favourable stability properties when interacting with rigid or constrained environments \cite{zillesConstraintbasedGodobjectMethod1995,ruspiniHapticDisplayComplex1997}.
+
+These approaches rely on high servo-loop update rates, typically on the order of 1~kHz or higher, in order to achieve stable and responsive force feedback, alongside accurate end-effector pose tracking and reliable mappings from Cartesian interaction forces to actuator torques \cite{ruspiniHapticDisplayComplex1997}. In robotic systems, such mappings are conventionally computed using the manipulator Jacobian, as formalised in operational-space control frameworks \cite{khatibUnifiedApproachMotion1987a}.
+
+\subsection{Stability in Haptic Systems}
+
+Ensuring stable haptic interaction places strict requirements on system latency, numerical integration, and control architecture. Foundational work by Adams and Hannaford demonstrated that unconditional stability in haptic systems can be achieved through the use of virtual coupling networks, which decouple device control from virtual environment dynamics and allow stability guarantees under passive user and environment assumptions \cite{adamsStableHapticInteraction1999}.
+
+These principles underpin many modern haptic rendering systems and highlight the importance of explicitly managing dynamic coupling, discrete-time implementation effects, and feedback loop timing in practical haptic interface design.
+
+\subsection{Low-Cost Haptic Hardware}
+
+Recent advances in low-cost hardware---including 3D-printed structures, compact microcontrollers, low-cost magnetic encoders, and affordable motor drive electronics---have made it increasingly feasible to construct capable actuated haptic devices using widely available components. At the same time, there is growing interest in open, modular, and reproducible research platforms that allow researchers and students to experiment with alternative control strategies, hardware layouts, and haptic interaction paradigms \cite{giriApplicationBasedReviewHaptics2021}.
+
+A prominent example is the \emph{Hapkit} platform presented by Martinez \emph{et al.}, which was developed as a low-cost, open-source one-degree-of-freedom haptic kit for educational applications \cite{martinez3DPrintedHaptic2016}. Their later 3D-printed implementation demonstrates that a robust and customisable haptic device can be realised at a materials cost of approximately US\$50, making it feasible for classroom and online deployment \cite{martinez3DPrintedHaptic2016}. This work is important in showing that haptic hardware can be made accessible and reproducible, but it is primarily focused on educational use and single-degree-of-freedom interaction.
+
+Martinez \emph{et al.} subsequently extended this line of work by proposing modular, open-source, customisable 3D-printed kinesthetic haptic devices that can be reconfigured into two-degree-of-freedom mechanisms, including both pantograph and serial layouts \cite{martinezOpenSourceModular2017}. This demonstrates that low-cost educational haptic platforms can be extended toward more capable multi-DOF architectures while retaining openness and ease of fabrication.
+
+Beyond educational hardware, Lavatelli \emph{et al.} proposed an open-source low-cost 2-DOF haptic device intended as a mechatronic platform built largely from inexpensive and openly available components \cite{lavatelliDesignOpenSource2014}. Their work is particularly relevant because it shows that low-cost two-degree-of-freedom haptic devices are feasible in an academic context, and that useful design trade-offs can be achieved between cost, simplicity, and functional haptic interaction capability.
+
+Taken together, these studies demonstrate that low-cost and open-source haptic hardware is an active area of academic development. However, much of this work is oriented either toward educational platforms, simplified device architectures, or hardware-focused design demonstrations. Comparatively less emphasis is placed on fully integrated real-time software architectures that combine low-cost actuated hardware with transparent communication, custom haptic rendering, simulation coupling, and extensibility toward broader robotic manipulation use cases.
+
+%NOTE: Verify that chatgpt didnt hulicinate by reading through the sources i used above
+
+\subsection{Summary of Literature}
+
+Overall, the literature demonstrates clear benefits of haptic feedback for robotic manipulation training and establishes well-developed theoretical foundations for stable haptic rendering. Nevertheless, there remains a practical gap in the availability of integrated systems that combine low-cost actuated hardware with transparent, architectures designed to support multiple simulation backends, suitable for educational use and rapid experimental prototyping.
+
+% NOTE: later add a short critical comparison paragraph here.
+% e.g. stability vs cost vs openness trade-offs.
