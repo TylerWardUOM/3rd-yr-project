@@ -1,6 +1,6 @@
-This chapter reports the measured outcomes of the Chapter 5 tests. It presents communication timing, simulation behaviour, safety outcomes, and hardware interaction observations.
+This section reports the measured outcomes of the Section~\ref{sec:experiments} tests. It presents communication timing, simulation behaviour, safety outcomes, and hardware interaction observations.
 
-Interpretation of these findings and their design implications is deferred to Chapter 7.
+Interpretation of these findings and their design implications is deferred to Section~\ref{sec:discussion}.
 %o DO NOT duplicate Results in Discussion. DO NOT duplicate Discussion in Conclusion. is what it says in handboox so make sure all discussion stuff not in here and left for discussion
 \subsection{Communication Performance}
 Communication performance was evaluated using standalone serial tests and runtime logging of the integrated haptic application.
@@ -10,7 +10,7 @@ Packet rate testing showed that communication performance remained stable over a
 
 At lower requested rates of 100~Hz and 250~Hz, packet loss was observed, with drop fractions of approximately 20.3\% and 8.5\% respectively. In contrast, for requested rates of 500~Hz and above, no dropped packets were observed in the recorded data, as shown in Fig.~\ref{fig:comm_overview}(a), where packet loss occurs only at the lowest transmission rates. Out-of-order packets were extremely rare across all higher-rate tests, with only a single out-of-order event recorded in each case.
 
-Interestingly, packet loss was more pronounced at lower transmission rates. This may be attributed to buffering and scheduling effects in the host or serial driver, where lower rates reduce the likelihood of continuous buffer flushing.
+Packet loss was more pronounced at lower transmission rates, a counterintuitive finding that may reflect the influence of host-side scheduling on USB buffer flushing behaviour; this is discussed further in Section~\ref{sec:discussion}.
 
 The measured receive rate tracked the requested transmission rate closely across the full test range. As shown in Fig.~\ref{fig:comm_overview}(b), the relationship between requested and measured rate was approximately linear, indicating that the communication system maintained throughput proportional to the commanded transmission frequency.
 
@@ -35,7 +35,7 @@ The measured receive rate tracked the requested transmission rate closely across
 	\label{fig:comm_overview}
 \end{figure}
 
-Inter-arrival jitter, defined in Section 5.1.1 as the standard deviation of packet inter-arrival time, was present in all tests, with standard deviation decreasing as the requested rate increased, as shown in Fig.~\ref{fig:jitter}. However, percentile analysis revealed that occasional large timing excursions persisted even at higher rates, indicating intermittent latency spikes. While average jitter decreased with increasing rate, worst-case timing excursions remained present.
+Inter-arrival jitter, measured as the standard deviation of packet inter-arrival time, was present in all tests, with standard deviation decreasing as the requested rate increased, as shown in Fig.~\ref{fig:jitter}. However, percentile analysis revealed that occasional large timing excursions persisted even at higher rates, indicating intermittent latency spikes. While average jitter decreased with increasing rate, worst-case timing excursions remained present.
 
 \begin{figure}[htbp]
 	\centering
@@ -171,7 +171,7 @@ Without rate limiting, abrupt force changes resulted in noticeable vibration and
 Overall, force clamping and rate limiting maintained bounded and stable actuator behaviour in the tested conditions.
 \subsubsection{Watchdog Timeout Behaviour}
 
-The watchdog was triggered consistently when command updates were absent for longer than the configured timeout interval of 10ms.
+The watchdog was triggered consistently when command updates were absent for longer than the configured timeout interval of 10\,ms.
 
 When the stream of incoming torque commands from the host was interrupted, the embedded controller detected the absence of updates and reset actuator torque commands to zero after the predefined timeout interval.
 

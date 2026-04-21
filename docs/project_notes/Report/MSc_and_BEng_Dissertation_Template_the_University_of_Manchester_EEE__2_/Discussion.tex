@@ -1,14 +1,13 @@
 %Discussion section 
 \subsection{Communication and Latency Constraints}
-The communication results indicate that the dominant limitation in closed-loop performance is transport delay, not host-side computation. In practical terms, this means the control architecture can execute quickly, but interaction fidelity is ultimately set by how quickly information and commands traverse the host--device link.
 
 The central finding from the communication evaluation is that transport delay --- measured at approximately 15--16\,ms round-trip --- is the dominant limitation on closed-loop performance, not host-side computation. Host-side processing latency remained sub-millisecond in the vast majority of cycles, confirming that the computational architecture performs well within the requirements of 1\,kHz haptic control.
 
-The consequence is that achievable virtual stiffness is bounded by the communication path rather than by processing speed. In haptic systems, loop delay introduces phase lag that reduces stability margins during contact, meaning that increasing local computational performance alone cannot improve hard-contact rendering if communication latency remains high. Delay management must therefore be treated as a first-order design constraint.
+The consequence is that achievable virtual stiffness is bounded by the communication path rather than by processing speed. Delayed force feedback introduces phase lag into the closed-loop system, reducing stability margins and constraining safe virtual stiffness without additional stabilisation mechanisms.
 
-This limitation arises because delayed force feedback introduces phase lag into the closed-loop system, reducing stability margins and increasing the risk of oscillatory behaviour during contact. As a result, very high virtual stiffness cannot be safely used without additional stabilisation mechanisms.
+Delay management must therefore be treated as a first-order design constraint, and improving the communication architecture is the primary route to higher haptic fidelity in this class of system.
 
-Nevertheless, stable haptic interaction remained achievable with appropriate architectural and control measures. This highlights the practical gap between ideal haptic assumptions and real deployment conditions, where non-negligible communication delay is often unavoidable.
+Nevertheless, stable haptic interaction remained achievable with appropriate architectural and control measures.
 
 A likely contributing factor is the use of the ST-Link virtual COM interface for host--device communication. This interface supported rapid development, but the observed burst-like delivery pattern suggests buffering and scheduling overhead that is large relative to the control timestep.
 
@@ -31,7 +30,7 @@ These stabilisation mechanisms can be interpreted within a passivity-based frame
 Together, these mechanisms enable the system to maintain stable and controllable interaction despite communication delays that would otherwise limit performance in a purely high-stiffness haptic rendering framework.
 
 \subsection{Hardware Limitations}
-The hardware results must be interpreted within clear prototype constraints. These constraints do not invalidate the architectural findings, but they do bound the achievable force fidelity and the generalisability of quantitative claims.
+The hardware results must be interpreted within clear prototype constraints. These constraints do not invalidate the architectural findings, but they do bound the achievable force fidelity and the generalisability of quantitative conclusions.
 
 A primary limitation was the absence of current sensing in the actuator control system. The initial design intended to utilise integrated motor driver solutions based on the STM32 B-G431-ESC1 platform, which provide built-in current sensing capabilities suitable for accurate torque control. However, significant integration challenges were encountered when attempting to interface these drivers with the selected magnetic encoders, particularly in achieving reliable and stable operation within the required control framework.
 
@@ -48,12 +47,10 @@ A further limitation arose from the failure of one actuator during development. 
 Overall, these results demonstrate that, in addition to communication latency, actuator capability and transmission design impose significant constraints on achievable haptic performance in low-cost systems.
 
 \subsection{Design Trade-Offs}
-The design of the system reflects a set of trade-offs between stability, responsiveness, and achievable force fidelity.
-
-While the use of damping and torque rate limiting was effective in ensuring stable interaction, these mechanisms introduce a reduction in perceived stiffness and responsiveness. In particular, the rate limiting of actuator torque results in a finite rise time when contact forces are applied. This leads to a short delay between initial contact and the development of the full resistive force, which reduces the sharpness of hard contact interactions such as collisions with rigid virtual walls, as observed during hardware validation (Section 6.4.2).
+The design of the system reflects a set of trade-offs between stability, responsiveness, and achievable force fidelity. While damping and torque rate limiting were effective in ensuring stable interaction, they reduce perceived stiffness and responsiveness. In particular, rate limiting of actuator torque results in a finite rise time when contact forces are applied, leading to a short delay between initial contact and the development of the full resistive force. This reduces the sharpness of hard-contact interactions such as collisions with rigid virtual walls, as observed during hardware validation (section~\ref{sec:results}).
 
 As a result, high-speed interactions and abrupt contacts are not rendered with the same fidelity as would be expected in systems with lower latency and higher achievable stiffness. Instead, contact forces are perceived as gradually increasing rather than instantaneous, which can affect realism in scenarios involving rigid constraints.
 
-However, this trade-off is necessary to ensure stable behaviour in the presence of communication delay. Without rate limiting and damping, the system exhibited oscillatory and unstable behaviour during contact, particularly under high stiffness settings, as demonstrated in Section 6.3.1. The implemented approach therefore prioritises stability and controllability over maximum stiffness, which is appropriate for a low-cost prototype system.
+However, this trade-off is necessary to ensure stable behaviour in the presence of communication delay. Without rate limiting and damping, the system exhibited oscillatory and unstable behaviour during contact, particularly under high stiffness settings, as demonstrated in Section~\ref{sec:results}. The implemented approach therefore prioritises stability and controllability over maximum stiffness, which is appropriate for a low-cost prototype system.
 
 These findings highlight a key design consideration in practical haptic systems: achieving stable interaction under real-world constraints often requires compromising on ideal force rendering performance.

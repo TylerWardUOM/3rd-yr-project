@@ -1,10 +1,10 @@
-This chapter defines the test procedures used to evaluate communication performance, closed-loop timing behaviour, simulation fidelity, safety behaviour, and hardware interaction characteristics of the proposed haptic rendering system.
+This section defines the test procedures used to evaluate communication performance, closed-loop timing behaviour, simulation fidelity, safety behaviour, and hardware interaction characteristics of the proposed haptic rendering system.
 
-The chapter focuses on what was tested and how measurements were collected; quantitative outcomes are reported in Chapter 6 and interpreted in Chapter 7.
+The section focuses on what was tested and how measurements were collected; quantitative outcomes are reported in Section~\ref{sec:results} and interpreted in Section~\ref{sec:discussion}.
 
 \subsection{Communication Performance Tests}
 
-Communication performance was characterised using the dedicated \texttt{serial\_tests} utility described in Section~4.4. The tool supports two modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. Both modes export CSV files for offline statistical analysis.
+Communication performance was characterised using the dedicated \texttt{serial\_tests} utility described in Section~\ref{sec:implementation}. The tool supports two modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. Both modes export CSV files for offline statistical analysis.
 
 Tests were conducted across target transmission rates from 100~Hz to 2000~Hz to assess the effect of increasing packet frequency on reliability and timing performance.
 

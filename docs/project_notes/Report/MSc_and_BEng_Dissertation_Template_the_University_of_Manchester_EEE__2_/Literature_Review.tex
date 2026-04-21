@@ -14,7 +14,7 @@ Real-time haptic rendering has been extensively studied, with particular focus o
 
 In these approaches, the device state is coupled to a constrained proxy within the virtual environment, enabling stable rendering of contact and geometric constraints. Reliable performance typically requires high update rates on the order of 1~kHz, together with accurate tracking of device state and consistent mapping from Cartesian interaction forces to actuator torques \cite{ruspiniHapticDisplayComplex1997}. In robotic implementations, these mappings are commonly derived using the manipulator Jacobian within operational-space control frameworks \cite{khatibUnifiedApproachMotion1987a}.
 
-Haptic systems are commonly classified as impedance-type or admittance-type devices, depending on whether the device measures position and outputs force (impedance) or measures force and outputs motion (admittance). Most grounded haptic interfaces, including the system developed in this work, operate as impedance devices due to the relative ease of position sensing and actuation. This distinction has important implications for stability and control design, particularly in the presence of delays and discretisation.
+Haptic systems are commonly classified as impedance-type or admittance-type devices, depending on whether the device measures position and outputs force (impedance) or measures force and outputs motion (admittance). Most grounded haptic interfaces, including the system developed in this work, operate as impedance devices due to the relative ease of position sensing and actuation. % Maybe cut: This distinction has important implications for stability and control design, particularly in the presence of delays and discretisation.
 
 \subsection{Stability in Haptic Systems}
 

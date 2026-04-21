@@ -4,7 +4,7 @@ This project presented the design, implementation, and evaluation of a low-cost,
 
 The system successfully achieved its primary objective of enabling bidirectional interaction between a user-operated device and a virtual environment, with real-time computation of interaction forces and feedback through actuator torque control. The architecture was designed to prioritise modularity and extensibility, allowing clear separation between hardware, communication, simulation, and rendering subsystems.
 
-Experimental results demonstrated that the system is capable of sustaining high update rates of approximately 1 kHz, with negligible packet loss at higher transmission frequencies and low host-side processing latency. However, communication analysis revealed a consistent round-trip delay of approximately 15--16 ms, which dominates the closed-loop response and imposes a fundamental limitation on achievable haptic performance.
+Experimental results demonstrated that the system is capable of sustaining high update rates of approximately 1\,kHz, with negligible packet loss at higher transmission frequencies and low host-side processing latency. However, communication analysis revealed a consistent round-trip delay of approximately 15--16 ms, which dominates the closed-loop response and imposes a fundamental limitation on achievable haptic performance.
 
 Despite this latency, stable and controllable haptic interaction was achieved through a combination of architectural and control strategies. The use of snapshot-based communication ensured that the system operated on the most recent available data, mitigating the effects of burst-like packet delivery. In addition, the application of damping and torque rate limiting was critical in maintaining stability, preventing oscillatory behaviour during contact, and enabling sustained interaction with virtual constraints.
 
@@ -17,7 +17,7 @@ Overall, the project demonstrates that stable and usable haptic interaction can 
 \subsection{Future Work}
 Several avenues for future development have been identified to improve system performance, fidelity, and extensibility.
 
-A key priority is the reduction of communication latency. The current system relies on the ST-Link virtual COM interface, which was selected for its simplicity and ease of integration during early development. While this approach enabled rapid prototyping, the results presented in Section 6.1 indicate that the communication pathway introduces buffering and scheduling delays that dominate the closed-loop response.
+A key priority is the reduction of communication latency. The current system relies on the ST-Link virtual COM interface, which was selected for its simplicity and ease of integration during early development. While this approach enabled rapid prototyping, the results presented in Section~\ref{sec:results} indicate that the communication pathway introduces buffering and scheduling delays that dominate the closed-loop response.
 
 Future work should therefore investigate lower-latency communication architectures between the host and embedded controller. In particular, direct UART communication via a dedicated USB--UART bridge may reduce buffering effects associated with the virtual COM interface, while alternative approaches such as native USB implementations (e.g., bulk transfer), CAN bus, or Ethernet-based communication could provide more deterministic timing behaviour. 
 

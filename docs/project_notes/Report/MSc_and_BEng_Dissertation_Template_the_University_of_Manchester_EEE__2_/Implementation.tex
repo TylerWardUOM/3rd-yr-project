@@ -1,6 +1,7 @@
 This section describes the system design and realised implementation, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
 
-The system is designed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost prototype. Stable haptic interaction requires high update rates (approximately 1\,kHz) and low end-to-end latency; accordingly, the architecture assumes high-frequency embedded torque control and asynchronous host-side computation. Each major subsystem runs on its own thread and exchanges data through explicit message channels, reflecting a trade-off between cost, achievable force fidelity, and system stability, with particular emphasis on maintaining stable interaction under non-negligible communication latency.
+The system is designed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost prototype. Stable haptic interaction requires high update rates (approximately 1\,kHz) and low end-to-end latency; %Mentioned a few times already
+ accordingly, the architecture assumes high-frequency embedded torque control and asynchronous host-side computation. Each major subsystem runs on its own thread and exchanges data through explicit message channels, reflecting a trade-off between cost, achievable force fidelity, and system stability, with particular emphasis on maintaining stable interaction under non-negligible communication latency.
 
 \subsection{System Overview}
 
@@ -74,7 +75,7 @@ Due to hardware constraints, no direct force sensing or current measurement was 
 
 Host--device communication uses fixed-format binary packets over a USB virtual serial link at high update rate (target 1\,kHz exchange). Two packet families are used: device state packets (firmware \(\rightarrow\) host), containing sequence number, MCU timestamp, and joint angles; and torque command packets (host \(\rightarrow\) firmware), containing command sequence, referenced state sequence, and commanded joint torques.
 
-Sequence numbers enable detection of dropped or out-of-order packets, while MCU timestamps provide a reference for timing analysis and latency measurement.
+Sequence numbers detect dropped or out-of-order packets, while MCU timestamps provide a reference for timing analysis and latency measurement.
 
 Both packet types include a two-byte header for stream re-synchronisation and a checksum for integrity checks.
 
@@ -100,7 +101,7 @@ This ensures that control decisions are always based on the most recent availabl
 	\label{fig:software_architecture}
 \end{figure}
 
-The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
+The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. %Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
 
 Inter-thread communication is implemented through a message bus with two channel types: queue channels for discrete commands and events (e.g., world edits, wrench messages), and snapshot channels for latest-value shared state (e.g., world snapshots).
 
