@@ -13,7 +13,7 @@
 % This is where the document title and author are set. Other details for the title page are set later
 % Note that if/when you edit these you may need to 'Recompile from scratch' to get the changes to display in the PDF. (In Overleaf, select the down arrow to the right of the 'Recompile' button)
 \begin{filecontents*}{\jobname.xmpdata}
-  \Title{A Modular Real-Time Haptic Rendering System Integrating Physics-Based Simulation and OpenGL Visualisation} 
+  \Title{A Real-Time Haptic Rendering System Integrating Physics-Based Simulation and OpenGL Visualisation} 
   \Author{11349510} % should be student number rather than name to help with annoymous marking
   \Language{en-GB}
   \Copyrighted{True}
@@ -126,9 +126,15 @@ Page \thepage\ of \pageref{endofmain}
 
 %%%%%%%%%%%%%%%%%% ABSTRACT %%%%%%%%%%%%%%%%%%
 \begin{abstract} % put abstract here.
-	This is abstract text.
+This dissertation presents the design, implementation, and evaluation of a low-cost real-time haptic rendering system integrating a two-degree-of-freedom physical interface with a custom simulation and visualisation framework. The work addresses the challenge of achieving stable bidirectional haptic interaction under practical constraints, including limited actuator capability and non-negligible communication latency.
 
-	\lipsum[1-2]
+The system combines embedded torque-controlled actuation, high-rate host–device communication, physics-based simulation, and proxy-based haptic rendering within a multi-threaded software architecture. Particular emphasis is placed on the integration of these components into a complete closed-loop interaction pipeline, rather than the performance of individual subsystems in isolation.
+
+Experimental evaluation demonstrates that the system achieves update rates of approximately 1 kHz with low host-side processing latency (sub-millisecond), but is fundamentally constrained by a consistent communication round-trip delay of approximately 15–16 ms. Despite this, stable and controllable haptic interaction is achieved through a combination of architectural and control strategies, including snapshot-based communication, virtual coupling with damping, and actuator-side torque rate limiting.
+
+The results show that communication latency, rather than computational performance, is the dominant factor limiting achievable haptic fidelity, imposing a practical bound on renderable virtual stiffness. Hardware limitations, including the absence of current sensing and transmission non-idealities, further constrain force accuracy and consistency.
+
+Overall, the work demonstrates that stable real-time haptic interaction can be achieved on a low-cost platform, while highlighting the central role of communication architecture and control design in determining system performance. The findings provide insight into the trade-offs between cost, stability, responsiveness, and fidelity in practical haptic systems, and identify clear directions for future improvement.
 \end{abstract}%
 \clearpage
 
@@ -205,9 +211,15 @@ Page \thepage\ of \pageref{endofmain}
 \begin{uomappendix}
 	\section{Project outline}
 	Project outline as submitted at the start of the project is a required appendix. Put here.
-
+	%\clearpage
 	\section{Risk assessment}
-	Risk assessment is a required appendix. Put here.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[angle=90,height= 0.85\paperheight]{"images/Risk Register Template"}
+		\caption{Project Risk Assesment}
+		\label{fig:risk-register}
+	\end{figure}
+	
 
 	%\subsection{Other appendices as necessary}
 	\section{Code}
