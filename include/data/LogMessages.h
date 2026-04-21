@@ -1,3 +1,5 @@
+#pragma once
+
 struct DeviceTimingLogMsg {
     // Host-side timestamps for a matched closed-loop control cycle
     uint64_t t_rx_parse_ns = 0;       // state packet used for this cycle was parsed
