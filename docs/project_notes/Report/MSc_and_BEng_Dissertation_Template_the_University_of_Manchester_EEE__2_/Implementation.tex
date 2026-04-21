@@ -52,7 +52,7 @@ To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048)\
 
 For the belt-driven actuator, an additional AS5600 magnetic encoder\cite{ams_as5600_2018} is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
 
-Embedded control runs on an STM32 Nucleo-G431RB\cite{NUCLEOG431RBProductSTMicroelectronics} platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero. %Mention torque skew rate limiter here?
+Embedded control runs on an STM32 Nucleo-G431RB\cite{NUCLEOG431RBProductSTMicroelectronics} platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero. Additionally, a torque slew-rate limiter is applied to each actuator command, constraining the rate of change of commanded torque to reduce high-frequency oscillations during rapid contact transitions.
 
 \begin{figure}[htbp]
 	\centering
@@ -126,8 +126,7 @@ where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\math
 
 This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a constrained dynamic system. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford.
 
-As a result, stability in the implemented system is not guaranteed by formal passivity conditions, but is instead achieved through a combination of virtual coupling, damping, and conservative actuator-side constraints. These mechanisms act to limit energy injection arising from delay and discretisation, providing practical stability despite the absence of a formally passive design.
-%TODO: Check that this as a result paragraph should be here could maybe be moved into discussion
+Consequently, stability is achieved in practice through virtual coupling, damping, and conservative actuator-side constraints, which limit energy injection arising from delay and discretisation. The passivity implications of this design and its performance under communication delay are discussed further in Section~\ref{sec:discussion}.
 
 To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N before publication.
 
