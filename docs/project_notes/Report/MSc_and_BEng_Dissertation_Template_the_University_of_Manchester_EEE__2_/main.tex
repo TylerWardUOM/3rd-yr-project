@@ -37,7 +37,7 @@
 \usepackage{url}                   % format hyperlinks correctly
 \usepackage{rotating}              % allow portrait figures and tables
 \usepackage{multirow}              % allows merging of rows in tables
-\usepackage{lscape}                % allows pages to be typeset in landscape mode
+\usepackage{pdflscape}                % allows pages to be typeset in landscape mode
 \usepackage{tabularx}              % allows fixed width tables
 \usepackage{verbatim}              % enhanced version of built-in verbatim environment
 \usepackage{footnote}              % allows more control over footnote environments
@@ -58,6 +58,7 @@
 \usepackage{easyReview}
 \let\comment\comments
 \let\endcomment\endcomments
+\usepackage{markdown}
 % Custom commands
 \newcommand{\degree}{\ensuremath{^\circ}}
 \newcommand{\sus}[1]{$^{\mbox{\scriptsize #1}}$} % superscript in text (e.g. 1st)
@@ -130,7 +131,7 @@ This dissertation presents the design, implementation, and evaluation of a low-c
 
 The system combines embedded torque-controlled actuation, high-rate host–device communication, physics-based simulation, and proxy-based haptic rendering within a multi-threaded software architecture. Particular emphasis is placed on the integration of these components into a complete closed-loop interaction pipeline, rather than the performance of individual subsystems in isolation.
 
-Experimental evaluation demonstrates that the system achieves update rates of approximately 1 kHz with low host-side processing latency (sub-millisecond), but is fundamentally constrained by a consistent communication round-trip delay of approximately 15–16 ms. Despite this, stable and controllable haptic interaction is achieved through a combination of architectural and control strategies, including snapshot-based communication, virtual coupling with damping, and actuator-side torque rate limiting.
+Experimental evaluation demonstrates that the system achieves update rates of approximately 1 kHz with low host-side processing latency (sub-millisecond), but is primarily constrained by a consistent communication round-trip delay of approximately 15–16 ms. Despite this, stable and controllable haptic interaction is achieved through a combination of architectural and control strategies, including snapshot-based communication, virtual coupling with damping, and actuator-side torque rate limiting.
 
 The results show that communication latency, rather than computational performance, is the dominant factor limiting achievable haptic fidelity, imposing a practical bound on renderable virtual stiffness. Hardware limitations, including the absence of current sensing and transmission non-idealities, further constrain force accuracy and consistency.
 
@@ -152,7 +153,12 @@ Overall, the work demonstrates that stable real-time haptic interaction can be a
 
 %%%%%%%%%%%%%%%%%% ACKNOWLEDGEMENTS %%%%%%%%%%%%%%%%%%
 \begin{uomacknowledgements}
-	Acknowledgments go here.
+	\section*{Use of AI Tools}
+	Large language models (including ChatGPT) were used during this project as a supplementary tool to assist with language refinement, report structuring, and code debugging. 
+	
+	These tools were used to improve clarity, grammar, and organisation of written content, and to support troubleshooting during software development. 
+	
+	All technical content, system design, implementation decisions, analysis, and conclusions are my own work. All material included in this report has been reviewed and verified by me.
 \end{uomacknowledgements}
 
 
@@ -210,19 +216,181 @@ Page \thepage\ of \pageref{endofmain}
 %%%%%%%%%%%%%%%%%% APPENDICES %%%%%%%%%%%%%%%%%%
 \begin{uomappendix}
 	\section{Project outline}
-	Project outline as submitted at the start of the project is a required appendix. Put here.
-	%\clearpage
-	\section{Risk assessment}
 	\begin{figure}[H]
 		\centering
-		\includegraphics[angle=90,height= 0.85\paperheight]{"images/Risk Register Template"}
-		\caption{Project Risk Assesment}
-		\label{fig:risk-register}
+		\includegraphics[width=0.7\linewidth]{images/Preliminary_Project_Proposal}
+		\caption{Original project outline as submitted at the start of the project}
+		\label{fig:preliminaryprojectproposal}
 	\end{figure}
+
 	
 
+
+\begin{landscape}
+	
+\section{Gantt Chart} \label{app:gantt}
+\begin{figure}[H]
+	\centering
+	\includegraphics[angle=0,height=0.80\textheight]{"images/gantt"}
+	\caption{Final Gantt chart showing the execution of the project over time. The chart reflects the iterative development process, including overlapping software and hardware work, as well as deviations from the original plan due to motor driver integration issues, hardware delays, and subsystem integration challenges.}
+	\label{fig:gantt}
+\end{figure}
+
+
+\section{Risk assessment} \label{app:risk_assesment}
+\begin{figure}[H]
+	\centering
+	\includegraphics[angle=0,height=0.80\textheight]{"images/Risk Register Template"}
+	\caption{Project Risk Assessment}
+	\label{fig:risk-register}
+\end{figure}
+
+\section{CPD Log} \label{app:cpd_log}
+\begin{figure}[H]
+	\centering
+	\includegraphics[angle=0,height=0.80\textheight]{"images/cpd"}
+	\caption{Project Risk Assessment}
+	\label{fig:cpd}
+\end{figure}
+
+\end{landscape}
+%	\begin{figure}[t]
+%		\centering
+%		\resizebox{\textwidth}{!}{%
+%			\begin{tikzpicture}[
+%				font=\small,
+%				thread/.style={draw, rounded corners, very thick, minimum width=3.3cm, minimum height=10.8cm, fill=gray!6},
+%				block/.style={draw, rounded corners, align=center, minimum width=2.7cm, minimum height=1.35cm, fill=white},
+%				extblock/.style={draw, rounded corners, align=center, minimum width=2.8cm, minimum height=1.35cm, fill=blue!4},
+%				data/.style={draw, rounded corners, align=center, minimum width=2.2cm, minimum height=0.85cm, fill=green!6},
+%				arrowq/.style={->, thick},
+%				snaparrow/.style={->, thick, dashed},
+%				note/.style={align=center, font=\scriptsize}
+%				]
+%				
+%				% Swimlanes
+%				\node[thread] (renderlane) at (0,0) {};
+%				\node[thread] (simlane)    at (4.2,0) {};
+%				\node[thread] (haptlane)   at (8.4,0) {};
+%				\node[thread] (devlane)    at (12.6,0) {};
+%				\node[thread] (loglane)    at (16.8,0) {};
+%				
+%				% Lane titles
+%				\node[font=\bfseries] at (renderlane.north) [yshift=-0.45cm] {Render Thread};
+%				\node[font=\bfseries] at (simlane.north)    [yshift=-0.45cm] {Simulation Thread};
+%				\node[font=\bfseries] at (haptlane.north)   [yshift=-0.45cm] {Haptics Thread};
+%				\node[font=\bfseries] at (devlane.north)    [yshift=-0.45cm] {Device Thread};
+%				\node[font=\bfseries] at (loglane.north)    [yshift=-0.45cm] {Logging Thread};
+%				
+%				% Thread rate labels
+%				\node[note] at (8.4,4.2) {1 kHz};
+%				\node[note] at (12.6,4.2) {1 kHz};
+%				\node[note] at (4.2,4.2) {fixed $dt = 1/240$ s};
+%				
+%				% Render lane blocks
+%				\node[block] (window) at (0,2.2) {\textbf{Window / UI}\\\scriptsize OpenGL window\\\scriptsize ImGui controls};
+%				\node[block] (renderer) at (0,0.2) {\textbf{GlSceneRenderer}\\\scriptsize scene rendering\\\scriptsize tool/proxy visualisation};
+%				
+%				% Simulation lane blocks
+%				\node[block] (world) at (4.2,1.4) {\textbf{WorldManager}\\\scriptsize authoritative scene state\\\scriptsize applies commands / builds snapshots};
+%				\node[block] (physx) at (4.2,-1.2) {\textbf{PhysicsEnginePhysX}\\\scriptsize fixed-step rigid-body simulation\\\scriptsize applies haptic interaction forces};
+%				
+%				% Haptics lane blocks
+%				\node[block] (haptic) at (8.4,0.1) {\textbf{HapticEngine}\\\scriptsize SDF contact query\\\scriptsize proxy projection\\\scriptsize virtual coupling + force clamp};
+%				
+%				% Device lane blocks
+%				\node[block] (device) at (12.6,0.1) {\textbf{DeviceAdapter}\\\scriptsize serial RX/TX + packet parsing\\\scriptsize FK pose estimation\\\scriptsize Jacobian transpose torque mapping};
+%				
+%				% Logging lane blocks
+%				\node[block] (logger) at (16.8,0.8) {\textbf{Logger Thread}\\\scriptsize drains log channels\\\scriptsize writes files on shutdown};
+%				\node[data] (csv1) at (16.8,-1.2) {\texttt{device\_timing.csv}};
+%				\node[data] (csv2) at (16.8,-2.5) {\texttt{device\_state\_log.csv}};
+%				
+%				% Physical system to right
+%				\node[extblock] (user) at (21.0,2.2) {\textbf{User}};
+%				\node[extblock] (pdev) at (21.0,0.4) {\textbf{2-DOF Haptic Device}\\\scriptsize encoders + BLDC actuators};
+%				\node[extblock] (fw) at (21.0,-1.7) {\textbf{Embedded Firmware}\\\scriptsize device state packets\\\scriptsize torque execution / watchdog};
+%				
+%				% Internal simulation arrows
+%				\draw[arrowq] (world) -- node[right, font=\scriptsize] {world state / rebuilds} (physx);
+%				\draw[arrowq] (physx) -- node[left, font=\scriptsize] {updated poses} (world);
+%				
+%				% Commands from UI
+%				\draw[arrowq] (renderer.east) to[out=10,in=170] node[above, font=\scriptsize] {WorldCommand} (world.west);
+%				
+%				% World snapshots
+%				\draw[snaparrow] (world.east) to[out=10,in=170] node[above, font=\scriptsize] {WorldSnapshot} (haptic.west);
+%				\draw[snaparrow] (world.west) to[out=170,in=10] node[above, font=\scriptsize] {WorldSnapshot} (renderer.east);
+%				
+%				% Haptic snapshot to renderer
+%				\draw[arrowq] (haptic.west) to[out=160,in=-10] node[below, font=\scriptsize] {HapticSnapshotMsg} (renderer.east);
+%				
+%				% Wrench to physics
+%				\draw[arrowq] (haptic.west) to[out=200,in=20] node[below, font=\scriptsize] {HapticWrenchCmd} (physx.east);
+%				
+%				% Device thread links
+%				\draw[arrowq] (device.west) to[out=180,in=0] node[above, font=\scriptsize] {ToolStateMsg} (haptic.east);
+%				\draw[arrowq] (haptic.east) to[out=0,in=180] node[below, font=\scriptsize] {HapticWrenchCmd} (device.west);
+%				
+%				% Logging links
+%				\draw[arrowq] (device.east) to[out=0,in=180] node[above, font=\scriptsize] {DeviceTimingLogMsg} (logger.west);
+%				\draw[arrowq] (device.east) to[out=-10,in=180] node[below, font=\scriptsize] {DeviceStateLogMsg} (logger.west);
+%				\draw[arrowq] (logger) -- (csv1);
+%				\draw[arrowq] (logger) -- (csv2);
+%				
+%				% Physical closed loop
+%				\draw[arrowq] (device.east) to[out=0,in=180] node[above, font=\scriptsize] {TorqueCommandPacket} (fw.west);
+%				\draw[arrowq] (fw.west) to[out=180,in=0] node[below, font=\scriptsize] {DeviceStatePacket} (device.east);
+%				
+%				\draw[arrowq] (user) -- node[right, font=\scriptsize] {motion / felt force} (pdev);
+%				\draw[arrowq] (pdev) -- (fw);
+%				
+%				% Legend
+%				\node[draw, rounded corners, align=left, fill=white] at (8.8,-5.2) {%
+%					\scriptsize \textbf{Legend}\\
+%					\scriptsize Solid arrows: queued messages / commands\\
+%					\scriptsize Dashed arrows: latest-value snapshot channels
+%				};
+%				
+%			\end{tikzpicture}%
+%		}
+%		\caption{Host-side software architecture and data flow. The system is partitioned into rendering, simulation, haptic, device communication, and logging threads. The haptic loop consumes the latest tool state and world snapshot, computes contact forces, and publishes interaction commands both to the physics engine and to the device adapter for torque rendering.}
+%		\label{fig:sd}
+%	\end{figure}
+
 	%\subsection{Other appendices as necessary}
-	\section{Code}
+\begin{landscape}
+	\section{Mechanical Design Drawing}
+	\label{app:mechanical_design}
+	
+	\centering
+	
+	\rotatebox{0}{%
+		\begin{minipage}{0.95\textheight}
+			\centering
+			\includegraphics[height=0.80\textheight]{"images/V2 Base Drawing v1"}
+			
+			\captionof{figure}{CAD assembly of the 2-DOF haptic interface illustrating link geometry, actuator configuration, belt-driven base joint, and encoder placement. Link dimensions are annotated to define the kinematic model used for forward kinematics and Jacobian-based torque mapping.}
+			\label{fig:v2-base-drawing-v1}
+		\end{minipage}
+	}
+	
+\end{landscape}
+
+\section{Code}
+	Below is the README for the repo:
+	
+	\begingroup
+	\markdownSetup{
+		renderers = {
+			headingOne = {\section*{#1}},
+			headingTwo = {\subsection*{#1}},
+			headingThree = {\subsubsection*{#1}},
+			headingFour = {\paragraph*{#1}}
+		}
+	}
+	\markdownInput{README.md}
+	\endgroup
 \end{uomappendix}
 
 

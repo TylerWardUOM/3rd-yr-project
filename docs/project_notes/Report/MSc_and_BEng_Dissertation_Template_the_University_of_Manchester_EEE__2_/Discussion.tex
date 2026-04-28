@@ -1,5 +1,5 @@
 %Discussion section 
-\subsection{Communication and Latency Constraints}
+\subsection{Communication and Latency Constraints} \label{sec:discussion_communication_latency}
 
 The central finding from the communication evaluation is that transport delay --- measured at approximately 15--16\,ms round-trip --- is the dominant limitation on closed-loop performance, not host-side computation. Host-side processing latency remained sub-millisecond in the vast majority of cycles, confirming that the computational architecture performs well within the requirements of 1\,kHz haptic control.
 
@@ -15,7 +15,7 @@ While the present work does not isolate the exact contribution of each stage in 
 
 These results highlight that, in practical haptic systems, communication architecture can be a dominant performance constraint, and must be considered alongside control and mechanical design when targeting high-fidelity interaction.
 
-\subsection{Stability of the Haptic Interaction}
+\subsection{Stability of the Haptic Interaction} \label{sec:discussion_stability}
 
 Although communication timing was imperfect, the system maintained stable interaction across tested conditions. The key point is that stability resulted from architectural choices that reduced the control impact of transport irregularities rather than from a formally guaranteed passive interconnection.
 
@@ -29,7 +29,7 @@ These stabilisation mechanisms can be interpreted within a passivity-based frame
 
 Together, these mechanisms enable the system to maintain stable and controllable interaction despite communication delays that would otherwise limit performance in a purely high-stiffness haptic rendering framework.
 
-\subsection{Hardware Limitations}
+\subsection{Hardware Limitations} \label{sec:discussion_hardware_limitations}
 The hardware results must be interpreted within clear prototype constraints. These constraints do not invalidate the architectural findings, but they do bound the achievable force fidelity and the generalisability of quantitative conclusions.
 
 A primary limitation was the absence of current sensing in the actuator control system. The initial design intended to utilise integrated motor driver solutions based on the STM32 B-G431-ESC1 platform, which provide built-in current sensing capabilities suitable for accurate torque control. However, significant integration challenges were encountered when attempting to interface these drivers with the selected magnetic encoders, particularly in achieving reliable and stable operation within the required control framework.
@@ -46,11 +46,27 @@ A further limitation arose from the failure of one actuator during development. 
 
 Overall, these results demonstrate that, in addition to communication latency, actuator capability and transmission design impose significant constraints on achievable haptic performance in low-cost systems.
 
-\subsection{Design Trade-Offs}
-The design of the system reflects a set of trade-offs between stability, responsiveness, and achievable force fidelity. While damping and torque rate limiting were effective in ensuring stable interaction, they reduce perceived stiffness and responsiveness. In particular, rate limiting of actuator torque results in a finite rise time when contact forces are applied, leading to a short delay between initial contact and the development of the full resistive force. This reduces the sharpness of hard-contact interactions such as collisions with rigid virtual walls, as observed during hardware validation (section~\ref{sec:results}).
+\subsection{Design Trade-Offs} \label{sec:discussion_design_tradeoffs}
+The design of the system reflects a set of trade-offs between stability, responsiveness, and achievable force fidelity. While damping and torque rate limiting were effective in ensuring stable interaction, they reduce perceived stiffness and responsiveness. In particular, rate limiting of actuator torque results in a finite rise time when contact forces are applied, leading to a short delay between initial contact and the development of the full resistive force. This reduces the sharpness of hard-contact interactions such as collisions with rigid virtual walls, as observed during the hardware validation in Section~\ref{sec:results_stable_contact_hardware}.
 
 As a result, high-speed interactions and abrupt contacts are not rendered with the same fidelity as would be expected in systems with lower latency and higher achievable stiffness. Instead, contact forces are perceived as gradually increasing rather than instantaneous, which can affect realism in scenarios involving rigid constraints.
 
-However, this trade-off is necessary to ensure stable behaviour in the presence of communication delay. Without rate limiting and damping, the system exhibited oscillatory and unstable behaviour during contact, particularly under high stiffness settings, as demonstrated in Section~\ref{sec:results}. The implemented approach therefore prioritises stability and controllability over maximum stiffness, which is appropriate for a low-cost prototype system.
+However, this trade-off is necessary to ensure stable behaviour in the presence of communication delay. Without rate limiting and damping, the system exhibited oscillatory and unstable behaviour during contact, particularly under high stiffness settings, as demonstrated in Sections~\ref{sec:results_rate_limiting} and~\ref{sec:results_stable_contact_hardware}. The implemented approach therefore prioritises stability and controllability over maximum stiffness, which is appropriate for a low-cost prototype system.
 
 These findings highlight a key design consideration in practical haptic systems: achieving stable interaction under real-world constraints often requires compromising on ideal force rendering performance.
+
+\subsection{Project Management and Development Process} \label{sec:discussion_project_management}
+
+Project management in this work was not followed as a rigid, pre-defined process, but evolved as technical challenges emerged. While an initial project plan was created to outline development stages, the Gantt chart included in Appendix~\ref{app:gantt} represents the final execution of the project. Development of the host software began prior to the official project start, with initial work on OpenGL-based rendering and interaction undertaken in late August, providing a foundation for subsequent system integration.
+
+The original plan provided a useful structure, identifying phases such as hardware development, embedded control, communication, and host-side software. However, several aspects required more time than anticipated, particularly communication debugging, subsystem integration, and stability tuning, so the plan was used as a high-level guide rather than a strict schedule. This included a major refactoring of the host software architecture between January and March, improving modularity and separation of system components.
+
+Significant deviations from the original plan occurred. Early integration difficulties with the selected motor drivers led to the adoption of SimpleFOC Mini drivers, prioritising reliable integration over calibrated torque control. Later, the failure of one actuator prevented full two-degree-of-freedom validation, requiring a shift to single-axis testing and system-level evaluation.
+
+Risk management was primarily reactive, although key risks were identified early (Appendix~\ref{app:risk_assesment}), including control instability, communication failure, and actuator limitations. As these arose, mitigation strategies such as torque limiting, slew-rate limiting, and watchdog safety mechanisms were introduced.
+
+Time management was shaped by both technical challenges and practical constraints. A significant portion of development time was spent integrating subsystems, including the host software, embedded controller, and actuators, where achieving reliable end-to-end behaviour required iterative debugging across hardware and software boundaries, becoming a primary bottleneck in the development process. Progress was also temporarily constrained by hardware availability, particularly while awaiting replacement motor drivers, during which effort was deliberately redirected towards report writing, literature review, and test design.
+
+The project required significant self-directed learning, documented in the CPD log (Appendix~\ref{app:cpd_log}), including real-time systems, multithreaded architectures, physics simulation, and haptic control. This informed key design decisions such as snapshot-based communication and damping-based stabilisation.
+
+Overall, although the project did not strictly follow its initial plan, effective project management was demonstrated through adapting to challenges, prioritising critical subsystems, and maintaining progress towards a functional system.

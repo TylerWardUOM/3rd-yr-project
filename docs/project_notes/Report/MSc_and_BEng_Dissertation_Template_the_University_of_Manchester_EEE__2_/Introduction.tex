@@ -1,4 +1,4 @@
-\subsection{Background and Motivation}
+\subsection{Background and Motivation} \label{sec:introduction_background}
 
 Robotic manipulators are increasingly used in domains such as industrial automation, teleoperation, and robot-assisted surgery, where safe and effective interaction with physical environments is essential. % cut? In many of these contexts, operator training plays a critical role in determining task quality, safety, and efficiency.
  Although visual feedback provides important global information about the workspace, it alone may be insufficient for developing fine motor control, accurate force regulation, and intuitive understanding of contact conditions.%TODO Maybe strengthen claim with evidence
@@ -28,7 +28,7 @@ The scope is intentionally limited. The dissertation does not attempt fully cali
 
 \subsection{Objectives}
 
-To achieve this aim, the project pursued six objectives: (i)~design and construct a 2-DOF haptic device using low-cost brushless actuators and magnetic encoders; (ii)~implement embedded firmware for encoder acquisition, actuator control, and bidirectional packet-based communication; (iii)~develop a modular host-side software architecture supporting world management, physics simulation, haptic rendering, and OpenGL visualisation; (iv)~implement proxy-based contact rendering and Jacobian-based force-to-torque mapping; (v)~evaluate system performance; and (vi)~assess the practical limitations of the architecture and identify directions for future improvement.
+To achieve this aim, the project pursued six objectives: (i)~design and construct a 2-DOF haptic device using low-cost brushless actuators and magnetic encoders; (ii)~implement embedded firmware for encoder acquisition, actuator control, and bidirectional packet-based communication; (iii)~develop a modular host-side software architecture supporting world management, physics simulation, haptic rendering, and OpenGL visualisation; (iv)~implement proxy-based contact rendering and Jacobian-based force-to-torque mapping; (v)~evaluate communication timing, safety behaviour, and qualitative haptic interaction performance; and (vi)~assess the practical limitations of the architecture and identify directions for future improvement.
 %Bullet point might read bettter but not enough page cap
 
 \subsection{Contributions of This Work}
@@ -36,7 +36,7 @@ To achieve this aim, the project pursued six objectives: (i)~design and construc
 Prior work on low-cost haptic platforms focuses primarily on hardware design~\cite{martinez3DPrintedHaptic2016,martinezOpenSourceModular2017,lavatelliDesignOpenSource2014} or on isolated software demonstrations, with comparatively little emphasis on fully integrated real-time systems in which hardware, firmware, communication, simulation, and rendering are co-developed and evaluated together. This work addresses that gap. Its principal contributions are:
 
 \begin{itemize}
-	\item \textbf{A complete end-to-end haptic rendering system.} Custom hardware, embedded firmware, a packet-based communication protocol, and a modular host-side framework with real-time physics and OpenGL visualisation are integrated into a single bidirectional pipeline and evaluated as a unified system. This level of co-design and cross-layer evaluation is absent from existing low-cost academic haptic prototypes. %Could shorten
+	\item \textbf{A complete end-to-end haptic rendering system.} Custom hardware, embedded firmware, a packet-based communication protocol, and a modular host-side framework with real-time physics and OpenGL visualisation are integrated into a single bidirectional pipeline and evaluated as a unified system. This type of co-design and cross-layer evaluation is less commonly emphasised in existing low-cost academic haptic prototypes. %Could shorten
 	
 	\item \textbf{Demonstration of stable interaction under non-negligible communication delay.} Stable, controllable contact interaction is achieved despite a measured round-trip latency of approximately 15--16\,ms --- more than an order of magnitude above the 1\,ms control timestep. Stability is maintained without formal passivity guarantees through the combined use of virtual coupling, damping, snapshot-based communication, multi-threaded decoupling, and an embedded torque slew-rate limiter.
 	
