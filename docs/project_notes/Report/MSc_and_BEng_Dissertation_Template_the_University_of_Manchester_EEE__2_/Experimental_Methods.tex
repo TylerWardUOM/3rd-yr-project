@@ -4,7 +4,7 @@ The section focuses on what was tested and how measurements were collected; quan
 
 \subsection{Communication Performance Tests}
 
-Communication performance was characterised using the dedicated \texttt{serial\_tests} utility described in Section~\ref{sec:implementation}. The tool supports two modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. Both modes export CSV files for offline statistical analysis.
+Communication performance was characterised using the dedicated \texttt{serial\_tests} utility described in Section~\ref{sec:logging_communication_validation}. The tool supports two modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. Both modes export CSV files for offline statistical analysis.
 
 Tests were conducted across target transmission rates from 100~Hz to 2000~Hz to assess the effect of increasing packet frequency on reliability and timing performance.
 
@@ -28,7 +28,7 @@ These results were used to characterise communication latency and timing consist
 
 \subsubsection{End-to-End Host-Side Timing Test}
 
-In addition to the standalone communication tests, end-to-end timing of the host-side haptic pipeline was evaluated using the runtime logging framework described in Section~4.4. Logs were captured during normal closed-loop operation and exported to \texttt{device\_timing.csv} and \texttt{device\_state\_log.csv} for offline analysis in MATLAB.
+In addition to the standalone communication tests, end-to-end timing of the host-side haptic pipeline was evaluated using the runtime logging framework described in Section~\ref{sec:logging_communication_validation}. Logs were captured during normal closed-loop operation and exported to \texttt{device\_timing.csv} and \texttt{device\_state\_log.csv} for offline analysis in MATLAB.
 
 The evaluation included host-side end-to-end latency between state-packet parsing and torque command transmission, intermediate pipeline delays between communication, haptic processing, and transmission stages, matched state-command sequence consistency, parsed state-packet inter-arrival timing, sequence gap statistics, and estimated parsed packet rate with MCU-side timing trends.
 
@@ -36,9 +36,10 @@ Because the host and microcontroller clocks were not synchronised, the analysis 
 
 \subsection{Simulation Validation}
 
-Simulation validation tests were designed to assess both the correctness of the haptic rendering model in isolation and the stability of the integrated system during interaction.
+Simulation validation tests were designed to assess the correctness and qualitative behaviour of the haptic rendering model independently of physical actuator dynamics.
 
-Two complementary evaluations were performed. First, the behaviour of the virtual coupling and contact model was assessed by observing the computed force output under controlled interaction conditions. Second, the full system, including the physical device, communication pipeline, and actuator feedback, was evaluated during sustained user interaction.
+Two simulation-focused evaluations were performed. First, the virtual wall test assessed the unilateral contact response of the proxy-based virtual coupling model. Second, constrained motion along a virtual surface was evaluated to verify that the model generated forces predominantly normal to the surface while allowing tangential motion. Physical closed-loop interaction with actuator feedback was evaluated separately through the stable-contact and constrained-motion hardware tests in Sections~\ref{sec:method_stable_contact_hardware} and~\ref{sec:method_constrained_motion_hardware}.
+
 %The second test is the stable force in hardware validation and maybe should be moved
 
 \subsubsection{Virtual Wall Test}
@@ -79,7 +80,7 @@ A watchdog timeout test verified safe system behaviour under communication loss 
 
 The embedded controller response confirmed that the watchdog triggered reliably when command updates ceased, commanded torque was removed within the intended timeout window, and the device returned to a safe passive state.
 
-\subsection{Hardware Validation}
+\subsection{Hardware Validation} \label{sec:method_hardware_validation}
 
 Hardware validation assessed the behaviour of the physical actuation system and overall device interaction, focusing on qualitative evaluation of responsiveness and stability.
 
@@ -89,13 +90,13 @@ Basic actuator response behaviour was evaluated using standalone motor testing p
 
 The evaluation examined responsiveness to torque changes, presence of oscillatory behaviour, smoothness of motion, and repeatability across repeated inputs. This represents qualitative validation rather than precise quantitative characterisation.
 
-\subsubsection{Stable Contact Test}
+\subsubsection{Stable Contact Test} \label{sec:method_stable_contact_hardware}
 
 A stable contact test evaluated the behaviour of the full closed-loop system during sustained interaction with a virtual surface.
 
 The end-effector was brought into contact with a virtual object and maintained in contact while observing the resulting force feedback behaviour. The evaluation assessed the ability to maintain continuous contact without instability, the presence of oscillation or chatter, consistency of the rendered resistive force, and overall usability of the interaction.
 
-\subsubsection{Constrained Motion Hardware Test}
+\subsubsection{Constrained Motion Hardware Test} \label{sec:method_constrained_motion_hardware}
 
 Hardware constrained-motion behaviour was evaluated during physical operation of the device.
 

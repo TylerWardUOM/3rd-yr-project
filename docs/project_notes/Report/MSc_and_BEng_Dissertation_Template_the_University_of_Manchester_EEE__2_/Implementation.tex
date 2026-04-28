@@ -47,27 +47,15 @@ The physical interface is a planar two degree-of-freedom serial mechanism design
 
 The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208)\cite{tmotor_gb2208}. The base joint incorporates a 3:1 GT2 belt reduction stage to increase available output torque, while the elbow joint is direct-drive to minimise mechanical complexity.
 
-An adjustable idler pulley is integrated into the belt stage to enable tensioning and reduce backlash. Despite this, non-ideal behaviour such as compliance and occasional slip under high load was observed, as discussed in Section~\ref{sec:discussion}.
+An adjustable idler pulley is integrated into the belt stage to enable tensioning and reduce backlash. Despite this, non-ideal behaviour such as compliance and occasional slip under high load was observed, as discussed in Section~\ref{sec:discussion_hardware_limitations}.
 
 To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048)\cite{ams_as5048_2018} are mounted directly on the joint axes and interfaced via SPI. This is particularly important for the belt-driven joint, where transmission compliance would otherwise introduce discrepancies between motor-side and output angles.
 
 For the belt-driven actuator, an additional AS5600 magnetic encoder\cite{ams_as5600_2018} is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
 
-Embedded control runs on an STM32 Nucleo-G431RB\cite{NUCLEOG431RBProductSTMicroelectronics} platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero. Additionally, a torque slew-rate limiter is applied to each actuator command, constraining the rate of change of commanded torque to reduce high-frequency oscillations during rapid contact transitions.
+A complete mechanical assembly, including component layout and link geometry, is provided in Appendix~\ref{app:mechanical_design}.
 
-\begin{figure}[htbp]
-	\centering
-	\fbox{%
-		\parbox[c][6cm][c]{0.8\textwidth}{%
-			\centering
-			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-			Mechanical diagram\\
-			(links, joints, belt reduction, encoders)
-		}
-	}
-	\caption{Mechanical layout of the haptic device.}
-	\label{fig:mechanical_layout}
-\end{figure}
+Embedded control runs on an STM32 Nucleo-G431RB\cite{NUCLEOG431RBProductSTMicroelectronics} platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero. Additionally, a torque slew-rate limiter is applied to each actuator command, constraining the rate of change of commanded torque to reduce high-frequency oscillations during rapid contact transitions.
 
 Due to hardware constraints, no direct force sensing or current measurement was implemented; as a result, torque output is estimated rather than directly measured. Additionally, one actuator failed during development, meaning final hardware validation was conducted using single-axis actuation, although both joints remained available for sensing.
 
@@ -86,20 +74,20 @@ The device adapter runs in a dedicated 1\,kHz loop. At each cycle, it retains th
 This ensures that control decisions are always based on the most recent available state, avoiding backlog-induced latency and improving responsiveness under high update rates.
 
 \subsection{Host Software Architecture}
-
-\begin{figure}[htbp]
-	\centering
-	\fbox{%
-		\parbox[c][6cm][c]{0.85\textwidth}{%
-			\centering
-			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-			System architecture diagram\\
-			(threads + message channels)
-		}
-	}
-	\caption{Overview of the host-side software architecture.}
-	\label{fig:software_architecture}
-\end{figure}
+%TODO: Swim lane diagram in apendix
+%\begin{figure}[htbp]
+%	\centering
+%	\fbox{%
+%		\parbox[c][6cm][c]{0.85\textwidth}{%
+%			\centering
+%			\textbf{PLACEHOLDER FIGURE}\\[6pt]
+%			System architecture diagram\\
+%			(threads + message channels)
+%		}
+%	}
+%	\caption{Overview of the host-side software architecture.}
+%	\label{fig:software_architecture}
+%\end{figure}
 
 The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. %Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
 
@@ -127,23 +115,23 @@ where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\math
 
 This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a constrained dynamic system. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford.
 
-Consequently, stability is achieved in practice through virtual coupling, damping, and conservative actuator-side constraints, which limit energy injection arising from delay and discretisation. The passivity implications of this design and its performance under communication delay are discussed further in Section~\ref{sec:discussion}.
+Accordingly, the force command is generated using a deliberately conservative coupling configuration, with damping and actuator-side limiting used to reduce abrupt force changes during contact transitions. The stability implications of this design are discussed in Section~\ref{sec:discussion_stability}.
 
 To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N before publication.
 
-\begin{figure}[htbp]
-	\centering
-	\fbox{%
-		\parbox[c][6cm][c]{0.75\textwidth}{%
-			\centering
-			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-			Proxy-based haptic rendering\\
-			(tool, proxy, surface, force vector)
-		}
-	}
-	\caption{Proxy-based contact rendering using virtual coupling.}
-	\label{fig:haptic_proxy}
-\end{figure}
+%\begin{figure}[htbp]
+%	\centering
+%	\fbox{%
+%		\parbox[c][6cm][c]{0.75\textwidth}{%
+%			\centering
+%			\textbf{PLACEHOLDER FIGURE}\\[6pt]
+%			Proxy-based haptic rendering\\
+%			(tool, proxy, surface, force vector)
+%		}
+%	}
+%	\caption{Proxy-based contact rendering using virtual coupling.}
+%	\label{fig:haptic_proxy}
+%\end{figure}
 
 \subsubsection{Physics Simulation Integration}
 
@@ -151,7 +139,7 @@ Rigid-body dynamics are simulated using NVIDIA PhysX. The physics subsystem runs
 
 A fixed-step accumulator scheme is used to decouple simulation stability from variable external loop timing. When world topology or physics properties change, actors are rebuilt from the latest authoritative world snapshot. After each simulation update, dynamic poses are written back to the world manager so subsequent rendering and haptic queries operate on consistent state.
 
-\subsection{Logging and Communication Validation}
+\subsection{Logging and Communication Validation} \label{sec:logging_communication_validation}
 
 To avoid introducing disk latency into the 1\,kHz control path, runtime logging is performed asynchronously. The device thread publishes structured timing and state messages to dedicated logging channels, and a background logger thread drains these channels into memory.
 
