@@ -1,6 +1,6 @@
 # Real-Time Haptic Rendering System
 
-**Repository:** https://github.com/TylerWardUOM/3rd-yr-project
+**Repository:** [TylerWardUOM/3rd-yr-project](https://github.com/TylerWardUOM/3rd-yr-project)
 
 ---
 
@@ -33,9 +33,7 @@ Message Bus channels:
   haptics.snapshots  -->  Renderer (overlay)
 ```
 
-A demo video of early kinematics testing is available in the repository at:
-`docs/Media/Kinematics Demo 2025-09-20.mp4`
-> Note: Still need to get a better more upto date video
+Demo videos can be found in the repository `docs/Media/`.
 
 ---
 
@@ -54,22 +52,30 @@ These instructions assume a clean Windows PC with no prior project dependencies 
 
 **Install vcpkg** (package manager for C++ libraries):
 
-    git clone https://github.com/microsoft/vcpkg.git C:\Users\<you>\vcpkg
-    cd C:\Users\<you>\vcpkg
-    bootstrap-vcpkg.bat
+```bash
+git clone https://github.com/microsoft/vcpkg.git C:\Users\<you>\vcpkg
+cd C:\Users\<you>\vcpkg
+bootstrap-vcpkg.bat
+```
 
 **Install PhysX via vcpkg:**
 
-    vcpkg install physx:x64-windows
+```bash
+vcpkg install physx:x64-windows
+```
 
 ### 2. Clone the Repository
 
-    git clone --recurse-submodules https://github.com/TylerWardUOM/3rd-yr-project.git
-    cd 3rd-yr-project
+```bash
+git clone --recurse-submodules https://github.com/TylerWardUOM/3rd-yr-project.git
+cd 3rd-yr-project
+```
 
 If you already cloned without submodules, run:
 
-    git submodule update --init --recursive
+```bash
+git submodule update --init --recursive
+```
 
 This pulls in the vendored `imgui` and `glm` libraries automatically.
 
@@ -77,12 +83,16 @@ This pulls in the vendored `imgui` and `glm` libraries automatically.
 
 Open `CMakeLists.txt` and change this line to match where your vcpkg is installed:
 
-    set(VCPKG_INSTALLED_DIR "C:/Users/<you>/vcpkg/installed/x64-windows")
+```cmake
+set(VCPKG_INSTALLED_DIR "C:/Users/<you>/vcpkg/installed/x64-windows")
+```
 
 ### 4. Configure and Build
 
-    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-    cmake --build build --config Release
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+```
 
 This produces two executables inside the build folder:
 
@@ -93,9 +103,9 @@ This produces two executables inside the build folder:
 
 To use the physical haptic device you will also need:
 
-- A 2-DOF planar robot arm with quadrature encoders and BLDC motors, connected by USB serial
-- The matching firmware flashed to the device's MCU (not included in this repo)
-- COM port access (default: COM4, 460800 baud — configurable in `src/main.cpp`)
+ - A 2-DOF planar robot arm with BLDC motors and absolute magnetic encoders (AS5048 on the joints, AS5600 on the motor shafts), connected by USB serial
+ - Embedded firmware for the device is included in this repository under the `firmware/` folder (flashable to the target MCU). See `firmware/README` or `firmware/firmware.ino` for build/flash instructions.
+ - COM port access (default: COM4, 460800 baud — configurable in `src/main.cpp`)
 
 The application will run without the hardware connected; it will fall back to mouse-based tool control.
 
@@ -105,8 +115,10 @@ The application will run without the hardware connected; it will fall back to mo
 
 ### Main Application
 
-    cd build\Release
-    app.exe
+```powershell
+cd build\Release
+./app.exe
+```
 
 A window opens showing a 3D scene with a ground plane, a sphere, and a cube.
 
@@ -127,11 +139,15 @@ The `serial_tests` executable lets you measure serial link performance without r
 
 **Packet rate / integrity test** (checks packets received per second):
 
-    serial_tests rate COM4 460800 30 rate_results.csv
+```bash
+serial_tests rate COM4 460800 30 rate_results.csv
+```
 
 **Round-trip time (RTT) test** (measures latency):
 
-    serial_tests rtt COM4 460800 1000 2 rtt_results.csv
+```bash
+serial_tests rtt COM4 460800 1000 2 rtt_results.csv
+```
 
 Arguments: `<port> <baud> <duration_sec or count> <interval_ms> <output_csv>`
 
