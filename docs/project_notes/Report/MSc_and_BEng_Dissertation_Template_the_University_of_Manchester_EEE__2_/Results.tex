@@ -1,5 +1,4 @@
 This section reports the measured outcomes of the Section~\ref{sec:experiments} tests. It presents communication timing, simulation behaviour, safety outcomes, and hardware interaction observations.
-
 Interpretation of these findings and their design implications is deferred to Section~\ref{sec:discussion}.
 %o DO NOT duplicate Results in Discussion. DO NOT duplicate Discussion in Conclusion. is what it says in handboox so make sure all discussion stuff not in here and left for discussion
 \subsection{Communication Performance}
@@ -51,7 +50,6 @@ Overall, the serial link supported packet rates at or above 1~kHz with negligibl
 
 \subsubsection{Round-Trip Latency Results} \label{sec:results_rtt}
 Round-trip latency results were highly consistent across all tested ping intervals. For nominal transmission intervals of 1~ms, 2~ms, and 10~ms, the success rate was 100\% in all cases, with no timeouts observed over 1000 samples per test.
-
 The mean measured round-trip latency remained approximately constant across all three test conditions, with values of 15.60~ms, 15.64~ms, and 15.67~ms respectively. Similarly, the 95th and 99th percentile RTT values were tightly grouped around 16.2--16.4~ms, indicating stable and predictable timing behaviour across repeated measurements. This behaviour is further illustrated in Fig.~\ref{fig:rtt_cdf}, where the cumulative distributions for all three tests overlap closely and rise sharply at approximately 15--16~ms, indicating that RTT is largely independent of the selected ping interval.
 
 \begin{figure}[htbp]
@@ -98,14 +96,14 @@ Analysis of host-side parsed-packet inter-arrival timing revealed significant va
 	\includegraphics[width=0.7\textwidth]{images/Raw parsed state packet inter-arrival distribution.pdf}
 	\caption{
 		Distribution of host-side inter-arrival time between consecutively parsed state packets. 
-		A dominant peak near 0~ms and a smaller concentration around 14--16~ms indicate burst-like packet processing at the host, consistent with buffered delivery and intermittent scheduling delays.
+		A dominant peak near 0~ms and a smaller concentration around 14--16~ms show non-uniform host-side packet timing.
 	}
 	\label{fig:raw_host_hist}
 \end{figure}
 
 Despite this non-uniform host-side processing pattern, analysis of MCU-side timestamps showed that the embedded system maintained a stable and consistent update rate. The effective MCU period per state was approximately 1.00~ms, corresponding to an update rate of 1000~Hz, with very low variability.
 
-Taken together, packet generation on the embedded controller was highly regular, while host-side packet processing was non-uniform and burst-like. Despite this, host-side processing latency remained low.
+Taken together, the embedded controller generated packets at a regular rate, while host-side packet timing was non-uniform. Host-side processing latency nevertheless remained low.
 
 % TODO: Repeat this analysis after adding t_chunk_read_ns to DeviceStateLogMsg.
 % The updated instrumentation should log:
@@ -135,7 +133,8 @@ Taken together, packet generation on the embedded controller was highly regular,
 % revise the interpretation to emphasise polling-loop timing or host-side processing effects.
 \subsection{Simulation Validation Results}
 
-Simulation validation tests were conducted with actuator output disabled, allowing the behaviour of the haptic rendering model to be evaluated independently of hardware dynamics and communication effects.
+Simulation validation was performed as described in Section~\ref{sec:method_simulation}, 
+with actuator output disabled.
 
 \subsubsection{Virtual Wall Model Response} \label{sec:results_virtual_wall}
 
@@ -199,19 +198,12 @@ Overall, the qualitative assessment indicated that the actuator response was suf
 \subsubsection{Stable Contact Behaviour (Virtual Wall Interaction)} \label{sec:results_stable_contact_hardware}
 
 This test represents the physical realisation of the virtual wall interaction previously validated in Section~\ref{sec:results_virtual_wall}.
-
 The integrated system was able to support sustained contact interaction without loss of stability.
-
 During testing, continuous contact with a virtual surface could be maintained for extended periods without runaway motion or divergence. The rendered force remained consistent, and the interaction was perceived as stable and controllable.
 
-Some low-level vibration and noise were present during contact, particularly under high stiffness settings. However, this did not lead to instability and was reduced through the combined use of damping and torque rate limiting.
-
-The system remained responsive to user input while maintaining a stable resistive force, indicating that the closed-loop architecture is suitable for practical haptic interaction scenarios.
-
-These results demonstrate stable contact interaction under real-time conditions despite communication variability.
+Some low-level vibration and noise were present during contact, particularly under high stiffness settings; however, this did not lead to instability and was reduced through the combined use of damping and torque rate limiting. The system remained responsive to user input while maintaining a stable resistive force, demonstrating stable contact interaction under real-time conditions despite communication variability.
 
 It is noted that the large penetration effects observed during simulation validation were less prominent during physical interaction. In practice, the rendered contact force limits penetration depth by opposing user motion. However, due to the finite torque output of the actuators and the achievable virtual stiffness, some penetration still occurs during contact.
-
 This effect is more pronounced with small or thin virtual objects, where small physical displacements can correspond to significant virtual penetration.
 
 Although stable contact behaviour was achieved, the rendered force did not exhibit perfectly rigid characteristics. The interaction was observed to have a degree of compliance, with force increasing gradually rather than instantaneously. This behaviour reflects the combined effect of the torque slew-rate limiter, actuator torque capability limitations, control fidelity, and transmission behaviour, which are discussed further in Sections~\ref{sec:discussion_hardware_limitations} and~\ref{sec:discussion_design_tradeoffs}.
@@ -221,22 +213,17 @@ Under attempts to push strongly through a rigidly rendered object, transmission 
 \subsubsection{Stable Contact Behaviour (Constrained Motion)}
 
 Constrained motion behaviour was also evaluated under physical operation of the device. Given that physical actuation was available only on the first joint during final testing, the constrained-motion behaviour observed in hardware represents a partial implementation of the intended two-axis guidance behaviour.
-
 When the end-effector was brought into contact with a virtual surface and moved along it, the system generated forces predominantly normal to the surface, resisting penetration while allowing motion tangential to the constraint. This resulted in guidance-like behaviour consistent with the constrained motion model validated in simulation.
 
-An additional observation was made when the device was released near a virtual surface. When positioned close to the surface, the end-effector could remain supported by the rendered contact force, behaving similarly to a physical object resting against a rigid boundary. In contrast, when released further from the surface, the end-effector moved freely until contact was re-established, at which point motion became constrained along the surface.
+An additional observation was made when the device was released near a virtual surface: when positioned close to the surface, the end-effector could remain supported by the rendered contact force, behaving similarly to a physical object resting against a rigid boundary, while release further from the surface led to free motion until contact was re-established.
 
-This behaviour demonstrates that the system is capable of producing physically intuitive constraint forces, while also reflecting the finite stiffness and force limits of the actuator system. The transition between free motion and constrained interaction was smooth and did not result in instability.
-
-The guidance behaviour was effective but not perfectly rigid, with some compliance and variation in constraint force observed during motion. This was consistent with the limited actuator stiffness and partial actuation available in the final hardware configuration.
+This behaviour demonstrates that the system is capable of producing physically intuitive constraint forces, while also reflecting the finite stiffness and force limits of the actuator system. The transition between free motion and constrained interaction was smooth and did not result in instability. The guidance behaviour was effective but not perfectly rigid, with some compliance and variation in constraint force observed during motion, consistent with the limited actuator stiffness and partial actuation available in the final hardware configuration.
 
 These results confirm stable and intuitive constraint interaction under real-time conditions.
 
 
-\subsection{Summary of Results}
-
-Overall, the system achieved stable real-time interaction on a low-cost platform.
-
-The main measured constraints were fixed communication latency (approximately 15--16~ms), finite actuator capability, partial actuation in final testing, and transmission non-idealities under high load.
-
-Within these constraints, the tests showed low packet loss at high update rates, low host-side processing latency, consistent safety behaviour, and stable qualitative contact/constraint interaction.
+%\subsection{Summary of Results}
+%
+%Overall, the system achieved stable real-time interaction on a low-cost platform.
+%The main measured constraints were fixed communication latency (approximately 15--16~ms), finite actuator capability, partial actuation in final testing, and transmission non-idealities under high load.
+%Within these constraints, the tests showed low packet loss at high update rates, low host-side processing latency, consistent safety behaviour, and stable qualitative contact/constraint interaction.

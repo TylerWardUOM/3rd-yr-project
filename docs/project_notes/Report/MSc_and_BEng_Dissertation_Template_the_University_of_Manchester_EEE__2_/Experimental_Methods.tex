@@ -1,5 +1,4 @@
 This section defines the test procedures used to evaluate communication performance, closed-loop timing behaviour, simulation fidelity, safety behaviour, and hardware interaction characteristics of the proposed haptic rendering system.
-
 The section focuses on what was tested and how measurements were collected; quantitative outcomes are reported in Section~\ref{sec:results} and interpreted in Section~\ref{sec:discussion}.
 
 \subsection{Communication Performance Tests}
@@ -34,7 +33,7 @@ The evaluation included host-side end-to-end latency between state-packet parsin
 
 Because the host and microcontroller clocks were not synchronised, the analysis was restricted to host-side timing differences and trend-based interpretation of MCU timestamps. Absolute one-way latency between host and device could therefore not be inferred directly.
 
-\subsection{Simulation Validation}
+\subsection{Simulation Validation} \label{sec:method_simulation}
 
 Simulation validation tests were designed to assess the correctness and qualitative behaviour of the haptic rendering model independently of physical actuator dynamics.
 
@@ -53,7 +52,6 @@ The evaluation examined the absence of significant rendered force outside the wa
 \subsubsection{Constrained Motion Along a Virtual Surface}
 
 The system was further evaluated for its ability to support constrained motion along a virtual surface.
-
 During this test, the end-effector was brought into contact with a planar wall and allowed to move along the surface while maintaining contact. This behaviour arises naturally from the proxy-based rendering method, where motion normal to the surface is resisted while tangential motion remains unconstrained.
 
 The evaluation assessed the ability to maintain contact during motion, the absence of resistance to tangential movement, stability during sustained sliding interaction, and smooth transitions between free-space and constrained motion.
@@ -99,7 +97,6 @@ The end-effector was brought into contact with a virtual object and maintained i
 \subsubsection{Constrained Motion Hardware Test} \label{sec:method_constrained_motion_hardware}
 
 Hardware constrained-motion behaviour was evaluated during physical operation of the device.
-
 The end-effector was brought into contact with a planar virtual surface and moved along it while maintaining contact. The evaluation assessed whether the system produced forces predominantly normal to the surface, resisted penetration, and allowed motion tangential to the constraint without instability.
 
 In addition, the device was released near the virtual surface to assess whether the rendered contact force could support the end-effector passively in a gravity-like interaction scenario.

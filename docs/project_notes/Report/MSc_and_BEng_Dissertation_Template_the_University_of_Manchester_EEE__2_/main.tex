@@ -114,7 +114,6 @@
 \submitdate{2026}                                  % regulations ask only for the year, not month
 \wordcount{\mywordcount}		                   % use \wordcount{} to set the count. Can just type in a number (e.g. \wordcount{1000}	if don't want to use the automatic count.) This is automatically displayed after the table of contents. 
 \maketitle
-Page \thepage\ of \pageref{endofmain}
 %TODO: Check im allowed to change numbering
 \pagenumbering{roman}
 \setcounter{page}{1}
@@ -122,6 +121,7 @@ Page \thepage\ of \pageref{endofmain}
 
 %%%%%%%%%%%%%%%%%% LISTS OF CONTENT %%%%%%%%%%%%%%%%%%
 \providecommand{\uomtoc}{\tableofcontents}
+\tableofcontents
 % other lists are not required, but can include \uomlof and \uomlot if really want to
 
 
@@ -215,7 +215,7 @@ Page \thepage\ of \pageref{endofmain}
 
 %%%%%%%%%%%%%%%%%% APPENDICES %%%%%%%%%%%%%%%%%%
 \begin{uomappendix}
-	\section{Project outline}
+	\section{Preliminary Project Proposal}
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.7\linewidth]{images/Preliminary_Project_Proposal}
@@ -237,7 +237,7 @@ Page \thepage\ of \pageref{endofmain}
 \end{figure}
 
 
-\section{Risk assessment} \label{app:risk_assesment}
+\section{Risk Register and Health \& Safety Risk Assessment} \label{app:risk_assesment}
 \begin{figure}[H]
 	\centering
 	\includegraphics[angle=0,height=0.80\textheight]{"images/Risk Register Template"}
@@ -249,7 +249,7 @@ Page \thepage\ of \pageref{endofmain}
 \begin{figure}[H]
 	\centering
 	\includegraphics[angle=0,height=0.80\textheight]{"images/cpd"}
-	\caption{Project Risk Assessment}
+	\caption{CPD Log documenting skills and knowledge acquired during the project.}
 	\label{fig:cpd}
 \end{figure}
 
@@ -377,9 +377,10 @@ Page \thepage\ of \pageref{endofmain}
 	
 \end{landscape}
 
-\section{Code}
-	Below is the README for the repo:
+\section{Source Code and Repository Information}
+	Repository Link: \href{https://github.com/TylerWardUOM/3rd-yr-project}{3rd-yr-project} \\
 	
+	Below is the README for the repo:
 	\begingroup
 	\markdownSetup{
 		renderers = {

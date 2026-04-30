@@ -1,4 +1,8 @@
 %Discussion section 
+This section interprets the experimental results presented in Section~\ref{sec:results}, 
+focusing on the three principal performance constraints identified: communication latency, 
+stability under delay, and hardware limitations. It analyses how these factors interact and the resulting trade-offs in achievable haptic performance.
+
 \subsection{Communication and Latency Constraints} \label{sec:discussion_communication_latency}
 
 The central finding from the communication evaluation is that transport delay --- measured at approximately 15--16\,ms round-trip --- is the dominant limitation on closed-loop performance, not host-side computation. Host-side processing latency remained sub-millisecond in the vast majority of cycles, confirming that the computational architecture performs well within the requirements of 1\,kHz haptic control.
@@ -11,6 +15,10 @@ Nevertheless, stable haptic interaction remained achievable with appropriate arc
 
 A likely contributing factor is the use of the ST-Link virtual COM interface for host--device communication. This interface supported rapid development, but the observed burst-like delivery pattern suggests buffering and scheduling overhead that is large relative to the control timestep.
 
+The increased packet loss observed at low transmission rates is likely attributed to host-side scheduling and USB buffering behaviour. At lower rates, packets are more likely to be grouped into bursts, increasing the likelihood of missed reads or buffer overrun in the host polling loop.
+
+The burst-like packet processing observed on the host suggests that packets are delivered in chunks rather than at uniform intervals. This behaviour is consistent with USB CDC buffering and operating system scheduling, which introduce non-uniform delivery despite regular transmission from the embedded system.
+
 While the present work does not isolate the exact contribution of each stage in the communication path, the evidence suggests transport-layer behaviour is a major source of delay. Lower-latency communication options could therefore provide a direct path to improved contact fidelity.
 
 These results highlight that, in practical haptic systems, communication architecture can be a dominant performance constraint, and must be considered alongside control and mechanical design when targeting high-fidelity interaction.
@@ -19,7 +27,7 @@ These results highlight that, in practical haptic systems, communication archite
 
 Although communication timing was imperfect, the system maintained stable interaction across tested conditions. The key point is that stability resulted from architectural choices that reduced the control impact of transport irregularities rather than from a formally guaranteed passive interconnection.
 
-Firstly, snapshot-based communication channels ensured that the haptic loop operated on the most recent available state rather than queued historical samples. This design choice limited the destabilising effect of burst delivery by preventing stale data from accumulating in the feedback path.
+Firstly, snapshot-based communication channels ensured that the haptic loop operated on the most recent available state rather than queued historical samples. This design choice limited the destabilising effect of burst delivery by preventing stale data from accumulating in the feedback path, thereby avoiding stale-state feedback that would otherwise increase the effective delay and reduce stability margins. Although formal passivity conditions were not enforced, the combination of damping, reduced stiffness, and actuator-side rate limiting can be interpreted as introducing dissipation to counter delay-induced energy injection. This places the implemented design within the class of passivity-related stability concerns identified by Colgate and Schenkel \cite{colgatePassivityClassSampleddata1997}, while remaining an empirical stabilisation strategy rather than a formally passive controller.
 
 Secondly, the separation of communication, haptic rendering, and physics simulation into independent threads allows each subsystem to operate at an appropriate rate without blocking time-critical operations. This decoupling reduces the propagation of timing variability between subsystems.
 
@@ -67,6 +75,6 @@ Risk management was primarily reactive, although key risks were identified early
 
 Time management was shaped by both technical challenges and practical constraints. A significant portion of development time was spent integrating subsystems, including the host software, embedded controller, and actuators, where achieving reliable end-to-end behaviour required iterative debugging across hardware and software boundaries, becoming a primary bottleneck in the development process. Progress was also temporarily constrained by hardware availability, particularly while awaiting replacement motor drivers, during which effort was deliberately redirected towards report writing, literature review, and test design.
 
-The project required significant self-directed learning, documented in the CPD log (Appendix~\ref{app:cpd_log}), including real-time systems, multithreaded architectures, physics simulation, and haptic control. This informed key design decisions such as snapshot-based communication and damping-based stabilisation.
+The project required significant self-directed learning, documented in the CPD log (Appendix~\ref{app:cpd_log}), including OpenGL rendering, haptic rendering literature, BLDC motor control with SimpleFOC, PhysX simulation integration, hardware integration, and technical report writing. These activities supported key design decisions such as the use of proxy-based rendering, torque-mode actuation, and the integration of the simulation and visualisation framework.
 
 Overall, although the project did not strictly follow its initial plan, effective project management was demonstrated through adapting to challenges, prioritising critical subsystems, and maintaining progress towards a functional system.

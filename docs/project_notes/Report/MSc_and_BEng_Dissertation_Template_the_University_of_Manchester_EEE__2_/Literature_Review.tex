@@ -20,7 +20,7 @@ Haptic systems are commonly classified as impedance-type or admittance-type devi
 
 Stable haptic interaction imposes strict requirements on latency, control architecture, and numerical implementation. Adams and Hannaford demonstrated that virtual coupling can provide stability guarantees by decoupling device dynamics from the virtual environment under passive interaction assumptions \cite{adamsStableHapticInteraction1999}. 
 
-More generally, stability in haptic systems is often analysed using passivity theory. Colgate and Hogan showed that discrete-time haptic interfaces can become unstable when energy is artificially generated within the feedback loop due to sampling, delay, or numerical approximation errors \cite{colgatePassivityClassSampleddata1997}. Their passivity framework establishes conditions under which a haptic system remains energetically passive, thereby ensuring stable interaction with arbitrary passive users and environments.
+More generally, stability in haptic systems is often analysed using passivity theory. Colgate and Schenkel showed that discrete-time haptic interfaces can become unstable when energy is artificially generated within the feedback loop due to sampling, delay, or numerical approximation errors \cite{colgatePassivityClassSampleddata1997}. Their passivity framework establishes conditions under which a haptic system remains energetically passive, thereby ensuring stable interaction with arbitrary passive users and environments.
 
 These results highlight the sensitivity of haptic systems to delay and discrete-time effects. In practical implementations, communication latency and asynchronous computation introduce additional energy into the system, reducing stability margins and limiting the achievable virtual stiffness. This is particularly relevant in systems where communication delay is non-negligible relative to the control timestep, motivating the use of control structures that explicitly manage dynamic coupling, damping, and energy injection in order to maintain stable interaction.
 
@@ -38,4 +38,6 @@ However, much of this work focuses primarily on hardware design or educational p
 
 The literature establishes that haptic feedback improves performance in robotic manipulation tasks and provides well-developed methods for stable force rendering, particularly through virtual coupling and passivity-based control frameworks. Low-cost hardware platforms have also demonstrated that accessible haptic devices are feasible.
 
-However, there remains a gap between simplified hardware demonstrations and fully integrated real-time systems that combine low-cost actuation, real-time communication, simulation, and extensible software design. Addressing this gap motivates the development of a low-cost haptic system in which hardware, communication, simulation, and rendering are co-designed and evaluated as an integrated real-time pipeline.
+However, there remains a gap between simplified hardware demonstrations and fully 
+integrated real-time systems --- a gap that directly motivates the system design 
+presented in Section~\ref{sec:implementation}.

@@ -11,8 +11,7 @@ At the same time, achieving stable and convincing haptic interaction is technica
 
 \subsection{Problem Definition}
 
-This dissertation addresses the design and evaluation of a \emph{low-cost, real-time haptic interface system} suitable for robotic manipulation training and experimentation, with explicit consideration of the practical constraints that arise in implementation.
-
+This dissertation addresses the design and evaluation of a low-cost real-time haptic interface system for robotic manipulation training, with explicit consideration of practical implementation constraints.
 The specific challenge is not merely to construct a haptic input device, but to integrate multiple subsystems into a stable bidirectional interaction loop: user motion must be sensed at the device, transmitted to a host system, interpreted within a simulated environment, converted into interaction forces, mapped back into actuator commands, and rendered to the user in real time. In practice, each stage of this loop introduces constraints. Limited actuator capability affects the achievable force output, communication delay limits responsiveness and stable virtual stiffness, and software architecture determines whether the system remains extensible and maintainable.
 
 Existing work demonstrates the value of haptic feedback and the feasibility of low-cost haptic hardware, but there remains a practical gap between simple hardware demonstrations and fully integrated systems that combine low-cost actuation, real-time communication, physics-based simulation, and explicit treatment of latency and stability. Educational and open-source devices have shown that affordable haptic hardware is possible \cite{martinez3DPrintedHaptic2016,martinezOpenSourceModular2017}, and low-cost 2-DOF academic systems have also been demonstrated \cite{lavatelliDesignOpenSource2014}. However, comparatively less emphasis is placed on complete end-to-end architectures in which hardware, embedded control, host-side simulation, rendering, and communication are developed together and evaluated as an integrated real-time system.
@@ -23,7 +22,6 @@ The problem addressed in this project is therefore defined as follows: \emph{to 
 \subsection{Aim and Scope of This Dissertation}
 
 The project focuses on demonstrating the feasibility of a complete end-to-end haptic architecture, covering: device design and construction; embedded firmware development for sensing, communication, and actuator control; implementation of a host-side framework integrating physics simulation, haptic rendering, and visualisation; and experimental evaluation of communication performance, timing, stability, and qualitative interaction behaviour.
-
 The scope is intentionally limited. The dissertation does not attempt fully calibrated force output, commercial-level rendering fidelity, or a formal user study. Final hardware validation was performed with force feedback on one joint only, due to actuator failure during development. The principal contribution therefore lies in \emph{system-level design, integration, and evaluation}, together with analysis of the practical constraints that limit achievable performance. As the results demonstrate, the dominant limitation is communication latency rather than host-side computation, and addressing this is identified as the primary route to higher-fidelity interaction.
 
 \subsection{Objectives}

@@ -1,18 +1,12 @@
 \subsection{Conclusions}
 
 This project presented the design, implementation, and evaluation of a low-cost, modular haptic rendering system integrating a two-degree-of-freedom input device with a custom real-time simulation and visualisation framework.
-
 The system successfully achieved its primary objective of enabling bidirectional interaction between a user-operated device and a virtual environment, with real-time computation of interaction forces and feedback through actuator torque control. The architecture was designed to prioritise modularity and extensibility, allowing clear separation between hardware, communication, simulation, and rendering subsystems.
 
-Experimental results demonstrated that the system is capable of sustaining high update rates of approximately 1\,kHz, with negligible packet loss at higher transmission frequencies and low host-side processing latency. However, communication analysis revealed a consistent round-trip delay of approximately 15--16 ms, which dominates the closed-loop response and imposes a fundamental limitation on achievable haptic performance.
+Experimental evaluation showed that the system could sustain an effective 1\,kHz update rate with low host-side processing latency. The primary limitation was not computation but communication: a consistent 15--16 ms round-trip delay dominated the closed-loop response and bounded the achievable virtual stiffness.
+Within this constraint, stable contact interaction was achieved through a combination of architectural and control strategies, including snapshot-based communication and damping-based stabilisation. The resulting haptic feedback was usable and controllable, but not rigid or quantitatively force-calibrated, due to finite actuator torque, the absence of current sensing, belt slip under high load, and the limitation to single-axis actuation during final validation.
 
-Despite this latency, stable and controllable haptic interaction was achieved through a combination of architectural and control strategies. The use of snapshot-based communication ensured that the system operated on the most recent available data, mitigating the effects of burst-like packet delivery. In addition, the application of damping and torque rate limiting was critical in maintaining stability, preventing oscillatory behaviour during contact, and enabling sustained interaction with virtual constraints.
-
-Simulation and hardware validation confirmed that the system is capable of rendering physically consistent contact and constraint forces. The virtual coupling and proxy-based rendering approach produced expected unilateral contact behaviour and supported constrained motion along virtual surfaces. Hardware testing further demonstrated that stable interaction could be maintained under real-time conditions, even with communication variability and partial actuation.
-
-However, the results also highlight an important trade-off between stability and force fidelity. While the system remains stable under delayed feedback, the achievable virtual stiffness is limited, and contact forces exhibit a finite rise time rather than instantaneous response. This reduces the realism of high-speed or high-stiffness interactions, particularly for rigid contact scenarios.
-
-Overall, the project demonstrates that stable and usable haptic interaction can be achieved using low-cost hardware and a modular software architecture, even in the presence of significant communication latency. The findings emphasise that in practical systems, communication delay is often the dominant constraint, and that appropriate architectural and control design is essential to achieving stable performance.
+Overall, the project demonstrates that stable and usable haptic interaction can be achieved using low-cost hardware and a modular software architecture, even in the presence of significant communication latency. The findings emphasise that in practical systems, communication delay is often the dominant constraint, and that appropriate architectural and control design is essential for achieving stable performance.
 
 \subsection{Future Work}
 Several avenues for future development have been identified to improve system performance, fidelity, and extensibility.

@@ -1,6 +1,7 @@
 This section describes the system design and realised implementation, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
 
-The system is designed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost prototype. Stable haptic interaction requires high update rates (approximately 1\,kHz) and low end-to-end latency; %Mentioned a few times already
+The system is designed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost prototype. Stable haptic interaction requires high update rates and low end-to-end latency 
+(Section~\ref{sec:Literature Review}); 
  accordingly, the architecture assumes high-frequency embedded torque control and asynchronous host-side computation. Each major subsystem runs on its own thread and exchanges data through explicit message channels, reflecting a trade-off between cost, achievable force fidelity, and system stability, with particular emphasis on maintaining stable interaction under non-negligible communication latency.
 
 \subsection{System Overview}
@@ -39,7 +40,7 @@ The proposed system implements a bidirectional haptic interaction loop consistin
 	\label{fig:system_architecture}
 \end{figure}
 
-User motion is measured at the device joints and transmitted to the host in real time. The host computes interaction forces based on the virtual environment state, maps these to joint torque commands, and returns them to the device actuators, forming a closed-loop interaction. Time-critical control tasks are executed on the embedded system at high frequency, while simulation, rendering, and visualisation are performed asynchronously on the host.
+Time-critical control tasks are executed on the embedded system at high frequency, while simulation, rendering, and visualisation are performed asynchronously on the host.
 
 \subsection{Mechanical and Embedded Platform}
 
@@ -54,6 +55,13 @@ To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048)\
 For the belt-driven actuator, an additional AS5600 magnetic encoder\cite{ams_as5600_2018} is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
 
 A complete mechanical assembly, including component layout and link geometry, is provided in Appendix~\ref{app:mechanical_design}.
+The assembled prototype is shown in Fig.~\ref{fig:final_device}, illustrating the realised mechanical structure and actuator configuration.
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=0.28\textheight]{images/final_build_pic.jpg}
+	\caption{Final assembled 2-DOF haptic interface prototype. The system consists of a planar two-link mechanism with BLDC gimbal motors, magnetic encoders, and a belt-driven base joint for torque amplification.}
+	\label{fig:final_device}
+\end{figure}
 
 Embedded control runs on an STM32 Nucleo-G431RB\cite{NUCLEOG431RBProductSTMicroelectronics} platform with SimpleFOC Mini drivers and the SimpleFOC software stack~\cite{simplefoc2022}. Both actuators operate in torque-mode FOC~\cite{vasSensorlessVectorDirect1998}. A communication watchdog is implemented in firmware: if valid host commands are not received within the timeout window, output torques are forced to zero. Additionally, a torque slew-rate limiter is applied to each actuator command, constraining the rate of change of commanded torque to reduce high-frequency oscillations during rapid contact transitions.
 
