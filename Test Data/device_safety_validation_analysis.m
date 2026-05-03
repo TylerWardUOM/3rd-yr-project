@@ -1,0 +1,914 @@
+%% Device safety validation analysis
+% Analyzes host/device logs for:
+% - host-side torque saturation
+% - device-side torque limiting/clamping
+% - watchdog timeout behaviour
+% - command-to-device consistency
+% - applied torque slew-rate limiting
+
+clear; clc; close all;
+
+%% ------------------------------------------------------------------------
+% Configuration
+% -------------------------------------------------------------------------
+
+experimentType = "all";   % "all", "slew", "saturation", "watchdog"
+
+ignoreStart_s = 0.0;
+
+firmware_torque_slew_rate = 55.0;   % N.m/s
+firmware_torque_cap = 6.5;          % N.m
+dt_threshold = 1e-5;                % Ignore extremely small dt for slew estimate
+
+min_watchdog_duration = 0.05; % seconds
+
+archiveToTestData = false;
+archiveBaseName = 'simSaturation';
+
+scriptDir = fileparts(mfilename('fullpath'));
+if isempty(scriptDir)
+    scriptDir = pwd;
+end
+
+projectRoot = fileparts(scriptDir);
+inputDir = fullfile(projectRoot, 'build', 'Debug');
+archiveDir = scriptDir;
+
+% hostFile = fullfile(inputDir, 'device_timing.csv');
+% deviceFile = fullfile(inputDir, 'device_state_log.csv');
+
+hostFile = fullfile(scriptDir, 'watchdog_test_device_timing.csv');
+deviceFile = fullfile(scriptDir, 'watchdog_test_device_state_log.csv');
+
+if ~isfile(hostFile)
+    error('Missing input file: %s', hostFile);
+end
+
+if ~isfile(deviceFile)
+    error('Missing input file: %s', deviceFile);
+end
+
+fprintf('Loading logs from: %s\n', inputDir);
+
+%% ------------------------------------------------------------------------
+% Load tables
+% -------------------------------------------------------------------------
+
+Thost = readtable(hostFile, 'VariableNamingRule', 'preserve');
+Tdev  = readtable(deviceFile, 'VariableNamingRule', 'preserve');
+
+hostCols = {'tx_cmd_seq','ref_state_seq','t_tx_start_ns','t_rx_parse_ns', ...
+            'tau1_raw','tau2_raw','tau1','tau2','host_sat1','host_sat2'};
+
+devCols = {'rx_state_seq','state_mcu_us','t_rx_parse_ns','t_chunk_read_ns', ...
+           'applied_tau1','applied_tau2','watchdog_active','sat1','sat2'};
+
+Thost = forceNumericColumns(Thost, hostCols);
+Tdev  = forceNumericColumns(Tdev, devCols);
+
+%% ------------------------------------------------------------------------
+% Archive source logs
+% -------------------------------------------------------------------------
+
+if archiveToTestData
+    if isempty(strtrim(archiveBaseName))
+        error('archiveBaseName must not be empty when archiveToTestData is true.');
+    end
+
+    archivedHost = fullfile(archiveDir, sprintf('%s_device_timing.csv', archiveBaseName));
+    archivedDevice = fullfile(archiveDir, sprintf('%s_device_state_log.csv', archiveBaseName));
+
+    copyfile(hostFile, archivedHost, 'f');
+    copyfile(deviceFile, archivedDevice, 'f');
+
+    fprintf('\nArchived source logs to:\n');
+    fprintf('  %s\n', archivedHost);
+    fprintf('  %s\n', archivedDevice);
+end
+
+%% ------------------------------------------------------------------------
+% Validate required columns
+% -------------------------------------------------------------------------
+
+requiredHost = {'tau1_raw','tau2_raw','tau1','tau2'};
+requiredDev = {'applied_tau1','applied_tau2','watchdog_active','sat1','sat2'};
+
+assertColumns(Thost, requiredHost, 'host log');
+assertColumns(Tdev, requiredDev, 'device log');
+
+%% ------------------------------------------------------------------------
+% Filter invalid rows
+% -------------------------------------------------------------------------
+
+if ismember('tx_cmd_seq', Thost.Properties.VariableNames)
+    Thost = Thost(Thost.tx_cmd_seq > 0, :);
+end
+
+if ismember('rx_state_seq', Tdev.Properties.VariableNames)
+    Tdev = Tdev(Tdev.rx_state_seq > 0, :);
+end
+
+validHost = isfinite(Thost.tau1_raw) & isfinite(Thost.tau2_raw) & ...
+            isfinite(Thost.tau1) & isfinite(Thost.tau2);
+
+validDev = isfinite(Tdev.applied_tau1) & isfinite(Tdev.applied_tau2) & ...
+           isfinite(Tdev.watchdog_active) & ...
+           isfinite(Tdev.sat1) & isfinite(Tdev.sat2);
+
+fprintf('Removed %d invalid host rows.\n', sum(~validHost));
+fprintf('Removed %d invalid device rows.\n', sum(~validDev));
+
+Thost = Thost(validHost, :);
+Tdev = Tdev(validDev, :);
+
+if isempty(Thost)
+    error('No valid host rows remain.');
+end
+
+if isempty(Tdev)
+    error('No valid device rows remain.');
+end
+
+%% ------------------------------------------------------------------------
+% Shared time axes
+% -------------------------------------------------------------------------
+
+hostTimeCol = chooseTimeColumn(Thost, {'t_tx_start_ns','t_rx_parse_ns'});
+devTimeCol  = chooseTimeColumn(Tdev, {'t_rx_parse_ns','t_chunk_read_ns'});
+
+t0 = min([Thost.(hostTimeCol)(1), Tdev.(devTimeCol)(1)]);
+
+tHost = double(Thost.(hostTimeCol) - t0) * 1e-9;
+tDev  = double(Tdev.(devTimeCol) - t0) * 1e-9;
+
+% Ignore startup transient
+hostMask = tHost >= ignoreStart_s;
+devMask = tDev >= ignoreStart_s;
+
+Thost = Thost(hostMask, :);
+Tdev = Tdev(devMask, :);
+
+tHost = tHost(hostMask) - ignoreStart_s;
+tDev = tDev(devMask) - ignoreStart_s;
+
+if isempty(Thost)
+    error('No host rows remain after ignoring first %.2f s.', ignoreStart_s);
+end
+
+if isempty(Tdev)
+    error('No device rows remain after ignoring first %.2f s.', ignoreStart_s);
+end
+
+%% ------------------------------------------------------------------------
+% Host-side torque metrics
+% -------------------------------------------------------------------------
+
+if ismember('host_sat1', Thost.Properties.VariableNames)
+    hostSat1 = Thost.host_sat1 == 1;
+else
+    hostSat1 = abs(Thost.tau1_raw - Thost.tau1) > 1e-6;
+end
+
+if ismember('host_sat2', Thost.Properties.VariableNames)
+    hostSat2 = Thost.host_sat2 == 1;
+else
+    hostSat2 = abs(Thost.tau2_raw - Thost.tau2) > 1e-6;
+end
+
+hostSatAny = hostSat1 | hostSat2;
+
+rawTorqueMag = hypot(Thost.tau1_raw, Thost.tau2_raw);
+cmdTorqueMag = hypot(Thost.tau1, Thost.tau2);
+
+%% ------------------------------------------------------------------------
+% Device-side safety metrics
+% -------------------------------------------------------------------------
+
+% Important:
+% sat1/sat2 are interpreted as whatever the firmware logs.
+% If your firmware uses the old combined flag, this means rate-limited OR clamped.
+% If your firmware is updated, this should ideally mean only torque-clamped.
+deviceSat1 = Tdev.sat1 == 1;
+deviceSat2 = Tdev.sat2 == 1;
+deviceSatAny = deviceSat1 | deviceSat2;
+
+watchdogActive = Tdev.watchdog_active == 1;
+
+devAppliedMag = hypot(Tdev.applied_tau1, Tdev.applied_tau2);
+
+%% ------------------------------------------------------------------------
+% Sign alignment
+% -------------------------------------------------------------------------
+
+[devTau1Aligned, devTau2Aligned, useInvertedSign1, useInvertedSign2] = ...
+    alignDeviceTorqueSign(Thost, Tdev);
+
+alignedAppliedMag = hypot(devTau1Aligned, devTau2Aligned);
+
+%% ------------------------------------------------------------------------
+% Host/device sequence-matched comparison
+% -------------------------------------------------------------------------
+
+merged = buildMatchedTable(Thost, Tdev, devTau1Aligned, devTau2Aligned, ...
+                           hostSatAny, deviceSatAny);
+
+%% ------------------------------------------------------------------------
+% Slew-rate analysis using host-side receive timestamps
+% -------------------------------------------------------------------------
+
+[slew1, slew2, slewAny] = estimateJointSlew(tDev, devTau1Aligned, devTau2Aligned, dt_threshold);
+
+%% ------------------------------------------------------------------------
+% Slew-rate analysis using MCU timestamps
+% -------------------------------------------------------------------------
+
+if ismember('state_mcu_us', Tdev.Properties.VariableNames) && height(Tdev) >= 2
+    tDev_mcu = double(Tdev.state_mcu_us - Tdev.state_mcu_us(1)) * 1e-6;
+    [slew1_mcu, slew2_mcu, slewAny_mcu] = estimateJointSlew(tDev_mcu, devTau1Aligned, devTau2Aligned, dt_threshold);
+else
+    tDev_mcu = [];
+    slew1_mcu = [];
+    slew2_mcu = [];
+    slewAny_mcu = [];
+end
+
+% Prefer MCU-timestamped slew for firmware comparison when available
+if ~isempty(slewAny_mcu)
+    slewForSummary = slewAny_mcu;
+else
+    slewForSummary = slewAny;
+end
+
+%% ------------------------------------------------------------------------
+% Torque cap and saturation diagnostics
+% -------------------------------------------------------------------------
+
+max_tau1 = max(abs(devTau1Aligned), [], 'omitnan');
+max_tau2 = max(abs(devTau2Aligned), [], 'omitnan');
+
+empirical_cap1 = topTailMedian(abs(devTau1Aligned));
+empirical_cap2 = topTailMedian(abs(devTau2Aligned));
+empirical_cap_combined = topTailMedian(alignedAppliedMag);
+
+cap_tol = max(1e-2, 0.02 * firmware_torque_cap);
+
+nearCap1 = abs(devTau1Aligned) >= firmware_torque_cap - cap_tol;
+nearCap2 = abs(devTau2Aligned) >= firmware_torque_cap - cap_tol;
+nearCapAny = nearCap1 | nearCap2;
+
+sat_false_negative = sum(nearCapAny & ~deviceSatAny);
+sat_false_positive = sum(deviceSatAny & ~nearCapAny);
+sat_mismatch_count = sat_false_negative + sat_false_positive;
+
+%% ------------------------------------------------------------------------
+% Rate-limited sample detection from applied torque slew
+% -------------------------------------------------------------------------
+
+rate_limited_full = false(size(alignedAppliedMag));
+
+validSlew = slewForSummary(isfinite(slewForSummary));
+if isempty(validSlew)
+    estimated_slew_limit = NaN;
+else
+    estimated_slew_limit = prctile(validSlew, 99);
+    rate_limit_thresh = 0.9 * firmware_torque_slew_rate;
+
+    if numel(slewForSummary) == numel(alignedAppliedMag) - 1
+        rate_limited_full(2:end) = slewForSummary >= rate_limit_thresh;
+    else
+        n = min(numel(slewForSummary), numel(alignedAppliedMag) - 1);
+        rate_limited_full(2:n+1) = slewForSummary(1:n) >= rate_limit_thresh;
+    end
+end
+
+rate_limited_count = sum(rate_limited_full);
+rate_limited_not_sat = sum(rate_limited_full & ~deviceSatAny);
+rate_limited_and_sat = sum(rate_limited_full & deviceSatAny);
+
+%% ------------------------------------------------------------------------
+% Watchdog windows
+% -------------------------------------------------------------------------
+
+[wdStartT, wdEndT, wdDur] = getFlagWindows(tDev, watchdogActive);
+% Keep only events longer than threshold
+keepMask = wdDur >= min_watchdog_duration;
+
+wdStartT_filt = wdStartT(keepMask);
+wdEndT_filt   = wdEndT(keepMask);
+watchdogFiltered = false(size(tDev));
+
+for k = 1:numel(wdStartT_filt)
+    idx = tDev >= wdStartT_filt(k) & tDev <= wdEndT_filt(k);
+    watchdogFiltered(idx) = true;
+end
+watchdog_event_count = numel(wdDur);
+watchdog_total_active_time = sum(wdDur, 'omitnan');
+
+if watchdog_event_count > 0
+    watchdog_mean_duration = mean(wdDur, 'omitnan');
+    watchdog_median_duration = median(wdDur, 'omitnan');
+    watchdog_max_duration = max(wdDur, [], 'omitnan');
+else
+    watchdog_mean_duration = NaN;
+    watchdog_median_duration = NaN;
+    watchdog_max_duration = NaN;
+end
+
+%% ------------------------------------------------------------------------
+% Console summary
+% -------------------------------------------------------------------------
+
+fprintf('\n=== Host-side Torque Saturation ===\n');
+fprintf('Samples: %d\n', height(Thost));
+fprintf('Joint 1 saturation rate: %.3f %%\n', 100 * mean(hostSat1));
+fprintf('Joint 2 saturation rate: %.3f %%\n', 100 * mean(hostSat2));
+fprintf('Any-joint saturation rate: %.3f %%\n', 100 * mean(hostSatAny));
+fprintf('Mean |tau_raw|: %.3f N.m\n', mean(rawTorqueMag, 'omitnan'));
+fprintf('Mean |tau_clamped|: %.3f N.m\n', mean(cmdTorqueMag, 'omitnan'));
+fprintf('Max |tau_raw|: %.3f N.m\n', max(rawTorqueMag, [], 'omitnan'));
+fprintf('Max |tau_clamped|: %.3f N.m\n', max(cmdTorqueMag, [], 'omitnan'));
+
+fprintf('\n=== Device-side Applied Torque and Safety ===\n');
+fprintf('Samples: %d\n', height(Tdev));
+fprintf('Watchdog active rate: %.3f %%\n', 100 * mean(watchdogActive));
+fprintf('Joint 1 device sat/limit rate: %.3f %%\n', 100 * mean(deviceSat1));
+fprintf('Joint 2 device sat/limit rate: %.3f %%\n', 100 * mean(deviceSat2));
+fprintf('Any-joint device sat/limit rate: %.3f %%\n', 100 * mean(deviceSatAny));
+fprintf('Mean |applied tau|: %.3f N.m\n', mean(devAppliedMag, 'omitnan'));
+fprintf('Max |applied tau1|: %.3f N.m\n', max_tau1);
+fprintf('Max |applied tau2|: %.3f N.m\n', max_tau2);
+fprintf('Detected sign inversion joint 1: %d\n', useInvertedSign1);
+fprintf('Detected sign inversion joint 2: %d\n', useInvertedSign2);
+
+fprintf('\n=== Slew-Rate Evidence ===\n');
+if ~isempty(slewForSummary)
+    fprintf('Max joint slew: %.3f N.m/s\n', max(slewForSummary, [], 'omitnan'));
+    fprintf('Median joint slew: %.3f N.m/s\n', median(slewForSummary, 'omitnan'));
+    fprintf('95th percentile joint slew: %.3f N.m/s\n', prctile(slewForSummary(isfinite(slewForSummary)), 95));
+    fprintf('99th percentile joint slew: %.3f N.m/s\n', estimated_slew_limit);
+    fprintf('Firmware configured slew limit: %.3f N.m/s\n', firmware_torque_slew_rate);
+    fprintf('Rate-limited sample count: %d\n', rate_limited_count);
+    fprintf('Rate-limited samples also flagged sat/limit: %d\n', rate_limited_and_sat);
+else
+    fprintf('Not enough samples to estimate slew rate.\n');
+end
+
+fprintf('\n=== Torque Cap / Saturation Check ===\n');
+fprintf('Firmware torque cap: %.3f N.m\n', firmware_torque_cap);
+fprintf('Empirical combined top-tail cap estimate: %.3f N.m\n', empirical_cap_combined);
+fprintf('Empirical joint 1 top-tail cap estimate: %.3f N.m\n', empirical_cap1);
+fprintf('Empirical joint 2 top-tail cap estimate: %.3f N.m\n', empirical_cap2);
+fprintf('Near-cap tolerance: %.3f N.m\n', cap_tol);
+fprintf('Saturation mismatches: %d total, fn=%d, fp=%d\n', ...
+    sat_mismatch_count, sat_false_negative, sat_false_positive);
+
+fprintf('\n=== Host vs Device Agreement ===\n');
+if ~isempty(merged)
+    fprintf('Matched cycles: %d\n', height(merged));
+    fprintf('Mean abs aligned torque error joint 1: %.4f N.m\n', mean(merged.abs_err1_aligned, 'omitnan'));
+    fprintf('Mean abs aligned torque error joint 2: %.4f N.m\n', mean(merged.abs_err2_aligned, 'omitnan'));
+    fprintf('Mean abs aligned torque magnitude error: %.4f N.m\n', mean(merged.abs_err_mag_aligned, 'omitnan'));
+    fprintf('Max abs aligned torque magnitude error: %.4f N.m\n', max(merged.abs_err_mag_aligned, [], 'omitnan'));
+else
+    fprintf('No sequence-matched host/device rows were found.\n');
+end
+
+fprintf('\n=== Watchdog Behaviour ===\n');
+if watchdog_event_count > 0
+    fprintf('Watchdog event count: %d\n', watchdog_event_count);
+    fprintf('Watchdog active rate: %.3f %%\n', 100 * mean(watchdogActive));
+    fprintf('Total active time: %.3f s\n', watchdog_total_active_time);
+    fprintf('Mean duration: %.3f s\n', watchdog_mean_duration);
+    fprintf('Median duration: %.3f s\n', watchdog_median_duration);
+    fprintf('Max duration: %.3f s\n', watchdog_max_duration);
+else
+    fprintf('Watchdog did not activate after first %.1f s.\n', ignoreStart_s);
+end
+
+%% ------------------------------------------------------------------------
+% Report summary struct
+% -------------------------------------------------------------------------
+
+reportSummary = struct();
+
+reportSummary.ignore_start_s = ignoreStart_s;
+
+reportSummary.host_samples = height(Thost);
+reportSummary.device_samples = height(Tdev);
+
+reportSummary.host_sat_any_pct = 100 * mean(hostSatAny);
+reportSummary.device_watchdog_pct = 100 * mean(watchdogActive);
+reportSummary.device_sat_any_pct = 100 * mean(deviceSatAny);
+
+reportSummary.mean_raw_tau_mag = mean(rawTorqueMag, 'omitnan');
+reportSummary.mean_cmd_tau_mag = mean(cmdTorqueMag, 'omitnan');
+reportSummary.mean_applied_tau_mag = mean(devAppliedMag, 'omitnan');
+
+reportSummary.max_tau1 = max_tau1;
+reportSummary.max_tau2 = max_tau2;
+
+reportSummary.firmware_torque_cap = firmware_torque_cap;
+reportSummary.empirical_torque_cap_combined = empirical_cap_combined;
+reportSummary.empirical_cap1 = empirical_cap1;
+reportSummary.empirical_cap2 = empirical_cap2;
+
+reportSummary.sat_mismatch_count = sat_mismatch_count;
+reportSummary.sat_false_negative = sat_false_negative;
+reportSummary.sat_false_positive = sat_false_positive;
+
+reportSummary.firmware_torque_slew_rate = firmware_torque_slew_rate;
+
+if ~isempty(slewForSummary)
+    reportSummary.max_slew_any_joint = max(slewForSummary, [], 'omitnan');
+    reportSummary.median_slew_any = median(slewForSummary, 'omitnan');
+    reportSummary.p95_slew_any = prctile(slewForSummary(isfinite(slewForSummary)), 95);
+    reportSummary.estimated_slew_limit_99pct = estimated_slew_limit;
+else
+    reportSummary.max_slew_any_joint = NaN;
+    reportSummary.median_slew_any = NaN;
+    reportSummary.p95_slew_any = NaN;
+    reportSummary.estimated_slew_limit_99pct = NaN;
+end
+
+reportSummary.rate_limited_count = rate_limited_count;
+reportSummary.rate_limited_not_sat = rate_limited_not_sat;
+reportSummary.rate_limited_and_sat = rate_limited_and_sat;
+
+reportSummary.use_inverted_sign_joint1 = useInvertedSign1;
+reportSummary.use_inverted_sign_joint2 = useInvertedSign2;
+
+if ~isempty(merged)
+    reportSummary.matched_cycles = height(merged);
+    reportSummary.mean_abs_tau1_aligned_error = mean(merged.abs_err1_aligned, 'omitnan');
+    reportSummary.mean_abs_tau2_aligned_error = mean(merged.abs_err2_aligned, 'omitnan');
+    reportSummary.mean_abs_tau_mag_aligned_error = mean(merged.abs_err_mag_aligned, 'omitnan');
+else
+    reportSummary.matched_cycles = 0;
+    reportSummary.mean_abs_tau1_aligned_error = NaN;
+    reportSummary.mean_abs_tau2_aligned_error = NaN;
+    reportSummary.mean_abs_tau_mag_aligned_error = NaN;
+end
+
+reportSummary.watchdog_event_count = watchdog_event_count;
+reportSummary.watchdog_total_active_time_s = watchdog_total_active_time;
+reportSummary.watchdog_mean_duration_s = watchdog_mean_duration;
+reportSummary.watchdog_median_duration_s = watchdog_median_duration;
+reportSummary.watchdog_max_duration_s = watchdog_max_duration;
+
+disp(reportSummary);
+
+%% ------------------------------------------------------------------------
+% Write concise experiment summary
+% -------------------------------------------------------------------------
+
+experimentType = lower(string(experimentType));
+
+switch experimentType
+    case "slew"
+        txt = sprintf([ ...
+            'SLEW SUMMARY\n' ...
+            'Max joint slew: %.3f N.m/s\n' ...
+            '95th percentile slew: %.3f N.m/s\n' ...
+            'Median slew: %.3f N.m/s\n' ...
+            'Firmware slew limit: %.3f N.m/s\n' ...
+            'Rate-limited sample count: %d\n'], ...
+            reportSummary.max_slew_any_joint, ...
+            reportSummary.p95_slew_any, ...
+            reportSummary.median_slew_any, ...
+            reportSummary.firmware_torque_slew_rate, ...
+            reportSummary.rate_limited_count);
+
+        writeSummary(archiveDir, 'results_slew_summary.txt', txt);
+
+    case "saturation"
+        txt = sprintf([ ...
+            'SATURATION SUMMARY\n' ...
+            'Firmware torque cap: %.3f N.m\n' ...
+            'Empirical combined cap estimate: %.3f N.m\n' ...
+            'Empirical cap j1: %.3f N.m\n' ...
+            'Empirical cap j2: %.3f N.m\n' ...
+            'Max |tau1|: %.3f N.m\n' ...
+            'Max |tau2|: %.3f N.m\n' ...
+            'Device sat/limit rate: %.3f %%\n' ...
+            'Saturation mismatches: %d total, fn=%d, fp=%d\n'], ...
+            reportSummary.firmware_torque_cap, ...
+            reportSummary.empirical_torque_cap_combined, ...
+            reportSummary.empirical_cap1, ...
+            reportSummary.empirical_cap2, ...
+            reportSummary.max_tau1, ...
+            reportSummary.max_tau2, ...
+            reportSummary.device_sat_any_pct, ...
+            reportSummary.sat_mismatch_count, ...
+            reportSummary.sat_false_negative, ...
+            reportSummary.sat_false_positive);
+
+        writeSummary(archiveDir, 'results_saturation_summary.txt', txt);
+
+    case "watchdog"
+        if reportSummary.watchdog_event_count > 0
+            txt = sprintf([ ...
+                'WATCHDOG SUMMARY\n' ...
+                'Watchdog active rate: %.3f %%\n' ...
+                'Events detected: %d\n' ...
+                'Mean duration: %.3f s\n' ...
+                'Median duration: %.3f s\n' ...
+                'Max duration: %.3f s\n' ...
+                'Total active time: %.3f s\n'], ...
+                reportSummary.device_watchdog_pct, ...
+                reportSummary.watchdog_event_count, ...
+                reportSummary.watchdog_mean_duration_s, ...
+                reportSummary.watchdog_median_duration_s, ...
+                reportSummary.watchdog_max_duration_s, ...
+                reportSummary.watchdog_total_active_time_s);
+        else
+            txt = sprintf('WATCHDOG SUMMARY\nWatchdog did not activate in this run.\n');
+        end
+
+        writeSummary(archiveDir, 'results_watchdog_summary.txt', txt);
+
+    otherwise
+        txt = sprintf([ ...
+            'COMBINED SUMMARY\n' ...
+            'Host any-sat: %.3f %%\n' ...
+            'Device watchdog active: %.3f %%\n' ...
+            'Device sat/limit: %.3f %%\n' ...
+            'Firmware torque cap: %.3f N.m\n' ...
+            'Empirical cap combined: %.3f N.m\n' ...
+            'Empirical cap j1: %.3f N.m\n' ...
+            'Empirical cap j2: %.3f N.m\n' ...
+            'Max joint slew: %.3f N.m/s\n' ...
+            'Firmware slew limit: %.3f N.m/s\n' ...
+            'Sat mismatches: %d\n' ...
+            'Rate-limited count: %d\n' ...
+            'Watchdog events: %d\n'], ...
+            reportSummary.host_sat_any_pct, ...
+            reportSummary.device_watchdog_pct, ...
+            reportSummary.device_sat_any_pct, ...
+            reportSummary.firmware_torque_cap, ...
+            reportSummary.empirical_torque_cap_combined, ...
+            reportSummary.empirical_cap1, ...
+            reportSummary.empirical_cap2, ...
+            reportSummary.max_slew_any_joint, ...
+            reportSummary.firmware_torque_slew_rate, ...
+            reportSummary.sat_mismatch_count, ...
+            reportSummary.rate_limited_count, ...
+            reportSummary.watchdog_event_count);
+
+        writeSummary(archiveDir, 'results_combined_summary.txt', txt);
+end
+
+fprintf('\nWrote concise summary file to: %s\n', archiveDir);
+
+%% ------------------------------------------------------------------------
+% Plots
+% -------------------------------------------------------------------------
+
+figure('Name', 'Device Safety Validation - Command and Applied Torque', 'Color', 'w');
+
+subplot(2, 1, 1);
+plot(tHost, Thost.tau1_raw, '-', 'LineWidth', 1.0); hold on;
+plot(tHost, Thost.tau1, '-', 'LineWidth', 1.2);
+% plot(tHost, Thost.tau2_raw, '--', 'LineWidth', 1.0);
+% plot(tHost, Thost.tau2, '--', 'LineWidth', 1.2);
+grid on;
+xlabel('Time after startup removed (s)');
+ylabel('Torque (N.m)');
+title('Host torque command');
+legend({'tau1 raw', 'tau1 clamped'}, 'Location', 'best');
+
+subplot(2, 1, 2);
+plot(tDev, Tdev.applied_tau1, '-', 'LineWidth', 1.0); hold on;
+plot(tDev, Tdev.applied_tau2, '-', 'LineWidth', 1.0);
+plot(tDev, devTau1Aligned, '--', 'LineWidth', 1.2);
+plot(tDev, devTau2Aligned, '--', 'LineWidth', 1.2);
+grid on;
+xlabel('Time after startup removed (s)');
+ylabel('Applied torque (N.m)');
+title('Device applied torque');
+legend({'raw tau1', 'raw tau2', 'aligned tau1', 'aligned tau2'}, 'Location', 'best');
+
+figure('Name', 'Device Safety Validation - Safety Flags', 'Color', 'w');
+
+subplot(2, 1, 1);
+stairs(tDev, double(watchdogActive), 'LineWidth', 1.2); hold on;
+stairs(tDev, double(deviceSatAny), 'LineWidth', 1.2);
+stairs(tHost, double(hostSatAny), 'LineWidth', 1.2);
+ylim([-0.1, 1.1]);
+grid on;
+xlabel('Time after startup removed (s)');
+ylabel('Flag');
+title('Safety flags');
+legend({'watchdog', 'device sat/limit', 'host saturation'}, 'Location', 'best');
+
+subplot(2, 1, 2);
+plot(tHost, abs(Thost.tau1_raw - Thost.tau1), 'LineWidth', 1.0); hold on;
+plot(tHost, abs(Thost.tau2_raw - Thost.tau2), 'LineWidth', 1.0);
+grid on;
+xlabel('Time after startup removed (s)');
+ylabel('|raw - clamped| (N.m)');
+title('Host saturation magnitude');
+legend({'joint 1', 'joint 2'}, 'Location', 'best');
+
+figure('Name', 'Device Safety Validation - Agreement and Slew', 'Color', 'w');
+
+subplot(2, 2, 1);
+if ~isempty(merged)
+    plot(merged.seq, merged.abs_err1_aligned, 'LineWidth', 1.0); hold on;
+    plot(merged.seq, merged.abs_err2_aligned, 'LineWidth', 1.0);
+    grid on;
+    xlabel('State sequence');
+    ylabel('|host - device| (N.m)');
+    title('Aligned host/device torque error');
+    legend({'joint 1', 'joint 2'}, 'Location', 'best');
+else
+    axis off;
+    text(0.1, 0.5, 'No matched host/device sequence rows found.', 'FontSize', 11);
+end
+
+subplot(2, 2, 2);
+scatter(rawTorqueMag, cmdTorqueMag, 8, 'filled');
+grid on;
+xlabel('|tau raw| (N.m)');
+ylabel('|tau clamped| (N.m)');
+title('Host command magnitude compression');
+
+subplot(2, 2, 3);
+if ~isempty(slew1)
+    plot(tDev(2:end), slew1, 'LineWidth', 1.0); hold on;
+    plot(tDev(2:end), slew2, 'LineWidth', 1.0);
+    yline(firmware_torque_slew_rate, '--', 'LineWidth', 1.0);
+    grid on;
+    xlabel('Time after startup removed (s)');
+    ylabel('|d tau/dt| (N.m/s)');
+    title('Estimated applied torque slew rate');
+    legend({'joint 1', 'joint 2', 'firmware limit'}, 'Location', 'best');
+else
+    axis off;
+    text(0.1, 0.5, 'Not enough samples to estimate slew rate.', 'FontSize', 11);
+end
+
+subplot(2, 2, 4);
+plot(tDev, abs(devTau1Aligned), 'LineWidth', 1.0); hold on;
+plot(tDev, abs(devTau2Aligned), 'LineWidth', 1.0);
+yline(firmware_torque_cap, '--', 'LineWidth', 1.0);
+grid on;
+xlabel('Time after startup removed (s)');
+ylabel('|applied torque| (N.m)');
+title('Applied torque vs firmware torque cap');
+legend({'joint 1', 'joint 2', 'firmware cap'}, 'Location', 'best');
+
+figure('Name', 'Device Safety Validation - Watchdog Focus', 'Color', 'w');
+
+subplot(2, 1, 1);
+stairs(tDev, double(watchdogFiltered), 'LineWidth', 1.5);
+ylim([-0.1, 1.1]);
+grid on;
+xlabel('Time after startup removed (s)');
+ylabel('Watchdog active');
+title('Watchdog activity');
+
+subplot(2, 1, 2);
+plot(tDev, devAppliedMag, 'LineWidth', 1.2);
+grid on;
+xlabel('Time after startup removed (s)');
+ylabel('|applied torque| (N.m)');
+title('Applied torque magnitude during watchdog test');
+
+%% ------------------------------------------------------------------------
+% Improved Slew-Rate Plot: Distribution + Limit Overlay
+% -------------------------------------------------------------------------
+
+figure('Name', 'Torque Slew Rate Distribution', 'Color', 'w');
+
+% Use the same slew data used for the console/report summary.
+slewPlot = slewForSummary;
+slewPlot = slewPlot(isfinite(slewPlot));
+
+if isempty(slewPlot)
+    axis off;
+    text(0.1, 0.5, 'Not enough valid samples to estimate slew rate.', ...
+        'FontSize', 11);
+else
+    % Histogram
+    histogram(slewPlot, 80);
+    hold on;
+
+    % Firmware limit and percentiles
+    p95_slew = prctile(slewPlot, 95);
+    p99_slew = prctile(slewPlot, 99);
+    max_slew = max(slewPlot, [], 'omitnan');
+
+    xline(firmware_torque_slew_rate, 'r--', ...
+        sprintf('Firmware limit = %.1f N.m/s', firmware_torque_slew_rate), ...
+        'LineWidth', 2.3, ...
+        'LabelOrientation', 'horizontal', ...
+        'LabelVerticalAlignment', 'bottom');
+
+    xline(p95_slew, 'k--', ...
+        sprintf('95th = %.2f', p95_slew), ...
+        'LineWidth', 1.2, ...
+        'LabelOrientation', 'horizontal', ...
+        'LabelVerticalAlignment', 'middle');
+
+    xline(p99_slew, 'b--', ...
+        sprintf('99th = %.2f', p99_slew), ...
+        'LineWidth', 1.2, ...
+        'LabelOrientation', 'horizontal', ...
+        'LabelVerticalAlignment', 'top');
+
+    grid on;
+    xlabel('Applied torque slew rate |dτ/dt| (N·m/s)');
+set(gca, 'YScale', 'log');
+ylabel('Sample count (log scale)');
+title('Applied Torque Slew-Rate Distribution');
+
+    subtitle(sprintf('Median = %.2f N.m/s, 95th = %.2f N.m/s, 99th = %.2f N.m/s, max = %.2f N.m/s', ...
+        median(slewPlot, 'omitnan'), p95_slew, p99_slew, max_slew));
+
+    legend({'Slew samples', 'Firmware limit', '95th percentile', '99th percentile'}, ...
+        'Location', 'best');
+end
+
+%% ========================================================================
+% Local helper functions
+% ========================================================================
+
+function T = forceNumericColumns(T, cols)
+    for k = 1:numel(cols)
+        c = cols{k};
+        if ismember(c, T.Properties.VariableNames) && ~isnumeric(T.(c))
+            T.(c) = str2double(string(T.(c)));
+        end
+    end
+end
+
+function assertColumns(T, cols, logName)
+    for k = 1:numel(cols)
+        if ~ismember(cols{k}, T.Properties.VariableNames)
+            error('%s is missing required column: %s', logName, cols{k});
+        end
+    end
+end
+
+function timeCol = chooseTimeColumn(T, candidates)
+    for k = 1:numel(candidates)
+        if ismember(candidates{k}, T.Properties.VariableNames)
+            timeCol = candidates{k};
+            return;
+        end
+    end
+
+    error('No valid timestamp column found.');
+end
+
+function [devTau1Aligned, devTau2Aligned, useInv1, useInv2] = alignDeviceTorqueSign(Thost, Tdev)
+    devTau1Aligned = Tdev.applied_tau1;
+    devTau2Aligned = Tdev.applied_tau2;
+
+    useInv1 = false;
+    useInv2 = false;
+
+    if ismember('ref_state_seq', Thost.Properties.VariableNames) && ...
+       ismember('rx_state_seq', Tdev.Properties.VariableNames)
+
+        [~, idxHost, idxDev] = intersect(Thost.ref_state_seq, Tdev.rx_state_seq, 'stable');
+
+        if isempty(idxHost)
+            n = min(height(Thost), height(Tdev));
+            idxHost = 1:n;
+            idxDev = 1:n;
+        end
+    else
+        n = min(height(Thost), height(Tdev));
+        idxHost = 1:n;
+        idxDev = 1:n;
+    end
+
+    hostTau1 = Thost.tau1(idxHost);
+    hostTau2 = Thost.tau2(idxHost);
+
+    devTau1 = Tdev.applied_tau1(idxDev);
+    devTau2 = Tdev.applied_tau2(idxDev);
+
+    sameErr1 = mean((hostTau1 - devTau1).^2, 'omitnan');
+    sameErr2 = mean((hostTau2 - devTau2).^2, 'omitnan');
+
+    invErr1 = mean((hostTau1 + devTau1).^2, 'omitnan');
+    invErr2 = mean((hostTau2 + devTau2).^2, 'omitnan');
+
+    useInv1 = invErr1 < sameErr1;
+    useInv2 = invErr2 < sameErr2;
+
+    if useInv1
+        devTau1Aligned = -devTau1Aligned;
+    end
+
+    if useInv2
+        devTau2Aligned = -devTau2Aligned;
+    end
+end
+
+function merged = buildMatchedTable(Thost, Tdev, devTau1Aligned, devTau2Aligned, hostSatAny, deviceSatAny)
+    merged = table();
+
+    if ~(ismember('ref_state_seq', Thost.Properties.VariableNames) && ...
+         ismember('rx_state_seq', Tdev.Properties.VariableNames))
+        return;
+    end
+
+    [commonSeq, idxHost, idxDev] = intersect(Thost.ref_state_seq, Tdev.rx_state_seq, 'stable');
+
+    if isempty(commonSeq)
+        return;
+    end
+
+    merged.seq = commonSeq;
+
+    merged.host_tau1 = Thost.tau1(idxHost);
+    merged.host_tau2 = Thost.tau2(idxHost);
+
+    merged.dev_tau1_aligned = devTau1Aligned(idxDev);
+    merged.dev_tau2_aligned = devTau2Aligned(idxDev);
+
+    merged.host_sat = hostSatAny(idxHost);
+    merged.dev_sat = deviceSatAny(idxDev);
+
+    merged.abs_err1_aligned = abs(merged.host_tau1 - merged.dev_tau1_aligned);
+    merged.abs_err2_aligned = abs(merged.host_tau2 - merged.dev_tau2_aligned);
+
+    hostMag = hypot(merged.host_tau1, merged.host_tau2);
+    devMag = hypot(merged.dev_tau1_aligned, merged.dev_tau2_aligned);
+
+    merged.abs_err_mag_aligned = abs(hostMag - devMag);
+end
+
+function [slew1, slew2, slewAny] = estimateJointSlew(t, tau1, tau2, dt_threshold)
+    if numel(t) < 2
+        slew1 = [];
+        slew2 = [];
+        slewAny = [];
+        return;
+    end
+
+    dt = diff(t);
+    dt(dt <= dt_threshold) = NaN;
+
+    slew1 = abs(diff(tau1)) ./ dt;
+    slew2 = abs(diff(tau2)) ./ dt;
+
+    slewAny = max(slew1, slew2);
+end
+
+function cap = topTailMedian(x)
+    x = x(isfinite(x));
+
+    if isempty(x)
+        cap = NaN;
+        return;
+    end
+
+    p95 = prctile(x, 95);
+    tail = x(x >= p95);
+
+    if isempty(tail)
+        cap = max(x);
+    else
+        cap = median(tail);
+    end
+end
+
+function [startT, endT, dur] = getFlagWindows(t, flag)
+    flag = logical(flag(:));
+
+    if isempty(flag)
+        startT = [];
+        endT = [];
+        dur = [];
+        return;
+    end
+
+    edges = diff([false; flag; false]);
+
+    startIdx = find(edges == 1);
+    endIdx = find(edges == -1) - 1;
+
+    startT = t(startIdx);
+    endT = t(endIdx);
+    dur = endT - startT;
+end
+
+function writeSummary(archiveDir, fname, txt)
+    path = fullfile(archiveDir, fname);
+
+    fid = fopen(path, 'w');
+
+    if fid < 0
+        warning('Could not open %s for writing.', path);
+        return;
+    end
+
+    fprintf(fid, '%s', txt);
+    fclose(fid);
+
+    fprintf('\nWrote summary: %s\n', path);
+end

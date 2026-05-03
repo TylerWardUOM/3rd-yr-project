@@ -42,7 +42,7 @@ Baud & Serial
 
 Protocol Summary
 ----------------
-- Device -> Host (State packet): [header][seq][mcu_ts][q1][q2][checksum]
+- Device -> Host (State packet): [header][seq][mcu_ts][q1][q2][applied_tau1][applied_tau2][watchdog][sat1][sat2][checksum]
 - Host -> Device (Torque cmd): [header][cmd_seq][ref_seq][tau1][tau2][checksum]
 (See `Packets.h` and `DeviceComms.*` for precise byte layouts and endianness.)
 

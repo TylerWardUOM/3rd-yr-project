@@ -1,0 +1,13 @@
+COMBINED SUMMARY
+Host any-sat: 0.000 %
+Device watchdog active: 6.810 %
+Device sat/limit: 0.000 %
+Firmware torque cap: 6.500 N.m
+Empirical cap combined: 3.153 N.m
+Empirical cap j1: 2.831 N.m
+Empirical cap j2: 1.415 N.m
+Max joint slew: 55.010 N.m/s
+Firmware slew limit: 55.000 N.m/s
+Sat mismatches: 0
+Rate-limited count: 1367
+Watchdog events: 259

@@ -1,6 +1,8 @@
 #include "hardware/DeviceAdapter.h"
 #include <iostream>
 #include <chrono>
+#include <cmath>
+
 
 #if (DEBUG_DEVICE_ADAPTER  == 0)
 
@@ -16,7 +18,28 @@
 #define DEBUG_DEVICE_TIMING_PRINT       0
 #define DEBUG_DEVICE_TIMING_RATE        500
 
+#else
+
+#define DEBUG_DEVICE_ANGLE_PRINT        1
+#define DEBUG_DEVICE_ANGLE_RATE         100
+
+#define DEBUG_DEVICE_TORQUE_PRINT       1
+#define DEBUG_DEVICE_TORQUE_RATE        100
+
+#define DEBUG_DEVICE_PARSE_PRINT        1
+#define DEBUG_DEVICE_PARSE_RATE         100
+
+#define DEBUG_DEVICE_TIMING_PRINT       1
+#define DEBUG_DEVICE_TIMING_RATE        500
+
 #endif
+
+// Watchdog timeout injection test controls (host TX pause).
+// Set ENABLE to 1 to pause outgoing torque packets once during runtime.
+#define WATCHDOG_TX_PAUSE_ENABLE        0
+#define WATCHDOG_TX_PAUSE_START_S       8.0
+#define WATCHDOG_TX_PAUSE_MS            300.0
+
 
 static uint16_t computeChecksum(const void* data, size_t len)
 {
@@ -32,6 +55,73 @@ static uint64_t nowNs()
     return std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::steady_clock::now().time_since_epoch()
     ).count();
+}
+
+struct WatchdogTxPauseConfig {
+    bool enabled = false;
+    bool active = false;
+    bool completed = false;
+    bool announced = false;
+    bool startTimeCaptured = false;
+    double baseTimeSec = 0.0;
+    double startSec = 0.0;
+    double durationSec = 0.0;
+    double endSec = 0.0;
+};
+
+static WatchdogTxPauseConfig loadWatchdogTxPauseConfig()
+{
+    WatchdogTxPauseConfig cfg{};
+
+    if (!WATCHDOG_TX_PAUSE_ENABLE || !(WATCHDOG_TX_PAUSE_MS > 0.0)) {
+        return cfg;
+    }
+
+    cfg.enabled = true;
+    cfg.startSec = WATCHDOG_TX_PAUSE_START_S;
+    cfg.durationSec = WATCHDOG_TX_PAUSE_MS / 1000.0;
+    return cfg;
+}
+
+static bool shouldPauseTorqueTxForWatchdog(WatchdogTxPauseConfig& cfg, double timeNow)
+{
+    if (!cfg.enabled || cfg.completed) {
+        return false;
+    }
+
+    if (!cfg.startTimeCaptured) {
+        cfg.baseTimeSec = timeNow;
+        cfg.startTimeCaptured = true;
+    }
+
+    const double elapsedSec = timeNow - cfg.baseTimeSec;
+
+    if (!cfg.announced) {
+        std::cout << "[DeviceAdapter] Watchdog TX pause armed: start="
+                  << cfg.startSec << " s, duration=" << (cfg.durationSec * 1000.0)
+                  << " ms\n";
+        cfg.announced = true;
+    }
+
+    if (!cfg.active && elapsedSec >= cfg.startSec) {
+        cfg.active = true;
+        cfg.endSec = elapsedSec + cfg.durationSec;
+        std::cout << "[DeviceAdapter] Watchdog TX pause START at elapsed t="
+                  << elapsedSec << " s\n";
+    }
+
+    if (cfg.active) {
+        if (elapsedSec < cfg.endSec) {
+            return true;
+        }
+
+        cfg.active = false;
+        cfg.completed = true;
+        std::cout << "[DeviceAdapter] Watchdog TX pause END at elapsed t="
+                  << elapsedSec << " s\n";
+    }
+
+    return false;
 }
 
 DeviceAdapter::DeviceAdapter(msg::Channel<ToolStateMsg>& deviceIn, msg::Channel<HapticWrenchCmd>& deviceCmdOut, 
@@ -113,6 +203,8 @@ bool DeviceAdapter::parseIncoming(std::vector<uint8_t>& newData, DeviceStatePack
 }
 
 void DeviceAdapter::update(double timeNow) {
+    static WatchdogTxPauseConfig watchdogTxPauseCfg = loadWatchdogTxPauseConfig();
+
     static uint64_t lastUpdateNs = 0;
     uint64_t now = nowNs();
 
@@ -151,6 +243,11 @@ void DeviceAdapter::update(double timeNow) {
         stateMsg.state_mcu_us = pkt.t_mcu_us;
         stateMsg.q1 = pkt.joint_angle[0];
         stateMsg.q2 = pkt.joint_angle[1];
+        stateMsg.applied_tau1 = pkt.applied_torque[0];
+        stateMsg.applied_tau2 = pkt.applied_torque[1];
+        stateMsg.watchdog_active = pkt.watchdog_active;
+        stateMsg.sat1 = pkt.saturation_active[0];
+        stateMsg.sat2 = pkt.saturation_active[1];
 
         stateLogOut_.publish(stateMsg);
 
@@ -235,9 +332,14 @@ void DeviceAdapter::update(double timeNow) {
 
         pkt_out.checksum = computeChecksum(&pkt_out, sizeof(TorqueCommandPacket) - 2);
 
-        logMsg.t_tx_start_ns = nowNs();
-        bool ok = link_.sendRaw(reinterpret_cast<uint8_t*>(&pkt_out), sizeof(TorqueCommandPacket));
-        logMsg.t_tx_done_ns = nowNs();
+        bool pauseTx = shouldPauseTorqueTxForWatchdog(watchdogTxPauseCfg, timeNow);
+
+        bool ok = true;
+        if (!pauseTx) {
+            logMsg.t_tx_start_ns = nowNs();
+            ok = link_.sendRaw(reinterpret_cast<uint8_t*>(&pkt_out), sizeof(TorqueCommandPacket));
+            logMsg.t_tx_done_ns = nowNs();
+        }
 
         logMsg.tx_cmd_seq = pkt_out.cmd_seq;
         logMsg.ref_state_seq = pkt_out.ref_state_seq;
@@ -245,7 +347,7 @@ void DeviceAdapter::update(double timeNow) {
         logMsg.tau1 = pkt_out.joint_torque[0];
         logMsg.tau2 = pkt_out.joint_torque[1];
 
-        const bool matchedCycle = gotState && gotCmd && ok &&
+        const bool matchedCycle = gotState && gotCmd && ok && !pauseTx &&
                                   (logMsg.rx_state_seq == logMsg.ref_state_seq);
 
         if (matchedCycle) {
@@ -274,8 +376,8 @@ Pose DeviceAdapter::anglesToPose(const float jointAngles[2]){
 }
 
 void DeviceAdapter::computeJacobiansAndTorques(const float jointAngles[2], const HapticWrenchCmd& newestOut, TorqueCommandPacket& pkt_out, DeviceTimingLogMsg& logMsg) {
-    double q1 = latestAngles_[0];
-    double q2 = latestAngles_[1];
+    double q1 = jointAngles[0];
+    double q2 = jointAngles[1];
 
     double L1 = 0.15;
     double L2 = 0.15;
@@ -291,9 +393,26 @@ void DeviceAdapter::computeJacobiansAndTorques(const float jointAngles[2], const
     logMsg.fx = static_cast<float>(Fx);
     logMsg.fy = static_cast<float>(Fy);
 
-    double tau1 = J11 * Fx + J21 * Fy;
-    double tau2 = J12 * Fx + J22 * Fy;
+    double tau1Raw = J11 * Fx + J21 * Fy;
+    double tau2Raw = J12 * Fx + J22 * Fy;
 
-    pkt_out.joint_torque[0] = -(float)tau1;
+    constexpr double torqueCap = 6.5;
+    auto clampSymmetric = [](double value, double limit) {
+        if (value > limit) return limit;
+        if (value < -limit) return -limit;
+        return value;
+    };
+
+    double tau1 = clampSymmetric(tau1Raw, torqueCap);
+    double tau2 = clampSymmetric(tau2Raw, torqueCap);
+
+    logMsg.tau1_raw = static_cast<float>(tau1Raw);
+    logMsg.tau2_raw = static_cast<float>(tau2Raw);
+    logMsg.host_sat1 = static_cast<uint8_t>(std::fabs(tau1 - tau1Raw) > 1e-6);
+    logMsg.host_sat2 = static_cast<uint8_t>(std::fabs(tau2 - tau2Raw) > 1e-6);
+    pkt_out.joint_torque[0] =  (float)tau1;
     pkt_out.joint_torque[1] =  (float)tau2;
+
+    logMsg.tau1 = pkt_out.joint_torque[0];
+    logMsg.tau2 = pkt_out.joint_torque[1];
 }

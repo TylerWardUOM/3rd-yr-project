@@ -15,7 +15,10 @@ struct DeviceComms {
     uint32_t rxTail;
 
     float commanded_torque[2];
+    float applied_torque[2];
     float angle[2];
+    uint8_t watchdog_active;
+    uint8_t saturation_active[2];
 
 
     uint32_t last_command_us;

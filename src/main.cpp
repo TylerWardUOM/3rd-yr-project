@@ -92,9 +92,11 @@ int main() {
     auto& deviceCmdOut  = bus.channel<HapticWrenchCmd>("device.wrench_cmd");
     auto& timingLog     = bus.channel<DeviceTimingLogMsg>("logging.device_timing");
     auto& stateLog      = bus.channel<DeviceStateLogMsg>("logging.device_state");
+    auto& simLog        = bus.channel<SimulationValidationLogMsg>("logging.sim_validation");
 
     std::vector<DeviceTimingLogMsg> timingLogs;
     std::vector<DeviceStateLogMsg> stateLogs;
+    std::vector<SimulationValidationLogMsg> simLogs;
 
     WorldManager wm(geomDb, geomFactory, worldCmds);
 
@@ -107,7 +109,8 @@ int main() {
         deviceIn,       // use toolIn for mouse control, deviceIn for real device input
         hapticOut,
         wrenchOut,
-        deviceCmdOut
+        deviceCmdOut,
+        simLog
     );
 
     DeviceAdapter deviceAdapter(deviceIn, deviceCmdOut, timingLog, stateLog);
@@ -138,8 +141,11 @@ int main() {
     }});
     wm.apply(WorldCommand{CreateObjectCommand{
         cube,
-        Pose{{-1.0, 1.0, 0.0}, {0, 0, 0, 1}, 1.0f},
-        {0.8f, 0.2f, 0.2f}
+        Pose{{-0.6, 0.320, 0.0}, {0, 0, 0, 1}, 1.0f},
+        {0.8f, 0.2f, 0.2f},
+        Role::None,
+        1.0,
+        false
     }});
 
     // ------------------------------------------------------------
@@ -187,7 +193,8 @@ int main() {
     std::thread logThread([&]() {
         while (logRunning.load(std::memory_order_relaxed) ||
             timingLog.size() > 0 ||
-            stateLog.size() > 0) {
+            stateLog.size() > 0 ||
+            simLog.size() > 0) {
 
             bool gotAny = false;
 
@@ -200,6 +207,12 @@ int main() {
             DeviceStateLogMsg stateMsg;
             while (stateLog.tryConsume(stateMsg)) {
                 stateLogs.push_back(stateMsg);
+                gotAny = true;
+            }
+
+            SimulationValidationLogMsg simMsg;
+            while (simLog.tryConsume(simMsg)) {
+                simLogs.push_back(simMsg);
                 gotAny = true;
             }
 
@@ -248,7 +261,7 @@ int main() {
         std::ofstream csv("device_timing.csv");
         csv << "rx_state_seq,state_mcu_us,tx_cmd_seq,ref_state_seq,"
             "t_rx_parse_ns,t_tool_publish_ns,t_wrench_consume_ns,"
-            "t_tx_start_ns,t_tx_done_ns,q1,q2,fx,fy,tau1,tau2\n";
+            "t_tx_start_ns,t_tx_done_ns,q1,q2,fx,fy,tau1_raw,tau1,tau2_raw,tau2,host_sat1,host_sat2\n";
 
         for (const auto& x : timingLogs) {
             csv << x.rx_state_seq << ","
@@ -264,21 +277,57 @@ int main() {
                 << x.q2 << ","
                 << x.fx << ","
                 << x.fy << ","
+                << x.tau1_raw << ","
                 << x.tau1 << ","
-                << x.tau2 << "\n";
+                << x.tau2_raw << ","
+                << x.tau2 << ","
+                << static_cast<int>(x.host_sat1) << ","
+                << static_cast<int>(x.host_sat2) << "\n";
         }
     }
 
     {
         std::ofstream csv("device_state_log.csv");
-        csv << "t_chunk_read_ns,t_rx_parse_ns,rx_state_seq,state_mcu_us,q1,q2\n";
+        csv << "t_chunk_read_ns,t_rx_parse_ns,rx_state_seq,state_mcu_us,q1,q2,applied_tau1,applied_tau2,watchdog_active,sat1,sat2\n";
         for (const auto& x : stateLogs) {
             csv << x.t_chunk_read_ns << ","
                 << x.t_rx_parse_ns << ","
                 << x.rx_state_seq << ","
                 << x.state_mcu_us << ","
                 << x.q1 << ","
-                << x.q2 << "\n";
+                << x.q2 << ","
+                << x.applied_tau1 << ","
+                << x.applied_tau2 << ","
+                << static_cast<int>(x.watchdog_active) << ","
+                << static_cast<int>(x.sat1) << ","
+                << static_cast<int>(x.sat2) << "\n";
+        }
+    }
+
+    {
+        std::ofstream csv("simulation_validation_log.csv");
+        csv << "t_sec,device_x,device_y,device_z,"
+            "proxy_x,proxy_y,proxy_z,"
+            "force_x,force_y,force_z,"
+            "normal_x,normal_y,normal_z,"
+            "penetration_depth_m,signed_phi_m,contact_active\n";
+        for (const auto& x : simLogs) {
+            csv << x.t_sec << ","
+                << x.device_x << ","
+                << x.device_y << ","
+                << x.device_z << ","
+                << x.proxy_x << ","
+                << x.proxy_y << ","
+                << x.proxy_z << ","
+                << x.force_x << ","
+                << x.force_y << ","
+                << x.force_z << ","
+                << x.normal_x << ","
+                << x.normal_y << ","
+                << x.normal_z << ","
+                << x.penetration_depth_m << ","
+                << x.signed_phi_m << ","
+                << x.contact_active << "\n";
         }
     }
 

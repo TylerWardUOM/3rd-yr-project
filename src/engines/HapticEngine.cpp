@@ -79,13 +79,15 @@ HapticEngine::HapticEngine(const GeometryDatabase& geomDb,
                            msg::Channel<ToolStateMsg>& toolIn,
                            msg::Channel<HapticSnapshotMsg>& hapticOut,
                            msg::Channel<HapticWrenchCmd>& wrenchOut,
-                           msg::Channel<HapticWrenchCmd>& deviceCmdOut)
+                           msg::Channel<HapticWrenchCmd>& deviceCmdOut,
+                           msg::Channel<SimulationValidationLogMsg>& simLogOut)
 : geometryDb_(geomDb)
 , worldSnaps_(worldSnaps)
 , toolIn_(toolIn)
 , hapticOut_(hapticOut)
 , wrenchOut_(wrenchOut)
 , deviceCmdOut_(deviceCmdOut)
+, simLogOut_(simLogOut)
 {
     latestTool_.toolPose_ws = Pose{{0,0,0},{0,0,0,1}};
     proxyPosePrev_          = latestTool_.toolPose_ws;
@@ -224,13 +226,42 @@ void HapticEngine::update(float dt)
     constexpr double K = 500.0;
     constexpr double M = 0.02;
     const double D = 0.7 * 2.0 * std::sqrt(K * M);
+    //const double D = 0.0;
+    // Raw velocities
+    Vec3 proxyVelRaw = mul(sub(proxyPose.p, proxyPosePrev_.p), 1.0 / dt);
+    Vec3 toolVelRaw  = latestTool_.toolVel_ws;
 
-    Vec3 proxyVel = mul(sub(proxyPose.p, proxyPosePrev_.p), 1.0 / dt);
-    Vec3 toolVel  = latestTool_.toolVel_ws;
+    // Low-pass filter coefficient
+    // Smaller alpha = smoother but more lag
+    const double alpha = 0.15;
 
+    // Persistent filtered velocities
+    proxyVelFilt_ = add(
+        mul(proxyVelFilt_, 1.0 - alpha),
+        mul(proxyVelRaw, alpha)
+    );
+
+    toolVelFilt_ = add(
+        mul(toolVelFilt_, 1.0 - alpha),
+        mul(toolVelRaw, alpha)
+    );
+
+    // Optional velocity clamp for safety
+    const double maxVel = 1.0; // m/s, tune
+
+    if (norm(proxyVelFilt_) > maxVel) {
+        proxyVelFilt_ = mul(proxyVelFilt_, maxVel / norm(proxyVelFilt_));
+    }
+    if (norm(toolVelFilt_) > maxVel) {
+        toolVelFilt_ = mul(toolVelFilt_, maxVel / norm(toolVelFilt_));
+    }
+    // proxyVelFilt_ = clampMagnitude(proxyVelFilt_, maxVel);
+    // toolVelFilt_  = clampMagnitude(toolVelFilt_, maxVel);
+
+    // Virtual coupling force
     Vec3 F = add(
         mul(sub(proxyPose.p, toolPose.p), K),
-        mul(sub(proxyVel, toolVel), D)
+        mul(sub(proxyVelFilt_, toolVelFilt_), D)
     );
 
     constexpr double Fmax = 31.0;
@@ -269,13 +300,54 @@ void HapticEngine::update(float dt)
     // --------------------------------------------------------
     // Publish haptics snapshot
     // --------------------------------------------------------
+    // Decide what force to publish/record: only expose contact force when in contact.
+    Vec3 F_publish = (contactId != 0) ? F : Vec3{0,0,0};
+
     HapticSnapshotMsg hs;
     hs.devicePose_ws = toolPose;
     hs.proxyPose_ws  = proxyPose;
-    hs.force_ws      = F;
+    hs.force_ws      = F_publish;
     hs.t_sec         = latestTool_.t_sec;
 
     hapticOut_.publish(hs);
+
+    // --------------------------------------------------------
+    // Publish simulation validation snapshot
+    // --------------------------------------------------------
+    SimulationValidationLogMsg simLog{};
+    simLog.t_sec = latestTool_.t_sec;
+
+    simLog.device_x = toolPose.p.x;
+    simLog.device_y = toolPose.p.y;
+    simLog.device_z = toolPose.p.z;
+
+    simLog.proxy_x = proxyPose.p.x;
+    simLog.proxy_y = proxyPose.p.y;
+    simLog.proxy_z = proxyPose.p.z;
+
+    // Log only the contact force (avoid showing transient damper forces when not in contact)
+    simLog.force_x = F_publish.x;
+    simLog.force_y = F_publish.y;
+    simLog.force_z = F_publish.z;
+
+    simLog.normal_x = contactNormal_ws.x;
+    simLog.normal_y = contactNormal_ws.y;
+    simLog.normal_z = contactNormal_ws.z;
+
+    simLog.penetration_depth_m = static_cast<float>(norm(sub(toolPose.p, proxyPose.p)));
+    simLog.signed_phi_m = (bestPhi < 1e20) ? static_cast<float>(bestPhi) : 0.0f;
+    simLog.contact_active = (contactId != 0) ? 1u : 0u;
+
+    // --- Fix B: if contact just ended, reset filtered proxy velocity to avoid
+    // transient damper spikes caused by velocity filter lag.
+    bool nowInContact = (contactId != 0);
+    if (wasInContact_ && !nowInContact) {
+        // Immediate reset; alternatively we could blend over a few ms for smoother transition
+        proxyVelFilt_ = toolVelFilt_;
+    }
+    wasInContact_ = nowInContact;
+
+    simLogOut_.publish(simLog);
 
     proxyPosePrev_ = proxyPose;
 }

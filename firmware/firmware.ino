@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include "DeviceComms.h"
 
-constexpr bool ENABLE_MOTORS = true;
+constexpr bool ENABLE_MOTORS = false;
 
 // ===================== Motors / Drivers =====================
 
@@ -38,10 +38,23 @@ float joint1_zero_offset = 0.0f;
 
 float applied_torque1 = 0.0f;
 float applied_torque2 = 0.0f;
+bool watchdog_active = false;
+bool torque_saturated1 = false;
+bool torque_saturated2 = false;
 
 uint32_t state_seq = 0;
 
 // ===================== Helpers =====================
+float joint_angle1_filt = 0.0f;
+bool joint1_filter_init = false;
+
+float joint_angle0_filt = 0.0f;
+bool joint0_filter_init = false;
+
+
+float lowPass(float previous, float current, float alpha) {
+  return previous + alpha * (current - previous);
+}
 
 float clampSymmetric(float x, float limit) {
   if (x > limit)  return limit;
@@ -68,9 +81,11 @@ void updateSlewLimitedTorque(float& applied_torque,
                              unsigned long now_us,
                              unsigned long& last_update_us,
                              float slew_rate,
-                             float torque_cap) {
+                             float torque_cap,
+                             bool& saturated) {
   float dt = (last_update_us == 0) ? 0.0f : (now_us - last_update_us) * 1e-6f;
   last_update_us = now_us;
+  saturated = false;
 
   if (dt > 0.0f) {
     float max_step = slew_rate * dt;
@@ -79,10 +94,19 @@ void updateSlewLimitedTorque(float& applied_torque,
     if (error > max_step)  error = max_step;
     if (error < -max_step) error = -max_step;
 
+    if (error != target_torque - applied_torque) {
+      //saturated = true;
+    }
+
     applied_torque += error;
   }
 
-  applied_torque = clampSymmetric(applied_torque, torque_cap);
+  float clipped = clampSymmetric(applied_torque, torque_cap);
+  if (clipped != applied_torque) {
+    saturated = true;
+  }
+
+  applied_torque = clipped;
 }
 
 // ===================== Setup =====================
@@ -195,7 +219,7 @@ void loop() {
   static unsigned long last_torque_update2_us = 0;
 
   const unsigned long comms_period_us = 1000;   // 1 kHz
-  const unsigned long cmd_timeout_us  = 10000;  // 10 ms
+  const unsigned long cmd_timeout_us  = 15000;  // 15 ms
 
   const float torque_slew_rate = 55.0f; // units per second //65 felt ok 200 okish 
   const float torque_cap = 6.5f;
@@ -211,16 +235,27 @@ void loop() {
   // Receive newest command packets
   DeviceComms_Receive(&device);
 
+  // NOTE: Inverted semantics: watchdog_active==1 now indicates a TIMEOUT (no
+  // recent command) so that a "1" represents a safety fault (out-of-date
+  // command). This matches the safety-validation analysis expectations.
+  watchdog_active = (unsigned long)(now - device.last_command_us) >= cmd_timeout_us;
+
+  // Get target torques regardless of motor enable so the packet always reflects
+  // the commanded/applied safety state.
+  float target_torque1 = getCommandedTorqueWithTimeout(&device, 0, now, cmd_timeout_us, torque_cap);
+  float target_torque2 = getCommandedTorqueWithTimeout(&device, 1, now, cmd_timeout_us, torque_cap);
+
+  updateSlewLimitedTorque(applied_torque1, target_torque1, now, last_torque_update1_us, torque_slew_rate, torque_cap, torque_saturated1);
+  updateSlewLimitedTorque(applied_torque2, target_torque2, now, last_torque_update2_us, torque_slew_rate, torque_cap, torque_saturated2);
+
+  device.applied_torque[0] = applied_torque1;
+  device.applied_torque[1] = applied_torque2;
+  device.watchdog_active = watchdog_active ? 1 : 0;
+  device.saturation_active[0] = torque_saturated1 ? 1 : 0;
+  device.saturation_active[1] = torque_saturated2 ? 1 : 0;
+
   // Only do torque path if motors are enabled
   if (ENABLE_MOTORS) {
-    // Get target torques
-    float target_torque1 = getCommandedTorqueWithTimeout(&device, 0, now, cmd_timeout_us, torque_cap);
-    float target_torque2 = getCommandedTorqueWithTimeout(&device, 1, now, cmd_timeout_us, torque_cap);
-
-    // Slew limit each motor independently
-    updateSlewLimitedTorque(applied_torque1, target_torque1, now, last_torque_update1_us, torque_slew_rate, torque_cap);
-    updateSlewLimitedTorque(applied_torque2, target_torque2, now, last_torque_update2_us, torque_slew_rate, torque_cap);
-
     // Apply torques
     motor1.move(applied_torque1);
     motor2.move(applied_torque2);
@@ -237,9 +272,30 @@ void loop() {
   float raw0 = joint1_sensor.getAngle();
   float raw1 = motor2_sensor.getAngle();
 
-  joint_angle0 = raw0 - joint0_zero_offset;
-  joint_angle1 = raw1 - joint1_zero_offset;
+  float joint_angle0_raw = raw0 - joint0_zero_offset;
+  float joint_angle1_raw = raw1 - joint1_zero_offset;
 
+  // Low-pass filter for joints
+  const float joint0_alpha = 0.15f;  // lower = smoother, higher = faster response
+  const float joint1_alpha = 0.1f;  // lower = smoother, higher = faster response
+
+  if (!joint0_filter_init) {
+    joint_angle0_filt = joint_angle0_raw;
+    joint0_filter_init = true;
+  } else {
+    joint_angle0_filt = lowPass(joint_angle0_filt, joint_angle0_raw, joint0_alpha);
+  }
+
+  joint_angle0 = joint_angle0_filt;
+
+  if (!joint1_filter_init) {
+    joint_angle1_filt = joint_angle1_raw;
+    joint1_filter_init = true;
+  } else {
+    joint_angle1_filt = lowPass(joint_angle1_filt, joint_angle1_raw, joint1_alpha);
+  }
+
+  joint_angle1 = joint_angle1_filt;
     DeviceComms_SetState(&device, state_seq, now, joint_angle0, joint_angle1);
     DeviceComms_SendState(&device);
 

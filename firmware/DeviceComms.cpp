@@ -21,9 +21,15 @@ void DeviceComms_Init(DeviceComms* dc, HardwareSerial& serialPort)
 
     dc->commanded_torque[0] = 0.0f;
     dc->commanded_torque[1] = 0.0f;
+    dc->applied_torque[0] = 0.0f;
+    dc->applied_torque[1] = 0.0f;
 
     dc->angle[0] = 0.0f;
     dc->angle[1] = 0.0f;
+
+    dc->watchdog_active = 0;
+    dc->saturation_active[0] = 0;
+    dc->saturation_active[1] = 0;
 
     dc->last_command_us = 0;
 
@@ -156,6 +162,11 @@ void DeviceComms_SendState(DeviceComms* dc)
 
     pkt.joint_angle[0] = dc->angle[0];
     pkt.joint_angle[1] = dc->angle[1];
+    pkt.applied_torque[0] = dc->applied_torque[0];
+    pkt.applied_torque[1] = dc->applied_torque[1];
+    pkt.watchdog_active = dc->watchdog_active;
+    pkt.saturation_active[0] = dc->saturation_active[0];
+    pkt.saturation_active[1] = dc->saturation_active[1];
 
     pkt.checksum = checksumBytes((uint8_t*)&pkt, sizeof(DeviceStatePacket) - 2);
 

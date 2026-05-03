@@ -12,6 +12,9 @@ typedef struct {
     uint32_t state_seq;
     uint32_t t_mcu_us;    // microsecond timestamp from MCU 
     float joint_angle[2];
+    float applied_torque[2];
+    uint8_t watchdog_active;
+    uint8_t saturation_active[2];
     uint16_t checksum;
 } DeviceStatePacket;
 #pragma pack(pop)

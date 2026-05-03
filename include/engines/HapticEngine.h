@@ -3,6 +3,7 @@
 #include "messaging/Channel.h"
 #include "data/WorldSnapshot.h"
 #include "data/HapticMessages.h"
+#include "data/LogMessages.h"
 #include "geometry/GeometryDatabase.h"
 #include "messaging/SnapshotChannel.h"
 #include "hardware/DeviceAdapter.h"
@@ -35,7 +36,8 @@ public:
                  msg::Channel<ToolStateMsg>& toolIn,
                  msg::Channel<HapticSnapshotMsg>& hapticOut,
                  msg::Channel<HapticWrenchCmd>& wrenchOut,
-                 msg::Channel<HapticWrenchCmd>& deviceCmdOut);
+                 msg::Channel<HapticWrenchCmd>& deviceCmdOut,
+                 msg::Channel<SimulationValidationLogMsg>& simLogOut);
 
     void run();        // 1 kHz loop
     void update(float dt);
@@ -46,6 +48,7 @@ private:
     msg::Channel<HapticSnapshotMsg>&  hapticOut_; // To Render
     msg::Channel<HapticWrenchCmd>&    wrenchOut_; // To Physics
     msg::Channel<HapticWrenchCmd>&    deviceCmdOut_; // To DeviceAdapter
+    msg::Channel<SimulationValidationLogMsg>& simLogOut_;
 
     const GeometryDatabase& geometryDb_;
 
@@ -55,4 +58,7 @@ private:
     ToolStateMsg  latestTool_{};
 
     Pose proxyPosePrev_{};
+    Vec3 proxyVelFilt_{0.0, 0.0, 0.0};
+    Vec3 toolVelFilt_{0.0, 0.0, 0.0};
+    bool wasInContact_ = false;
 };

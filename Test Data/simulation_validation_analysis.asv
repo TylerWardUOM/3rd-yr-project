@@ -1,0 +1,233 @@
+%% Simulation validation analysis from simulation_validation_log.csv
+% Computes quantitative metrics for report-ready simulation validation:
+% - penetration depth statistics
+% - force-vs-penetration linear fit (effective stiffness)
+% - normal/tangential force decomposition
+% - sustained-contact stability statistics
+
+clear; clc;
+
+scriptDir = fileparts(mfilename('fullpath'));
+if isempty(scriptDir)
+    scriptDir = pwd;
+end
+
+projectRoot = fileparts(scriptDir);
+inputDir = fullfile(projectRoot, 'build', 'Debug');
+archiveDir = scriptDir;
+
+% Set these before running if you want to archive the source log into Test Data.
+archiveToTestData = true;
+archiveBaseName = 'simSaturation';
+
+% Dataset preset options:
+%   'single_depth_hold'   -> Test Data/SingleDepthHold.csv (hold 2.80 to 3.60 s)
+%   'multi_depth_holds'   -> Test Data/MultiDepthHolds.csv (hold 4.90 to 6.20 s)
+%   'default_build_log'   -> build/Debug/simulation_validation_log.csv
+datasetPreset = 'default_build_log';
+
+switch datasetPreset
+    case 'single_depth_hold'
+        inFile = fullfile(scriptDir, 'SingleDepthHoldV2_simulation_validation_log.csv');
+        tStart = 8.0;
+        tEnd = 10.0;
+        ignoreStart_s = 4.0;
+    case 'multi_depth_holds'
+        inFile = fullfile(scriptDir, 'MultiDepthV2_simulation_validation_log.csv');
+        tStart = 3.0;
+        tEnd = 11.0;
+        ignoreStart_s = 0.0;
+    case 'no_contact'
+        inFile = fullfile(scriptDir, 'E1_NoContact_simulation_validation_log.csv');
+        tStart = 0.0;
+        tEnd = 30.0;
+        ignoreStart_s = 0.0;
+    case 'Motors_Contact'
+        inFile = fullfile(scriptDir, 'Motors_Contact_Move_simulation_validation_log.csv');
+        tStart = 0.0;
+        tEnd = 30.0;
+        ignoreStart_s = 3.0;
+    case 'default_build_log'
+        inFile = fullfile(inputDir, 'simulation_validation_log.csv');
+        % Set hold window manually when using arbitrary logs.
+        tStart = 3.0;
+        tEnd = 11.0;
+        ignoreStart_s = 0.0;
+    otherwise
+        error('Unknown datasetPreset: %s', datasetPreset);
+end
+
+if ~isfile(inFile)
+    error('Input file not found: %s', inFile);
+end
+
+fprintf('Loading simulation log from: %s\n', inFile);
+
+T = readtable(inFile, 'VariableNamingRule', 'preserve');
+% Normalise time axis to start at first valid timestamp
+tRaw = T.t_sec;
+
+validTime = isfinite(tRaw) & tRaw > 0;
+if ~any(validTime)
+    error('No valid timestamps found.');
+end
+
+t0 = tRaw(find(validTime, 1, 'first'));
+t = tRaw - t0;
+
+% Remove invalid/pre-start rows
+validRows = t >= 0;
+
+T = T(validRows, :);
+t = t(validRows);
+
+% Manual correction: logged time appears 10x too large
+timeScale = 1.0;
+t = t / timeScale;
+
+% Ignore first 3 seconds
+keepRows = t >= ignoreStart_s;
+
+T = T(keepRows, :);
+t = t(keepRows);
+
+% Basic vectors
+pDev = [T.device_x, T.device_y, T.device_z];
+pProxy = [T.proxy_x, T.proxy_y, T.proxy_z];
+F = [T.force_x, T.force_y, T.force_z];
+N = [T.normal_x, T.normal_y, T.normal_z];
+
+% Penetration depth
+if ismember('penetration_depth_m', T.Properties.VariableNames)
+    dPen = T.penetration_depth_m;
+else
+    dPen = sqrt(sum((pDev - pProxy).^2, 2));
+end
+
+% Contact mask
+if ismember('contact_active', T.Properties.VariableNames)
+    inContact = logical(T.contact_active);
+else
+    inContact = dPen > 0;
+end
+
+fprintf('\n=== Penetration Statistics (m) ===\n');
+if any(inContact)
+    dC = dPen(inContact);
+    fprintf('mean:   %.6f\n', mean(dC));
+    fprintf('median: %.6f\n', median(dC));
+    fprintf('p95:    %.6f\n', prctile(dC, 95));
+    fprintf('max:    %.6f\n', max(dC));
+else
+    fprintf('No contact samples detected.\n');
+end
+
+% Effective stiffness fit: |F| = k_eff * d + b (contact samples)
+Fmag = sqrt(sum(F.^2, 2));
+if any(inContact)
+    x = dPen(inContact);
+    y = Fmag(inContact);
+
+    valid = isfinite(x) & isfinite(y);
+    x = x(valid);
+    y = y(valid);
+
+    if numel(x) >= 2
+        p = polyfit(x, y, 1);
+        yHat = polyval(p, x);
+        ssRes = sum((y - yHat).^2);
+        ssTot = sum((y - mean(y)).^2);
+        r2 = 1.0 - ssRes / max(ssTot, eps);
+
+        fprintf('\n=== Force vs Penetration Fit ===\n');
+        fprintf('k_eff slope: %.3f N/m\n', p(1));
+        fprintf('intercept:   %.6f N\n', p(2));
+        fprintf('R^2:         %.4f\n', r2);
+    else
+        fprintf('\nNot enough valid contact samples for linear fit.\n');
+    end
+end
+
+% Normal/tangential decomposition during contact
+if any(inContact)
+    Nc = N(inContact, :);
+    Fc = F(inContact, :);
+
+    nNorm = sqrt(sum(Nc.^2, 2));
+    validN = nNorm > 1e-9;
+    Nc = Nc(validN, :);
+    Fc = Fc(validN, :);
+    nNorm = nNorm(validN);
+
+    if ~isempty(nNorm)
+        nHat = Nc ./ nNorm;
+        Fnormal = sum(Fc .* nHat, 2);
+        FtanVec = Fc - Fnormal .* nHat;
+        Ftan = sqrt(sum(FtanVec.^2, 2));
+
+        ratio = abs(Fnormal) ./ max(Ftan, 1e-9);
+
+        fprintf('\n=== Constrained Motion Force Decomposition ===\n');
+        fprintf('median |F_n|/|F_t|: %.3f\n', median(ratio));
+        fprintf('p95 |F_n|/|F_t|:    %.3f\n', prctile(ratio, 95));
+
+        % Hold region selection from dataset preset.
+        % For 'default_build_log', set tStart/tEnd above before running.
+        
+        holdMaskFull = (t >= tStart) & (t <= tEnd) & inContact;
+        
+        % Map hold mask into the filtered Fc/Nc indexing
+        holdMask = holdMaskFull(inContact);
+        holdMask = holdMask(validN);
+        
+        % Extract held-contact force magnitude
+        FmagHold = sqrt(sum(Fc(holdMask, :).^2, 2));
+
+        if numel(FmagHold) > 5
+            mu = mean(FmagHold);
+            sigma = std(FmagHold);
+            cv = sigma / max(mu, eps);
+        
+            fprintf('\n=== Sustained Contact Stability (Hold Region) ===\n');
+            fprintf('Hold Region %.2f s to %.2f s\n', tStart, tEnd)
+            fprintf('force mean: %.4f N\n', mu);
+            fprintf('force std:  %.4f N\n', sigma);
+            fprintf('force CV:   %.4f\n', cv);
+        else
+            fprintf('\nNot enough samples in hold region.\n');
+        end
+    end
+end
+
+% Optional quick plots
+figure('Name', 'Simulation Validation', 'Color', 'w');
+tiledlayout(2,2);
+
+nexttile;
+plot(t, dPen, 'LineWidth', 1.0);
+xlabel('t (s)'); ylabel('penetration (m)'); title('Penetration Depth'); grid on;
+
+nexttile;
+scatter(dPen(inContact), Fmag(inContact), 8, 'filled');
+xlabel('penetration (m)'); ylabel('|F| (N)'); title('Force vs Penetration'); grid on;
+
+nexttile;
+plot(t, Fmag, 'LineWidth', 1.0);
+xlabel('t (s)'); ylabel('|F| (N)'); title('Force Magnitude'); grid on;
+
+nexttile;
+stairs(t, double(inContact), 'LineWidth', 1.0);
+xlabel('t (s)'); ylabel('contact'); title('Contact Active'); ylim([-0.1, 1.1]); grid on;
+
+% Optional archive of the source CSV into Test Data
+if archiveToTestData
+    if isempty(strtrim(archiveBaseName))
+        error('archiveBaseName must not be empty when archiveToTestData is true.');
+    end
+
+    archivedSim = fullfile(archiveDir, sprintf('%s_simulation_validation_log.csv', archiveBaseName));
+    copyfile(inFile, archivedSim, 'f');
+
+    fprintf('\nArchived source log to:\n');
+    fprintf('  %s\n', archivedSim);
+end
