@@ -20,12 +20,14 @@
 clear;
 clc;
 close all;
+configureLightFigures();
 
 %% =========================================================
 % USER PATHS
 %% =========================================================
 
 dataFolder = "C:\Users\tman0\Code\3rd-yr-project\Test Data";
+reportImageFolder = "C:\Users\tman0\Code\3rd-yr-project\docs\project_notes\Report\MSc_and_BEng_Dissertation_Template_the_University_of_Manchester_EEE__2_\images";
 
 rateFiles = [
     "rate_100hz.csv"
@@ -158,22 +160,24 @@ disp(rateSummary);
 %% ---------------------------------------------------------
 % Plot 1: Requested vs measured receive rate
 %% ---------------------------------------------------------
-figure;
+f = figure;
 plot(requestedRateHz, measuredRateHz, 'o-');
 xlabel("Requested packet rate (Hz)");
 ylabel("Measured receive rate (Hz)");
 title("Requested vs measured packet rate");
 grid on;
+saveReportFigure(f, reportImageFolder, "Requested vs measured packet rate", 8.5, 6.0);
 
 %% ---------------------------------------------------------
 % Plot 2: Jitter (std of inter-arrival time) vs requested rate
 %% ---------------------------------------------------------
-figure;
+f = figure;
 plot(requestedRateHz, stdDtMs, 'o-');
 xlabel("Requested packet rate (Hz)");
 ylabel("Inter-arrival jitter std (ms)");
 title("Packet timing jitter vs requested rate");
 grid on;
+saveReportFigure(f, reportImageFolder, "Packet timing jitter vs requested rate", 8.5, 6.0);
 
 %% ---------------------------------------------------------
 % Plot 3: Mean inter-arrival time vs requested rate
@@ -188,12 +192,13 @@ grid on;
 %% ---------------------------------------------------------
 % Plot 4: Total dropped packets vs requested rate
 %% ---------------------------------------------------------
-figure;
+f = figure;
 plot(requestedRateHz, totalDrops, 'o-');
 xlabel("Requested packet rate (Hz)");
 ylabel("Total dropped packets");
 title("Dropped packets vs requested rate");
 grid on;
+saveReportFigure(f, reportImageFolder, "Dropped packets vs requested rate", 8.5, 6.0);
 
 %% ---------------------------------------------------------
 % Plot 5: Drop fraction vs requested rate
@@ -220,7 +225,7 @@ grid on;
 %
 % This helps show jitter/noise patterns across rates.
 %% ---------------------------------------------------------
-figure;
+f = figure;
 hold on;
 for i = 1:numRate
     T = rateTables{i};
@@ -433,7 +438,7 @@ grid on;
 %% ---------------------------------------------------------
 % Plot 5: Overlay RTT traces
 %% ---------------------------------------------------------
-figure;
+f = figure;
 hold on;
 for i = 1:numRtt
     T = rttTables{i};
@@ -470,20 +475,22 @@ ylabel("RTT (ms)");
 title("Distribution of round-trip latency by test interval");
 grid on;
 
-figure;
+f = figure;
+labels = ["RTT 1 ms", "RTT 2 ms", "RTT 10 ms"];
 hold on;
 for i = 1:numRtt
     T = rttTables{i};
     rttValid = sort(T.rtt_ms(T.success == 1));
     y = (1:length(rttValid)) / length(rttValid);
-    plot(rttValid, y, 'DisplayName', rttNames(i));
+    plot(rttValid, y, 'DisplayName', labels(i));
 end
 hold off;
 xlabel("RTT (ms)");
 ylabel("Cumulative probability");
 title("CDF of round-trip latency");
-legend("Location","best");
+legend('Location','eastoutside');
 grid on;
+saveReportFigure(f, reportImageFolder, "CDF of round-trip latency", 14.5, 7.0);
 
 %% =========================================================
 % OPTIONAL: SAVE SUMMARY TABLES
@@ -495,3 +502,54 @@ writetable(rttSummary,  fullfile(dataFolder, "rtt_summary.csv"));
 fprintf("\nSummary tables written to:\n");
 fprintf("  %s\n", fullfile(dataFolder, "rate_summary.csv"));
 fprintf("  %s\n", fullfile(dataFolder, "rtt_summary.csv"));
+
+function configureLightFigures()
+    set(groot, "DefaultFigureColor", "white");
+    set(groot, "DefaultAxesColor", "white");
+    set(groot, "DefaultAxesXColor", "black");
+    set(groot, "DefaultAxesYColor", "black");
+    set(groot, "DefaultAxesZColor", "black");
+    set(groot, "DefaultAxesGridColor", [0.75 0.75 0.75]);
+    set(groot, "DefaultAxesMinorGridColor", [0.86 0.86 0.86]);
+    set(groot, "DefaultTextColor", "black");
+    set(groot, "DefaultLegendTextColor", "black");
+    set(groot, "DefaultLegendColor", "white");
+    set(groot, "DefaultLegendEdgeColor", [0.35 0.35 0.35]);
+end
+
+function saveReportFigure(fig, outDir, fileStem, widthCm, heightCm)
+    set(fig, "Color", "white", "InvertHardcopy", "off");
+    set(fig, "Units", "centimeters", "Position", [2 2 widthCm heightCm]);
+    set(fig, "PaperUnits", "centimeters", "PaperPosition", [0 0 widthCm heightCm]);
+    ax = findall(fig, "Type", "axes");
+    set(ax, ...
+        "Color", "white", ...
+        "XColor", "black", ...
+        "YColor", "black", ...
+        "ZColor", "black", ...
+        "GridColor", [0.75 0.75 0.75], ...
+        "MinorGridColor", [0.86 0.86 0.86], ...
+        "FontSize", 13, ...
+        "LineWidth", 1.1, ...
+        "Box", "on");
+    set(findall(fig, "Type", "line"), "LineWidth", 1.6, "MarkerSize", 6);
+    set(findall(fig, "Type", "legend"), ...
+        "FontSize", 12, ...
+        "Color", "white", ...
+        "TextColor", "black", ...
+        "EdgeColor", [0.35 0.35 0.35]);
+    titleHandles = get(ax, "Title");
+    xlabelHandles = get(ax, "XLabel");
+    ylabelHandles = get(ax, "YLabel");
+    setTextSize(titleHandles, 15, "bold");
+    setTextSize(xlabelHandles, 14, "normal");
+    setTextSize(ylabelHandles, 14, "normal");
+    exportgraphics(fig, fullfile(outDir, fileStem + ".pdf"), "ContentType", "vector", "BackgroundColor", "white");
+end
+
+function setTextSize(handles, fontSize, fontWeight)
+    if iscell(handles)
+        handles = [handles{:}];
+    end
+    set(handles, "FontSize", fontSize, "FontWeight", fontWeight, "Color", "black");
+end

@@ -34,11 +34,11 @@ projectRoot = fileparts(scriptDir);
 inputDir = fullfile(projectRoot, 'build', 'Debug');
 archiveDir = scriptDir;
 
-hostFile = fullfile(inputDir, 'device_timing.csv');
-deviceFile = fullfile(inputDir, 'device_state_log.csv');
+% hostFile = fullfile(inputDir, 'device_timing.csv');
+% deviceFile = fullfile(inputDir, 'device_state_log.csv');
 
-% hostFile = fullfile(scriptDir, 'watchdog_test_device_timing.csv');
-% deviceFile = fullfile(scriptDir, 'watchdog_test_device_state_log.csv');
+hostFile = fullfile(scriptDir, 'simSaturation_device_timing.csv');
+deviceFile = fullfile(scriptDir, 'simSaturation_device_state_log.csv');
 
 if ~isfile(hostFile)
     error('Missing input file: %s', hostFile);
@@ -596,8 +596,9 @@ plot(tHost, Thost.tau1, '-', 'LineWidth', 1.2);
 grid on;
 xlabel('Time (s)');
 ylabel('Torque (N.m)');
-title('Torque Command Saturation: Raw vs Clamped Output');
-legend({'Raw torque command', 'Clamped torque (applied)'}, 'Location', 'best');
+title('Host torque command');
+legend({'tau1 raw', 'tau1 clamped'}, 'Location', 'best');
+
 
 figure('Name', 'Device Safety Validation - Safety Flags', 'Color', 'w');
 

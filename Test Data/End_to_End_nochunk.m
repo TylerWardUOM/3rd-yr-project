@@ -36,13 +36,15 @@
 clear;
 clc;
 close all;
+configureLightFigures();
 
 %% =========================================================
 % LOAD FILES
 %% =========================================================
 
-timingFile = "device_timing.csv";
-stateFile  = "device_state_log.csv";
+timingFile = "Copy_of_device_timing.csv";
+stateFile  = "Copy_of_device_state_log.csv";
+reportImageFolder = "C:\Users\tman0\Code\3rd-yr-project\docs\project_notes\Report\MSc_and_BEng_Dissertation_Template_the_University_of_Manchester_EEE__2_\images";
 
 Timing = readtable(timingFile, "VariableNamingRule", "preserve");
 State  = readtable(stateFile,  "VariableNamingRule", "preserve");
@@ -277,12 +279,53 @@ grid on;
 % PLOTS: RAW PARSED STATE LOG
 %% =========================================================
 
-figure;
-histogram(valid_host_dt, 50);
-xlabel("Parsed state packet inter-arrival time on host (ms)");
-ylabel("Count");
-title("Raw parsed state packet inter-arrival distribution");
-grid on;
+f = figure;
+
+% -------- MAIN AXES (LEFT) --------
+axMain = axes('Position', [0.08 0.15 0.50 0.75]); % [x y width height]
+
+histogram(axMain, valid_host_dt, 50);
+
+xlabel(axMain, "Inter-arrival time (ms)");
+ylabel(axMain, "Count");
+title(axMain, "Parsed State Packet Inter-Arrival Distribution");
+
+grid(axMain, 'on');
+
+% Vertical lines
+xl1 = xline(0.2, '--r', 'Burst (≈0 ms)', ...
+    'LineWidth', 1.2, ...
+    'FontSize', 11, ...
+    'LabelOrientation', 'horizontal', ...
+    'LabelVerticalAlignment', 'middle');
+
+xl2 = xline(15, '--g', 'Delay regime (~15 ms)', ...
+    'LineWidth', 1.2, ...
+    'FontSize', 11, ...
+    'LabelOrientation', 'horizontal', ...
+    'LabelVerticalAlignment', 'middle',LabelHorizontalAlignment='left');
+
+
+% -------- ZOOM AXES (RIGHT) --------
+axZoom = axes('Position', [0.68 0.15 0.28 0.75]);
+
+zoomData = valid_host_dt(valid_host_dt >= 10 & valid_host_dt <= 17);
+histogram(axZoom, zoomData, 25);
+
+xlim(axZoom, [10 17]);
+
+xlabel(axZoom, "Time (ms)");
+ylabel(axZoom, "Count");
+title(axZoom, "Zoom: 10–17 ms");
+
+grid(axZoom, 'on');
+
+
+% -------- SAVE --------
+saveReportFigure(f, reportImageFolder, ...
+    "Raw parsed state packet inter-arrival distribution", ...
+    16.5, 12.5);
+
 
 figure;
 plot(raw_host_dt_ms, '-');
@@ -312,7 +355,6 @@ ylabel("Effective MCU period per state (ms)");
 title("Estimated MCU state period from raw parsed packet log");
 grid on;
 
-%% =========================================================
 % OPTIONAL SUMMARY TABLES
 %% =========================================================
 
@@ -361,3 +403,54 @@ disp(stateSummary);
 
 writetable(timingSummary, "device_timing_summary.csv");
 writetable(stateSummary,  "device_state_summary.csv");
+
+function configureLightFigures()
+    set(groot, "DefaultFigureColor", "white");
+    set(groot, "DefaultAxesColor", "white");
+    set(groot, "DefaultAxesXColor", "black");
+    set(groot, "DefaultAxesYColor", "black");
+    set(groot, "DefaultAxesZColor", "black");
+    set(groot, "DefaultAxesGridColor", [0.72 0.72 0.72]);
+    set(groot, "DefaultAxesMinorGridColor", [0.86 0.86 0.86]);
+    set(groot, "DefaultTextColor", "black");
+    set(groot, "DefaultLegendColor", "white");
+    set(groot, "DefaultLegendTextColor", "black");
+    set(groot, "DefaultLegendEdgeColor", [0.35 0.35 0.35]);
+end
+
+function saveReportFigure(fig, outDir, fileStem, widthCm, heightCm)
+    set(fig, "Color", "white", "InvertHardcopy", "off");
+    set(fig, "Units", "centimeters", "Position", [2 2 widthCm heightCm]);
+    set(fig, "PaperUnits", "centimeters", "PaperPosition", [0 0 widthCm heightCm]);
+    ax = findall(fig, "Type", "axes");
+    set(ax, ...
+        "Color", "white", ...
+        "XColor", "black", ...
+        "YColor", "black", ...
+        "ZColor", "black", ...
+        "GridColor", [0.72 0.72 0.72], ...
+        "MinorGridColor", [0.86 0.86 0.86], ...
+        "FontSize", 13, ...
+        "LineWidth", 1.1, ...
+        "Box", "on");
+    set(findall(fig, "Type", "histogram"), "LineWidth", 1.1, "EdgeColor", "black");
+    set(findall(fig, "Type", "line"), "LineWidth", 1.2, "MarkerSize", 5);
+    set(findall(fig, "Type", "legend"), ...
+        "Color", "white", ...
+        "TextColor", "black", ...
+        "EdgeColor", [0.35 0.35 0.35]);
+    titleHandles = get(ax, "Title");
+    xlabelHandles = get(ax, "XLabel");
+    ylabelHandles = get(ax, "YLabel");
+    setTextSize(titleHandles, 13, "bold");
+    setTextSize(xlabelHandles, 12, "normal");
+    setTextSize(ylabelHandles, 12, "normal");
+    exportgraphics(fig, fullfile(outDir, fileStem + ".pdf"), "ContentType", "vector", "BackgroundColor", "white");
+end
+
+function setTextSize(handles, fontSize, fontWeight)
+    if iscell(handles)
+        handles = [handles{:}];
+    end
+    set(handles, "FontSize", fontSize, "FontWeight", fontWeight, "Color", "black");
+end
