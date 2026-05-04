@@ -23,9 +23,10 @@ end
 inFile = fullfile(scriptDir, 'constrained_simulation_validation_log.csv');
 
 % Hold/contact window used in your analysis
-tStart = 18.5;
-tEnd   = 24.2;
-
+% tStart = 18.5;
+% tEnd   = 24.2;
+tStart = 20.5;
+tEnd   = 23.2;
 % Optional output
 saveFigures = true;
 outPrefix = 'constrained_motion';

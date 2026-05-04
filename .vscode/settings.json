@@ -83,7 +83,11 @@
       "xlocinfo": "cpp",
       "xmemory": "cpp",
       "xstring": "cpp",
-      "xtr1common": "cpp"
+      "xtr1common": "cpp",
+      "condition_variable": "cpp",
+      "cwctype": "cpp",
+      "numbers": "cpp",
+      "semaphore": "cpp"
     }
 
   }

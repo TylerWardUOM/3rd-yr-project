@@ -6,6 +6,20 @@
 
 ⚠️ Penetration is NOT a performance metric here — it is the input to the force model.
 
+## Hold-region selection (reproducibility)
+
+Hold regions used for sustained-contact statistics were selected manually in the analysis scripts. The `simulation_validation_analysis.m` script accepts a `datasetPreset` which defines the time window used for the hold-region metrics; the presets and corresponding hold windows used for the reported metrics are:
+
+- `single_depth_hold`: hold region tStart = 8.0 s, tEnd = 10.0 s (ignoreStart = 4.0 s)
+- `multi_depth_holds`: hold region tStart = 3.0 s, tEnd = 11.0 s (ignoreStart = 0.0 s)
+- `no_contact`: tStart = 0.0 s, tEnd = 30.0 s (ignoreStart = 0.0 s)
+- `Motors_Contact`: tStart = 30.0 s, tEnd = 60.0 s (ignoreStart = 30.0 s)
+- `constrained`: tStart = 11.5 s, tEnd = 24.2 s (ignoreStart = 0.0 s)
+- `sim_saturation`: tStart = 3.0 s, tEnd = 11.0 s (ignoreStart = 0.0 s)
+
+If `datasetPreset` is set to `default_build_log`, the script expects the user to set `tStart`/`tEnd` manually before running. Exact sample counts and the values used to compute each reported statistic are captured in the analysis scripts' `reportSummary` structs (see `Test Data/*_analysis.m`) and can be extracted automatically; tell me if you want me to compute and insert sample counts for each metric into this table.
+
+
 ---
 
 ## **5.2.1 Single-Depth Wall Contact**

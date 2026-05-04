@@ -3,7 +3,7 @@ The section focuses on what was tested and how measurements were collected; quan
 
 \subsection{Communication Performance Tests}
 
-Communication performance was characterised using the dedicated \texttt{serial\_tests} utility described in Section~\ref{sec:logging_communication_validation}. The tool supports two modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. Both modes export CSV files for offline statistical analysis.
+Communication performance was characterised using the dedicated \texttt{serial\_tests} utility described in Section~\ref{sec:logging_communication_validation}. Its rate/integrity and ping--echo modes export CSV files for offline statistical analysis.
 
 Tests were conducted across target transmission rates from 100~Hz to 2000~Hz to assess the effect of increasing packet frequency on reliability and timing performance.
 
@@ -27,76 +27,56 @@ These results were used to characterise communication latency and timing consist
 
 \subsubsection{End-to-End Host-Side Timing Test}
 
-In addition to the standalone communication tests, end-to-end timing of the host-side haptic pipeline was evaluated using the runtime logging framework described in Section~\ref{sec:logging_communication_validation}. Logs were captured during normal closed-loop operation and exported to \texttt{device\_timing.csv} and \texttt{device\_state\_log.csv} for offline analysis in MATLAB.
-
-The evaluation included host-side end-to-end latency between state-packet parsing and torque command transmission, intermediate pipeline delays between communication, haptic processing, and transmission stages, matched state-command sequence consistency, parsed state-packet inter-arrival timing, sequence gap statistics, and estimated parsed packet rate with MCU-side timing trends.
+In addition to the standalone communication tests, end-to-end timing of the host-side haptic pipeline was evaluated using the runtime logging framework described in Section~\ref{sec:logging_communication_validation}. Logs captured during normal closed-loop operation were analysed in MATLAB to compute host-side latency, intermediate pipeline delays, matched state-command consistency, parsed state-packet inter-arrival timing, sequence gaps, parsed packet rate, and MCU-side timing trends.
 
 Because the host and microcontroller clocks were not synchronised, the analysis was restricted to host-side timing differences and trend-based interpretation of MCU timestamps. Absolute one-way latency between host and device could therefore not be inferred directly.
 
 \subsection{Simulation Validation} \label{sec:method_simulation}
 
-Simulation validation tests were designed to assess the correctness and qualitative behaviour of the haptic rendering model independently of physical actuator dynamics.
+Simulation validation tests were designed to assess the command-side behaviour of the haptic rendering model independently of physical actuator dynamics.
 
-Two simulation-focused evaluations were performed. First, the virtual wall test assessed the unilateral contact response of the proxy-based virtual coupling model. Second, constrained motion along a virtual surface was evaluated to verify that the model generated forces predominantly normal to the surface while allowing tangential motion. Physical closed-loop interaction with actuator feedback was evaluated separately through the stable-contact and constrained-motion hardware tests in Sections~\ref{sec:method_stable_contact_hardware} and~\ref{sec:method_constrained_motion_hardware}.
-
-%The second test is the stable force in hardware validation and maybe should be moved
+The simulation tests focused on planar virtual-wall behaviour. A single-depth hold test assessed whether the rendered force command remained steady during sustained penetration. A multi-depth hold test quantified the force--penetration relationship by holding the end-effector at several penetration depths and fitting the logged rendered-force data. Additional free-space and deep-penetration checks verified that the renderer produced negligible force outside contact and that host-side force saturation was applied under extreme penetration. Physical closed-loop interaction with actuator feedback was evaluated separately through the repeated-contact and constrained-motion hardware tests in Sections~\ref{sec:method_stable_contact_hardware} and~\ref{sec:method_constrained_motion_hardware}.
 
 \subsubsection{Virtual Wall Test}
 
-A virtual wall test was performed to validate the basic unilateral contact behaviour of the haptic rendering engine. A planar contact boundary was defined in the virtual environment, and the device end-effector was manually moved toward and against the wall during repeated trials.
+A virtual wall test validated unilateral contact behaviour by moving the end-effector toward and against a planar boundary. The evaluation examined whether force was near zero outside contact, remained steady during a single-depth hold, increased approximately linearly with penetration depth, and matched the implemented spring--damper coupling model while the proxy remained constrained to the wall.
 
-This test verified that the proxy-based rendering method prevented penetration of the constrained proxy through the wall surface while allowing the unconstrained device position to continue moving, thereby generating a restoring virtual coupling force.
+\subsubsection{Free-Space and Saturation Checks}
 
-The evaluation examined the absence of significant rendered force outside the wall, the increase in force with penetration depth, and qualitative agreement with the implemented spring--damper coupling model.
-
-\subsubsection{Constrained Motion Along a Virtual Surface}
-
-The system was further evaluated for its ability to support constrained motion along a virtual surface.
-During this test, the end-effector was brought into contact with a planar wall and allowed to move along the surface while maintaining contact. This behaviour arises naturally from the proxy-based rendering method, where motion normal to the surface is resisted while tangential motion remains unconstrained.
-
-The evaluation assessed the ability to maintain contact during motion, the absence of resistance to tangential movement, stability during sustained sliding interaction, and smooth transitions between free-space and constrained motion.
+Free-space and deep-penetration checks were used to verify the boundary cases of the renderer. The free-space check confirmed that no significant force was generated outside contact. The deep-penetration check verified that large virtual penetrations were limited by the configured host-side force clamp before torque commands were generated.
 
 \subsection{Safety Validation}
 
-Safety validation tests ensured that the system remained bounded and behaved predictably under both normal and fault conditions. These tests focused on verifying torque saturation, rate limiting, and watchdog-based fail-safe behaviour.
+Safety validation tests evaluated whether the system remained bounded and behaved predictably under both normal and fault conditions. These tests focused on checking torque saturation, rate limiting, and watchdog-based fail-safe behaviour.
+The reported safety metrics were saturation fraction, maximum raw and clamped torque, applied torque cap, measured torque slew-rate percentiles, watchdog activation count, total watchdog-active time, activation duration, and sequence-matched command consistency.
 
 \subsubsection{Torque Saturation Test}
 
-A torque saturation test verified that actuator command limits were correctly enforced across both host and embedded layers.
-
-Force outputs were limited on the host side to a predefined maximum, and the embedded controller applied an additional clamp to ensure commands remained within safe bounds. Testing confirmed that host-side force commands were correctly limited, transmitted torque commands were further bounded by the embedded controller, and actuator output remained within safe and predictable limits.
+A torque saturation test verified that host-side force limits and embedded torque clamps kept actuator commands within safe bounds during high-force contact.
 
 \subsubsection{Rate Limiting Test}
 
 A rate limiting test evaluated the effect of constraining the rate of change of commanded torque at the embedded controller level.
 
-A slew-rate limiter was implemented to reduce high-frequency oscillations and improve stability during rapid contact transitions. Testing verified that rapid command changes were smoothed into bounded torque ramps, high-frequency oscillations were reduced during contact events, and overall system stability improved during interaction.
+Testing verified that the embedded slew-rate limiter smoothed rapid command changes into bounded torque ramps and reduced high-frequency oscillation during contact transitions.
 
 \subsubsection{Watchdog Timeout Test}
 
 A watchdog timeout test verified safe system behaviour under communication loss by interrupting the incoming command stream during operation.
 
-The embedded controller response confirmed that the watchdog triggered reliably when command updates ceased, commanded torque was removed within the intended timeout window, and the device returned to a safe passive state.
+The test verified that the watchdog triggered when command updates ceased, removed commanded torque within the timeout window, and returned the device to a passive state.
 
 \subsection{Hardware Validation} \label{sec:method_hardware_validation}
 
-Hardware validation assessed the behaviour of the physical actuation system and overall device interaction, focusing on qualitative evaluation of responsiveness and stability.
+Hardware validation assessed the behaviour of the physical actuation system and overall device interaction using the updated runtime logging framework. Because no calibrated force sensor or phase-current measurement was available, the tests did not measure physical output force directly. Instead, logged position, proxy position, rendered force command, host torque command, and device-side applied torque were used as quantitative indicators of contact behaviour, bounded motion, command consistency, and practical interaction quality.
 
-\subsubsection{Actuator Torque Response Characterisation}
+\subsubsection{Repeated Contact Test} \label{sec:method_stable_contact_hardware}
 
-Basic actuator response behaviour was evaluated using standalone motor testing prior to system integration. Step changes in commanded torque were applied, and the resulting mechanical response was assessed qualitatively.
+A repeated-contact test evaluated the behaviour of the full closed-loop system during sustained interaction with a virtual surface.
 
-The evaluation examined responsiveness to torque changes, presence of oscillatory behaviour, smoothness of motion, and repeatability across repeated inputs. This represents qualitative validation rather than precise quantitative characterisation.
-
-\subsubsection{Stable Contact Test} \label{sec:method_stable_contact_hardware}
-
-A stable contact test evaluated the behaviour of the full closed-loop system during sustained interaction with a virtual surface.
-
-The end-effector was brought into contact with a virtual object and maintained in contact while observing the resulting force feedback behaviour. The evaluation assessed the ability to maintain continuous contact without instability, the presence of oscillation or chatter, consistency of the rendered resistive force, and overall usability of the interaction.
+The end-effector was brought into contact with a virtual object while actuator feedback was enabled. Logged data were used to assess whether penetration remained bounded and whether the commanded force--penetration relationship remained consistent with the implemented virtual coupling model. The reported metrics were mean, percentile, and maximum penetration depth, together with the fitted force--penetration stiffness and coefficient of determination. Qualitative observations of oscillation, chatter, and usability were used only to contextualise the logged results.
 
 \subsubsection{Constrained Motion Hardware Test} \label{sec:method_constrained_motion_hardware}
 
 Hardware constrained-motion behaviour was evaluated during physical operation of the device.
-The end-effector was brought into contact with a planar virtual surface and moved along it while maintaining contact. The evaluation assessed whether the system produced forces predominantly normal to the surface, resisted penetration, and allowed motion tangential to the constraint without instability.
-
-In addition, the device was released near the virtual surface to assess whether the rendered contact force could support the end-effector passively in a gravity-like interaction scenario.
+The end-effector was brought into contact with a planar virtual surface and moved along it while maintaining contact. Quantitative metrics were computed over a sustained-contact window, excluding entry and release transients. The evaluation assessed whether the logged force command was predominantly normal to the surface, whether normal displacement remained bounded, and whether tangential motion could be produced without large oscillatory excursions. The reported metrics were mean and maximum penetration, normal-to-tangential force ratio, sustained-contact force magnitude, and force coefficient of variation.

@@ -1,8 +1,6 @@
-This section describes the system design and realised implementation, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
+This section describes the realised system design, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
 
-The system is designed to prioritise real-time stability, modularity, and reproducibility within the constraints of a low-cost prototype. Stable haptic interaction requires high update rates and low end-to-end latency 
-(Section~\ref{sec:Literature Review}); 
- accordingly, the architecture assumes high-frequency embedded torque control and asynchronous host-side computation. Each major subsystem runs on its own thread and exchanges data through explicit message channels, reflecting a trade-off between cost, achievable force fidelity, and system stability, with particular emphasis on maintaining stable interaction under non-negligible communication latency.
+The system prioritises bounded real-time interaction, modularity, and reproducibility within the constraints of a low-cost prototype. Because haptic interaction is sensitive to update rate and end-to-end latency (Section~\ref{sec:Literature Review}), time-critical embedded control is separated from asynchronous host-side simulation, rendering, and logging.
 
 \subsection{System Overview}
 
@@ -58,8 +56,27 @@ A complete mechanical assembly, including component layout and link geometry, is
 The assembled prototype is shown in Fig.~\ref{fig:final_device}, illustrating the realised mechanical structure and actuator configuration.
 \begin{figure}[H]
 	\centering
-	\includegraphics[height=0.28\textheight]{images/final_build_pic.jpg}
-	\caption{Final assembled 2-DOF haptic interface prototype. The system consists of a planar two-link mechanism with BLDC gimbal motors, magnetic encoders, and a belt-driven base joint for torque amplification.}
+	\begin{tikzpicture}
+		\node[anchor=south west, inner sep=0] (img) at (0,0)
+		{\includegraphics[height=0.28\textheight]{images/final_build_pic.jpg}};
+		\begin{scope}[x={(img.south east)}, y={(img.north west)}]
+			\tikzset{
+				callout/.style={draw, fill=white, fill opacity=0.88, text opacity=1, rounded corners=1pt, inner sep=1.5pt, font=\scriptsize},
+				arrow/.style={->, line width=0.45pt}
+			}
+			\node[callout] (handle) at (0.78,0.86) {End-effector handle};
+			\draw[arrow] (handle.west) -- (0.73,0.78);
+			\node[callout] (link) at (0.61,0.71) {Upper link};
+			\draw[arrow] (link.west) -- (0.48,0.66);
+			\node[callout] (elbow) at (0.20,0.76) {Elbow joint encoder};
+			\draw[arrow] (elbow.east) -- (0.29,0.70);
+			\node[callout] (base) at (0.38,0.18) {Base motor and belt stage};
+			\draw[arrow] (base.east) -- (0.48,0.28);
+			\node[callout] (electronics) at (0.81,0.24) {Embedded electronics};
+			\draw[arrow] (electronics.west) -- (0.72,0.18);
+		\end{scope}
+	\end{tikzpicture}
+	\caption{Final assembled 2-DOF haptic interface prototype, annotated with the main mechanical and embedded components.}
 	\label{fig:final_device}
 \end{figure}
 
@@ -69,11 +86,7 @@ Due to hardware constraints, no direct force sensing or current measurement was 
 
 \subsection{Communication Protocol and Device Interface}
 
-Host--device communication uses fixed-format binary packets over a USB virtual serial link at high update rate (target 1\,kHz exchange). Two packet families are used: device state packets (firmware \(\rightarrow\) host), containing sequence number, MCU timestamp, and joint angles; and torque command packets (host \(\rightarrow\) firmware), containing command sequence, referenced state sequence, and commanded joint torques.
-
-Sequence numbers detect dropped or out-of-order packets, while MCU timestamps provide a reference for timing analysis and latency measurement.
-
-Both packet types include a two-byte header for stream re-synchronisation and a checksum for integrity checks.
+Host--device communication uses fixed-format binary packets over a USB virtual serial link at a target 1\,kHz exchange rate. Device state packets contain a sequence number, MCU timestamp, and joint angles; torque command packets contain the command sequence, referenced state sequence, and commanded joint torques. Sequence numbers support drop and ordering checks, while timestamps support timing analysis. Both packet types include a two-byte header for stream re-synchronisation and a checksum for integrity checks.
 
 On the host, serial I/O and protocol handling are split across two layers: \textit{SerialLink} providing a low-level COM read/write abstraction, and \textit{DeviceAdapter} handling packet parsing, forward kinematics, Cartesian force-to-joint torque mapping, and message-bus integration.
 
@@ -82,26 +95,12 @@ The device adapter runs in a dedicated 1\,kHz loop. At each cycle, it retains th
 This ensures that control decisions are always based on the most recent available state, avoiding backlog-induced latency and improving responsiveness under high update rates.
 
 \subsection{Host Software Architecture}
-%TODO: Swim lane diagram in apendix
-%\begin{figure}[htbp]
-%	\centering
-%	\fbox{%
-%		\parbox[c][6cm][c]{0.85\textwidth}{%
-%			\centering
-%			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-%			System architecture diagram\\
-%			(threads + message channels)
-%		}
-%	}
-%	\caption{Overview of the host-side software architecture.}
-%	\label{fig:software_architecture}
-%\end{figure}
 
 The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. %Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
 
 Inter-thread communication is implemented through a message bus with two channel types: queue channels for discrete commands and events (e.g., world edits, wrench messages), and snapshot channels for latest-value shared state (e.g., world snapshots).
 
-This separation allows command traffic to be drained in batches while continuous state can be accessed with low latency.
+This separation allows command traffic to be drained in batches while continuous state can be accessed with low latency. Snapshot channels are used specifically to decouple the haptic loop from non-uniform packet delivery: when serial packets arrive in bursts, the loop consumes the newest state rather than accumulating stale samples in the feedback path.
 
 \subsubsection{World and Rendering Subsystems}
 
@@ -119,27 +118,13 @@ Force output is generated using a proxy-based virtual coupling model, in which a
 \[
 \mathbf{F} = K\left(\mathbf{x}_{p}-\mathbf{x}_{t}\right) + D\left(\mathbf{v}_{p}-\mathbf{v}_{t}\right)
 \]
-where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and \(D = 0.7\cdot 2\sqrt{KM}\).
+where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and \(D = 0.7\cdot 2\sqrt{KM}\). The stiffness was selected as a conservative value for the measured communication delay while still producing clearly perceptible contact forces; the fitted stiffness reported in Section~\ref{sec:results_force_penetration} and the observed contact behaviour discussed in Section~\ref{sec:discussion_stability} are used to evaluate this choice.
 
 This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a constrained dynamic system. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford.
 
-Accordingly, the force command is generated using a deliberately conservative coupling configuration, with damping and actuator-side limiting used to reduce abrupt force changes during contact transitions. The stability implications of this design are discussed in Section~\ref{sec:discussion_stability}.
+Accordingly, the force command is generated using a deliberately conservative coupling configuration, with damping and actuator-side limiting used to reduce abrupt force changes during contact transitions. The observed behaviour of this design is discussed in Section~\ref{sec:discussion_stability}.
 
 To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N before publication.
-
-%\begin{figure}[htbp]
-%	\centering
-%	\fbox{%
-%		\parbox[c][6cm][c]{0.75\textwidth}{%
-%			\centering
-%			\textbf{PLACEHOLDER FIGURE}\\[6pt]
-%			Proxy-based haptic rendering\\
-%			(tool, proxy, surface, force vector)
-%		}
-%	}
-%	\caption{Proxy-based contact rendering using virtual coupling.}
-%	\label{fig:haptic_proxy}
-%\end{figure}
 
 \subsubsection{Physics Simulation Integration}
 
@@ -151,6 +136,6 @@ A fixed-step accumulator scheme is used to decouple simulation stability from va
 
 To avoid introducing disk latency into the 1\,kHz control path, runtime logging is performed asynchronously. The device thread publishes structured timing and state messages to dedicated logging channels, and a background logger thread drains these channels into memory.
 
-At shutdown, logs are exported to two CSV files: \texttt{device\_timing.csv}, containing matched state-command timing records for closed-loop control cycles including host-side timestamps associated with packet parsing, tool-state publication, wrench consumption, and torque command transmission; and \texttt{device\_state\_log.csv}, containing a record of every valid parsed incoming state packet including host receive timestamps, packet sequence identifiers, MCU timestamps, and measured joint angles.
+At shutdown, logs are exported to \texttt{device\_timing.csv} for matched state-command timing records and \texttt{device\_state\_log.csv} for every valid parsed state packet. The timing log captures the packet parsing, tool publication, wrench consumption, and torque transmission timestamps used in Section~\ref{sec:results_host_timing}.
 
-A separate communication test executable (\texttt{serial\_tests}) was also implemented to characterise serial performance independently of the full application. It supports two operating modes: a packet rate and integrity mode for analysing streamed device packets, and a ping--echo mode for measuring round-trip latency. In both modes, incoming serial data are processed using a buffered parser with explicit packet header search, checksum validation, and byte-wise re-synchronisation to ensure robustness to fragmented or corrupted input. Results are exported to machine-readable CSV files for offline analysis.
+A separate \texttt{serial\_tests} executable characterises serial performance independently of the full application. It supports packet rate/integrity testing and ping--echo round-trip latency testing, using the same buffered parser, header search, checksum validation, and re-synchronisation approach as the main device interface.

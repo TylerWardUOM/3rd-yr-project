@@ -1,15 +1,12 @@
 This section reports the measured outcomes of the Section~\ref{sec:experiments} tests. It presents communication timing, simulation behaviour, safety outcomes, and hardware interaction observations.
 Interpretation of these findings and their design implications is deferred to Section~\ref{sec:discussion}.
-%o DO NOT duplicate Results in Discussion. DO NOT duplicate Discussion in Conclusion. is what it says in handboox so make sure all discussion stuff not in here and left for discussion
 \subsection{Communication Performance}
 Communication performance was evaluated using standalone serial tests and runtime logging of the integrated haptic application.
 
 \subsubsection{Packet Rate and Integrity Results}
-Packet rate testing showed that communication performance remained stable over a wide range of requested transmission frequencies, although the behaviour was not uniform across all tested rates.
+Packet rate testing showed that communication performance remained consistent over a wide range of requested transmission frequencies, although the behaviour was not uniform across all tested rates.
 
 At lower requested rates of 100~Hz and 250~Hz, packet loss was observed, with drop fractions of approximately 20.3\% and 8.5\% respectively. In contrast, for requested rates of 500~Hz and above, no dropped packets were observed in the recorded data, as shown in Fig.~\ref{fig:comm_overview}(a), where packet loss occurs only at the lowest transmission rates. Out-of-order packets were extremely rare across all higher-rate tests, with only a single out-of-order event recorded in each case.
-
-Packet loss was more pronounced at lower transmission rates, a counterintuitive finding that may reflect the influence of host-side scheduling on USB buffer flushing behaviour; this is discussed further in Section~\ref{sec:discussion_communication_latency}.
 
 The measured receive rate tracked the requested transmission rate closely across the full test range. As shown in Fig.~\ref{fig:comm_overview}(b), the relationship between requested and measured rate was approximately linear, indicating that the communication system maintained throughput proportional to the commanded transmission frequency.
 
@@ -17,19 +14,17 @@ The measured receive rate tracked the requested transmission rate closely across
 	\centering
 	
 	\begin{subfigure}{0.48\textwidth}
-		\includegraphics[width=\linewidth]{images/Dropped packets vs requested rate.pdf}
+		\includegraphics[width=0.95\linewidth]{images/Dropped packets vs requested rate.pdf}
 		\caption{Dropped packets}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}{0.48\textwidth}
-		\includegraphics[width=\linewidth]{images/Requested vs measured packet rate.pdf}
+		\includegraphics[width=0.95\linewidth]{images/Requested vs measured packet rate.pdf}
 		\caption{Rate tracking}
 	\end{subfigure}
 	
 	\caption{
-		Communication performance across transmission rates. 
-		(a) Total dropped packets as a function of requested rate, showing packet loss only at low frequencies. 
-		(b) Measured receive rate versus requested transmission rate, demonstrating approximately linear tracking.
+		Communication performance across transmission rates. Packet loss occurred only at low frequencies, while measured receive rate tracked the requested rate approximately linearly.
 	}
 	\label{fig:comm_overview}
 \end{figure}
@@ -38,10 +33,9 @@ Inter-arrival jitter, measured as the standard deviation of packet inter-arrival
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/Packet timing jitter vs requested rate.pdf}
+	\includegraphics[width=0.58\textwidth]{images/Packet timing jitter vs requested rate.pdf}
 	\caption{
-		Standard deviation of packet inter-arrival time as a function of requested transmission rate. 
-		Jitter decreases with increasing rate, although occasional large timing excursions remain present.
+		Packet inter-arrival jitter decreases with requested rate, although occasional large timing excursions remain present.
 	}
 	\label{fig:jitter}
 \end{figure}
@@ -50,14 +44,13 @@ Overall, the serial link supported packet rates at or above 1~kHz with negligibl
 
 \subsubsection{Round-Trip Latency Results} \label{sec:results_rtt}
 Round-trip latency results were highly consistent across all tested ping intervals. For nominal transmission intervals of 1~ms, 2~ms, and 10~ms, the success rate was 100\% in all cases, with no timeouts observed over 1000 samples per test.
-The mean measured round-trip latency remained approximately constant across all three test conditions, with values of 15.60~ms, 15.64~ms, and 15.67~ms respectively. Similarly, the 95th and 99th percentile RTT values were tightly grouped around 16.2--16.4~ms, indicating stable and predictable timing behaviour across repeated measurements. This behaviour is further illustrated in Fig.~\ref{fig:rtt_cdf}, where the cumulative distributions for all three tests overlap closely and rise sharply at approximately 15--16~ms, indicating that RTT is largely independent of the selected ping interval.
+The mean measured round-trip latency remained approximately constant across all three test conditions, with values of 15.60~ms, 15.64~ms, and 15.67~ms respectively. Similarly, the 95th and 99th percentile RTT values were tightly grouped around 16.2--16.4~ms, indicating consistent and predictable timing behaviour across repeated measurements. This behaviour is further illustrated in Fig.~\ref{fig:rtt_cdf}, where the cumulative distributions for all three tests overlap closely and rise sharply at approximately 15--16~ms, indicating that RTT is largely independent of the selected ping interval.
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/CDF of round-trip latency.pdf}
+	\includegraphics[width=0.6\textwidth]{images/CDF of round-trip latency.pdf}
 	\caption{
-		Cumulative distribution functions of measured round-trip latency for nominal ping intervals of 1~ms, 2~ms, and 10~ms. 
-		The distributions overlap closely and rise sharply at approximately 15--16~ms, indicating that round-trip latency is dominated by a largely fixed delay component rather than by the selected ping interval.
+		Cumulative distributions of RTT for 1~ms, 2~ms, and 10~ms ping intervals. The overlapping curves indicate a largely fixed 15--16~ms delay component.
 	}
 	\label{fig:rtt_cdf}
 \end{figure}
@@ -75,10 +68,9 @@ The host-side end-to-end latency, defined as the time between state-packet parsi
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/Matched host-side end-to-end latency distribution.pdf}
+	\includegraphics[width=0.64\textwidth]{images/Matched host-side end-to-end latency distribution.pdf}
 	\caption{
-		Distribution of matched host-side end-to-end latency, measured from state-packet parsing to completion of torque command transmission. 
-		The latency is concentrated at low values, with prominent peaks near 0~ms and around 0.5~ms, and only a small number of higher-latency outliers.
+		Matched host-side latency from state-packet parsing to torque-command transmission, concentrated at low values with few higher-latency outliers.
 	}
 	\label{fig:e2e_hist}
 \end{figure}
@@ -93,137 +85,154 @@ Analysis of host-side parsed-packet inter-arrival timing revealed significant va
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/Raw parsed state packet inter-arrival distribution.pdf}
+	\includegraphics[width=1.0\textwidth]{images/Raw parsed state packet inter-arrival distribution(final).pdf}
 	\caption{
-		Distribution of host-side inter-arrival time between consecutively parsed state packets. 
-		A dominant peak near 0~ms and a smaller concentration around 14--16~ms show non-uniform host-side packet timing.
+		Host-side parsed-packet inter-arrival distribution. The secondary peak corresponds to the 95th--99th percentile range of 14.5--15.8~ms.
 	}
 	\label{fig:raw_host_hist}
 \end{figure}
 
-Despite this non-uniform host-side processing pattern, analysis of MCU-side timestamps showed that the embedded system maintained a stable and consistent update rate. The effective MCU period per state was approximately 1.00~ms, corresponding to an update rate of 1000~Hz, with very low variability.
+Despite this non-uniform host-side processing pattern, analysis of MCU-side timestamps showed that the embedded system maintained a consistent update rate. The effective MCU period per state was approximately 1.00~ms, corresponding to an update rate of 1000~Hz, with very low variability.
 
 Taken together, the embedded controller generated packets at a regular rate, while host-side packet timing was non-uniform. Host-side processing latency nevertheless remained low.
 
-% TODO: Repeat this analysis after adding t_chunk_read_ns to DeviceStateLogMsg.
-% The updated instrumentation should log:
-%   (1) the host timestamp when readAvailable() returns a non-empty chunk
-%   (2) the host timestamp when each packet is parsed from incomingBuffer_
-%
-% This will allow separation of:
-%   - chunk delivery timing to the host
-%   - packet parsing timing within the host update loop
-%
-% With the updated log, compute and report:
-%   - unique chunk inter-arrival time statistics
-%   - chunk-to-parse delay statistics
-%   - comparison between chunk timing and parse timing
-%
-% If the updated results show that chunk delivery itself is bursty while chunk-to-parse
-% delay remains small, replace the discussion paragraph above with a stronger conclusion
-% such as:
-%
-% "Additional instrumentation distinguished chunk delivery timing from packet parsing timing.
-% The results showed that burstiness originated primarily in chunk delivery to the host
-% rather than in packet parsing itself, supporting the interpretation that USB CDC buffering
-% and host operating-system scheduling were the dominant causes of non-uniform host-side
-% packet timing."
-%
-% If instead chunk delivery is relatively uniform but chunk-to-parse delay is large or bursty,
-% revise the interpretation to emphasise polling-loop timing or host-side processing effects.
 \subsection{Simulation Validation Results}
 
-Simulation validation was performed as described in Section~\ref{sec:method_simulation}, 
-with actuator output disabled.
+Simulation validation was performed as described in Section~\ref{sec:method_simulation}, with actuator output disabled. These tests evaluated the haptic rendering model independently of physical actuator dynamics.
 
-\subsubsection{Virtual Wall Model Response} \label{sec:results_virtual_wall}
+\subsubsection{Virtual Wall Contact Response} \label{sec:results_virtual_wall}
 
-A virtual wall test was performed to evaluate the output forces generated by the haptic rendering engine in isolation from physical feedback.
+The virtual wall response was evaluated using a single-depth hold test. During contact, the rendered force magnitude had a mean value of 11.46~N and a standard deviation of 0.30~N, corresponding to a coefficient of variation of 0.026.
 
-The rendered force exhibited the expected unilateral contact behaviour. No significant force was produced when the end-effector remained outside the virtual boundary, while penetration resulted in a restoring force that increased with penetration depth, consistent with the implemented spring--damper virtual coupling model. This behaviour matches the expected response of a unilateral contact model, in which force is applied only during penetration and acts along the surface normal.
+As shown in Fig.~\ref{fig:single_depth_contact}, force was generated only when the end-effector penetrated the virtual wall. When the end-effector was outside the wall, the output force remained approximately zero.
 
-However, this behaviour degraded under conditions of large penetration. In these cases, both the magnitude and direction of the rendered force became inconsistent. This is attributed to limitations of the projection-based contact model, where the closest-point computation becomes less reliable at greater distances from the surface. As a result, discontinuities in the estimated surface normal and projection point can arise, leading to reduced or misdirected restoring forces.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.58\textwidth]{images/SingleDepth_Force_Vs_Time.png}
+	\caption{
+		Single-depth virtual wall contact test. The rendered \( |\mathbf{F}| \) remains steady during sustained contact, with mean 11.46~N, standard deviation 0.30~N, and coefficient of variation 0.026.
+	}
+	\label{fig:single_depth_contact}
+\end{figure}
 
-This behaviour is consistent with known limitations of simplified projection-based proxy methods, where the proxy is recomputed from the current tool position without enforcing continuous constraint satisfaction. The implications for interaction stability and force fidelity are discussed in Sections~\ref{sec:discussion_stability} and~\ref{sec:discussion_design_tradeoffs}.
+\subsubsection{Force--Penetration Characterisation} \label{sec:results_force_penetration}
 
-Overall, this test confirms that the contact model produces physically consistent behaviour under typical interaction conditions, while highlighting limitations under extreme penetration scenarios.
+A multi-depth hold test was used to quantify the relationship between virtual penetration depth and logged rendered-force magnitude. A linear fit to the force--penetration data produced an effective stiffness of 489.57~N\,m$^{-1}$ with $R^2 = 0.9973$, as shown in Fig.~\ref{fig:force_penetration_fit}.
 
-\subsubsection{Constrained Motion Model Behaviour}
+This closely matches the configured virtual coupling stiffness of 500~N\,m$^{-1}$ over the tested range.
 
-The behaviour of constrained motion was also evaluated with actuator output disabled.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.58\textwidth]{images/MultiDepth_Force_Vs_Pen.png}
+	\caption{
+		Force--penetration relationship from the multi-depth hold test, with fitted stiffness 489.57~N\,m$^{-1}$ and $R^2 = 0.9973$.
+	}
+	\label{fig:force_penetration_fit}
+\end{figure}
 
-When the end-effector was moved along the virtual wall surface, the computed force remained predominantly normal to the surface, resisting motion into the wall while allowing tangential motion. This behaviour is characteristic of virtual fixture or constraint-based haptic rendering, where motion is restricted in selected directions while remaining unconstrained in others. Such behaviour is particularly relevant for training applications, where users must learn to follow constrained paths or avoid forbidden regions.
+\subsubsection{Free-Space and Saturation Behaviour}
 
-These results demonstrate that the simulation model can reliably generate constraint forces aligned with surface geometry, supporting its suitability for guidance and training-based interaction tasks.
+A no-contact test verified that the haptic engine produced no significant force output in free space.
+
+A deep-penetration test was also performed to verify host-side force limiting. Under large penetration, the commanded force saturated at approximately 31~N, as shown in Fig.~\ref{fig:force_saturation}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.58\textwidth]{images/Saturated_Force_Vs_Pen.png}
+	\caption{
+		Deep-penetration simulation test showing force saturation at the host-side limit of approximately 31~N.
+	}
+	\label{fig:force_saturation}
+\end{figure}
+
 
 \subsection{Safety Validation Results}
-Safety mechanisms were evaluated primarily as functional pass/fail protections.
+
+Safety validation evaluated whether torque commands remained bounded during high-force contact, rapid command transitions, and communication loss.
 
 \subsubsection{Torque Saturation}
-Torque saturation mechanisms were effective in maintaining bounded actuator behaviour. Under conditions where large forces were generated by the haptic rendering engine, the host-side force clamp limited the magnitude of commanded forces before transmission. This was further reinforced by an embedded torque clamp, ensuring that actuator outputs remained within predefined safety bounds.
+
+Torque saturation was evaluated using the deep-penetration test. Host-side saturation occurred in 31.10\% of samples, with the maximum raw torque command reaching 9.35~N\,m before being clamped to 7.66~N\,m. On the device side, the maximum applied torque was limited to 6.50~N\,m, matching the configured firmware torque cap.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.65\textwidth]{images/Command and Applied Torque.pdf}
+	\caption{
+		Torque saturation during deep-penetration testing: raw host commands are clamped before transmission and applied torque remains bounded by the 6.50~N\,m firmware cap.
+	}
+	\label{fig:torque_saturation}
+\end{figure}
 
 \subsubsection{Rate Limiting} \label{sec:results_rate_limiting}
-The implemented slew-rate limiter on the microcontroller significantly improved stability during interaction. Rapid changes in commanded torque were smoothed into gradual transitions, reducing high-frequency oscillations and improving the perceived stability of contact.
 
-Without rate limiting, abrupt force changes resulted in noticeable vibration and unstable behaviour. The inclusion of the rate limiter reduced these effects and contributed to stable sustained interaction.
+The embedded torque slew-rate limiter was evaluated from the applied torque logs. The measured 95th percentile slew rate was 55.000~N\,m\,s$^{-1}$, the 99th percentile was 55.005~N\,m\,s$^{-1}$, and the maximum measured slew rate was 55.010~N\,m\,s$^{-1}$. These values closely match the configured firmware limit of 55~N\,m\,s$^{-1}$.
 
-Overall, force clamping and rate limiting maintained bounded and stable actuator behaviour in the tested conditions.
+The slew-rate distribution is shown in Fig.~\ref{fig:slew_hist}. The dominant peak at 0~N\,m\,s$^{-1}$ corresponds to steady-state operation, while the sharp upper bound occurs at the configured 55~N\,m\,s$^{-1}$ limit.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.74\textwidth]{images/Torque Slew Rate Distribution.pdf}
+	\caption{
+		Applied torque slew-rate histogram showing a sharp upper bound at the firmware limit of 55~N\,m\,s$^{-1}$.
+	}
+	\label{fig:slew_hist}
+\end{figure}
+
 \subsubsection{Watchdog Timeout Behaviour}
 
-The watchdog was triggered consistently when command updates were absent for longer than the configured timeout interval of 10\,ms.
+The watchdog was evaluated by deliberately interrupting host torque-command transmission. A total of 259 watchdog activation events were recorded, corresponding to 6.81\% of device samples. The total watchdog-active time was 0.529~s, with a mean activation duration of 0.0020~s and a maximum duration of 0.311~s.
 
-When the stream of incoming torque commands from the host was interrupted, the embedded controller detected the absence of updates and reset actuator torque commands to zero after the predefined timeout interval.
+As shown in Fig.~\ref{fig:watchdog}, applied torque was removed during watchdog activation.
 
-This resulted in the device returning to a passive, unpowered state without exhibiting unintended motion or sustained force output.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.74\textwidth]{images/Device Safety Validation - Watchdog Focus.pdf}
+	\caption{
+		Watchdog validation during interrupted host command transmission. Applied torque is removed when the watchdog becomes active.
+	}
+	\label{fig:watchdog}
+\end{figure}
 
-The watchdog behaviour was observed to be consistent and repeatable across multiple trials, providing a robust safeguard against communication failure or host-side faults.
+\subsubsection{Command Consistency}
 
-These results confirm effective fail-safe behaviour during communication disruption.
+Sequence-matched host and device logs showed a mean applied torque magnitude error of 0.134~N\,m between host commands and device-side applied torque. For typical commanded torques of approximately 2--4~N\,m, this corresponds to roughly 3--7\% error. Larger differences occurred during transient command changes, especially when the slew-rate limiter and safety clamps were active.
+
 
 \subsection{Hardware Validation Results}
 
-Hardware validation focused on qualitative assessment of responsiveness, stability, and perceived interaction behaviour during representative haptic tasks. Because direct force measurement and current sensing were not available, the hardware results should be interpreted as evidence of qualitative interaction capability rather than calibrated force accuracy. In addition, final force-feedback testing was limited to single-axis actuation due to actuator failure, although both joints remained available for position sensing.
+Hardware validation was performed with actuator feedback enabled. Because direct force sensing and current measurement were not available, these results quantify interaction behaviour using logged position, force-command, and torque-command data rather than calibrated physical force output. Final force-feedback testing was limited to single-axis actuation due to actuator failure, although both joints remained available for position sensing.
 
+\subsubsection{Repeated Contact With Virtual Wall} \label{sec:results_stable_contact_hardware}
 
-\subsubsection{Actuator Torque Response Characterisation}
+During repeated motor-enabled contact with the virtual wall, penetration remained bounded. The mean penetration depth was 0.0342~m, the 95th percentile penetration depth was 0.0498~m, and the maximum penetration depth was 0.0517~m.
 
-Standalone testing of individual actuators demonstrated that the motor and control hardware were capable of producing responsive and stable torque output.
+The force--penetration relationship during this test remained approximately linear, with an effective stiffness of 490.99~N\,m$^{-1}$ and $R^2 = 0.9979$. This indicates that the rendered force command remained consistent with the virtual coupling model during closed-loop interaction.
+The fitted stiffness of 490.99~N\,m$^{-1}$ agrees closely with the simulation-only result of 489.57~N\,m$^{-1}$ in Section~\ref{sec:results_force_penetration}. This comparison is based on logged command data rather than direct force measurement.
 
-Step changes in commanded torque resulted in immediate and clearly observable changes in actuator behaviour. Although the actuator control did not provide a calibrated one-to-one relationship between commanded and physical torque, the response was generally smooth and repeatable, with limited overshoot and no sustained oscillatory instability under typical operating conditions.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.58\textwidth]{images/MotorON_Pen_vs_Tine.png}
+	\caption{
+		Motor-enabled repeated contact test. Maximum penetration was approximately 0.052~m; the force--penetration fit gave 490.99~N\,m$^{-1}$ with $R^2=0.9979$.
+	}
+	\label{fig:motor_contact_penetration}
+\end{figure}
 
-Some minor oscillations were observed at higher torque levels or during rapid command changes; however, these were mitigated through the use of torque rate limiting and appropriate control parameter selection.
+\subsubsection{Constrained Motion Along a Surface}
 
-Overall, the qualitative assessment indicated that the actuator response was sufficiently fast and stable for use in haptic rendering applications, where timely and predictable force output is required.
+Constrained motion was evaluated by bringing the end-effector into contact with the virtual wall and moving along the surface. Metrics were computed over the sustained-contact window from 20.50~s to 23.20~s, excluding entry and release transients. During this window, the mean penetration depth, computed from device--proxy separation, was 0.0492~m and the maximum penetration depth was 0.0512~m.
 
-\subsubsection{Stable Contact Behaviour (Virtual Wall Interaction)} \label{sec:results_stable_contact_hardware}
+Force decomposition showed that the rendered force was predominantly normal to the surface, with a median $|F_n|/|F_t|$ ratio of 17.72 and a 95th percentile ratio of 266.03. The sustained-contact force magnitude had a mean value of 24.68~N and a standard deviation of 0.72~N, corresponding to a coefficient of variation of 0.029.
 
-This test represents the physical realisation of the virtual wall interaction previously validated in Section~\ref{sec:results_virtual_wall}.
-The integrated system was able to support sustained contact interaction without loss of stability.
-During testing, continuous contact with a virtual surface could be maintained for extended periods without runaway motion or divergence. The rendered force remained consistent, and the interaction was perceived as stable and controllable.
+The device and proxy trajectories are shown in Fig.~\ref{fig:constrained_motion_traj}. The proxy remains aligned with the virtual wall, while the device trajectory shows bounded displacement normal to the wall and motion along the tangential direction.
 
-Some low-level vibration and noise were present during contact, particularly under high stiffness settings; however, this did not lead to instability and was reduced through the combined use of damping and torque rate limiting. The system remained responsive to user input while maintaining a stable resistive force, demonstrating stable contact interaction under real-time conditions despite communication variability.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/Constrained Motion - Device, Proxy, and Virtual Wall.pdf}
+	\caption{
+		Device and proxy trajectories during the analysed constrained-motion window from 20.50~s to 23.20~s. The proxy remains constrained to the wall while device normal displacement stays bounded.
+	}
+	\label{fig:constrained_motion_traj}
+\end{figure}
 
-It is noted that the large penetration effects observed during simulation validation were less prominent during physical interaction. In practice, the rendered contact force limits penetration depth by opposing user motion. However, due to the finite torque output of the actuators and the achievable virtual stiffness, some penetration still occurs during contact.
-This effect is more pronounced with small or thin virtual objects, where small physical displacements can correspond to significant virtual penetration.
-
-Although stable contact behaviour was achieved, the rendered force did not exhibit perfectly rigid characteristics. The interaction was observed to have a degree of compliance, with force increasing gradually rather than instantaneously. This behaviour reflects the combined effect of the torque slew-rate limiter, actuator torque capability limitations, control fidelity, and transmission behaviour, which are discussed further in Sections~\ref{sec:discussion_hardware_limitations} and~\ref{sec:discussion_design_tradeoffs}.
-
-Under attempts to push strongly through a rigidly rendered object, transmission non-idealities were also observed at the base joint. In particular, belt slip occurred under sufficiently high load, leading to a reduction in perceived resistance and a loss of consistency in the rendered force during extreme contact conditions. Although this behaviour was not dominant during typical interaction, it became apparent during aggressive push-through attempts and further limited the maximum practically renderable stiffness.
-
-\subsubsection{Stable Contact Behaviour (Constrained Motion)}
-
-Constrained motion behaviour was also evaluated under physical operation of the device. Given that physical actuation was available only on the first joint during final testing, the constrained-motion behaviour observed in hardware represents a partial implementation of the intended two-axis guidance behaviour.
-When the end-effector was brought into contact with a virtual surface and moved along it, the system generated forces predominantly normal to the surface, resisting penetration while allowing motion tangential to the constraint. This resulted in guidance-like behaviour consistent with the constrained motion model validated in simulation.
-
-An additional observation was made when the device was released near a virtual surface: when positioned close to the surface, the end-effector could remain supported by the rendered contact force, behaving similarly to a physical object resting against a rigid boundary, while release further from the surface led to free motion until contact was re-established.
-
-This behaviour demonstrates that the system is capable of producing physically intuitive constraint forces, while also reflecting the finite stiffness and force limits of the actuator system. The transition between free motion and constrained interaction was smooth and did not result in instability. The guidance behaviour was effective but not perfectly rigid, with some compliance and variation in constraint force observed during motion, consistent with the limited actuator stiffness and partial actuation available in the final hardware configuration.
-
-These results confirm stable and intuitive constraint interaction under real-time conditions.
-
-
-%\subsection{Summary of Results}
-%
-%Overall, the system achieved stable real-time interaction on a low-cost platform.
-%The main measured constraints were fixed communication latency (approximately 15--16~ms), finite actuator capability, partial actuation in final testing, and transmission non-idealities under high load.
-%Within these constraints, the tests showed low packet loss at high update rates, low host-side processing latency, consistent safety behaviour, and stable qualitative contact/constraint interaction.
+Across the motor-enabled hardware tests, penetration remained bounded and logged force-command behaviour remained approximately consistent with the implemented virtual coupling model.

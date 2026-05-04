@@ -159,19 +159,19 @@ Results are written to CSV for analysis.
 
 ### Haptic Contact Detection — Signed Distance Functions (SDF)
 
-Each virtual object's surface is represented by a Signed Distance Function φ(x). The value is positive outside the surface, zero on it, and negative inside. The gradient of φ points along the outward surface normal.
+Each virtual object's surface is represented by a Signed Distance Function phi(x). The value is positive outside the surface, zero on it, and negative inside. The gradient of phi points along the outward surface normal.
 
 **Plane SDF** — for a plane with unit normal n and origin distance d:
 
-    φ(x) = n · x − d
+    phi(x) = n dot x - d
 
 **Sphere SDF** — for a sphere with centre c and radius r:
 
-    φ(x) = |x − c| − r
+    phi(x) = |x - c| - r
 
-**Proxy projection** — when the tool penetrates a surface (φ < 0), a haptic proxy is snapped to the nearest point on the surface:
+**Proxy projection** — when the tool penetrates a surface (phi < 0), a haptic proxy is snapped to the nearest point on the surface:
 
-    x_proxy = x_tool − φ(x_tool) · n̂
+    x_proxy = x_tool - phi(x_tool) dot n_hat
 
 This is the *god-object / proxy* method for haptic rendering (Zilles & Salisbury, 1995).
 
@@ -181,7 +181,7 @@ This is the *god-object / proxy* method for haptic rendering (Zilles & Salisbury
 
 A virtual spring-damper couples the physical device position x_d to the constrained proxy position x_p. This produces the force fed back to the device:
 
-    F_cpl = K(x_p − x_d) + D(ẋ_p − ẋ_d)
+    F_cpl = K(x_p - x_d) + D(v_p - v_d)
 
 Parameters used in this implementation:
 
@@ -189,10 +189,10 @@ Parameters used in this implementation:
 |---|---|---|
 | K | 500 N/m | Spring stiffness |
 | M | 0.02 kg | Virtual mass (for critical damping calc) |
-| D | 0.7 × 2√(KM) ≈ 8.9 N·s/m | ~70% of critical damping, for stability |
-| F_max | 31 N | Hard force clamp — device safety limit |
+| D | 0.7 x 2 sqrt(KM) approx. 8.9 N s/m | ~70% of critical damping |
+| F_max | 31 N | Hard force clamp for device safety |
 
-The equal and opposite reaction force (−F) is applied as an impulse to the corresponding PhysX rigid body each physics step, so virtual objects can be pushed around by the device.
+The equal and opposite reaction force (-F) is applied as an impulse to the corresponding PhysX rigid body each physics step, so virtual objects can be pushed around by the device.
 
 ---
 
@@ -209,13 +209,13 @@ The end-effector orientation quaternion is a rotation of (q1 + q2) about the Z a
 
 ### Jacobian Torque Computation
 
-To render a Cartesian force F = [Fx, Fy] at the end-effector, joint torques are computed via the Jacobian transpose (τ = Jᵀ · F):
+To render a Cartesian force F = [Fx, Fy] at the end-effector, joint torques are computed via the Jacobian transpose (tau = J^T dot F):
 
-    J = [ −L1·sin(q1) − L2·sin(q1+q2),   −L2·sin(q1+q2) ]
-        [  L1·cos(q1) + L2·cos(q1+q2),    L2·cos(q1+q2)  ]
+    J = [ -L1 sin(q1) - L2 sin(q1+q2),   -L2 sin(q1+q2) ]
+        [  L1 cos(q1) + L2 cos(q1+q2),    L2 cos(q1+q2)  ]
 
-    τ1 = J11·Fx + J21·Fy
-    τ2 = J12·Fx + J22·Fy
+    tau1 = J11 Fx + J21 Fy
+    tau2 = J12 Fx + J22 Fy
 
 These torques are packed into a `TorqueCommandPacket` (with header `0xAA 0x55` and a checksum) and sent over serial to the MCU.
 
@@ -238,7 +238,7 @@ All inter-thread communication uses lock-free message bus channels (`Channel<T>`
 
 On shutdown, the application writes two CSV files to the working directory:
 
-- `device_timing.csv` — per-cycle timestamps (rx parse, tool publish, wrench consume, serial write) and signal values (q1, q2, fx, fy, τ1, τ2)
+- `device_timing.csv` — per-cycle timestamps (rx parse, tool publish, wrench consume, serial write) and signal values (q1, q2, fx, fy, tau1, tau2)
 - `device_state_log.csv` — every parsed state packet from the device (sequence number, MCU timestamp, joint angles)
 
 These are useful for diagnosing latency and communication issues.
