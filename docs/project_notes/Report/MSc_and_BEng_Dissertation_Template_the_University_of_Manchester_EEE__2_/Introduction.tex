@@ -32,7 +32,7 @@ To achieve this aim, the project pursued six SMART objectives:
 
 \begin{enumerate}[label=(\roman*)]
 	\item Build a low-cost physical haptic interface with a total hardware cost below £200, capable of measuring joint position and accepting actuator torque commands during closed-loop operation.
-	\item Achieve reliable host--device data exchange at a target update rate of 1\,kHz, with packet integrity assessed using measured receive rate, packet loss, out-of-order events, and round-trip latency.
+	\item Evaluate whether host--device packet streaming can be sustained at a nominal 1\,kHz rate, while separately quantifying packet integrity, burst behaviour, and round-trip latency to determine the effective closed-loop timing limitation.
 	\item Demonstrate that host-side computation is not the dominant timing bottleneck by measuring mean closed-loop host processing latency below 1\,ms during integrated operation.
 	\item Validate the host-side rendered contact model quantitatively using logged rendered-force data, showing a near-linear force--penetration relationship with fitted stiffness within 5\% of the configured virtual coupling value and high goodness of fit.
 	\item Verify safety behaviour by measuring force saturation, embedded torque limiting, torque slew-rate limiting, and watchdog torque removal during communication interruption.
@@ -46,7 +46,7 @@ Prior work on low-cost haptic platforms focuses primarily on hardware design~\ci
 \begin{itemize}
 	\item \textbf{A complete end-to-end haptic rendering system.} Custom hardware, embedded firmware, a packet-based communication protocol, and a modular host-side framework with real-time physics and OpenGL visualisation are integrated into a single bidirectional pipeline and evaluated as a unified system. This type of co-design and cross-layer evaluation is less commonly emphasised in existing low-cost academic haptic prototypes.
 	
-	\item \textbf{Demonstration of bounded contact interaction under non-negligible communication delay.} Bounded, controllable contact behaviour was observed during the tested interactions despite a measured round-trip latency of approximately 15--16\,ms --- more than an order of magnitude above the 1\,ms control timestep. This behaviour was achieved without a formal passivity guarantee through the combined use of virtual coupling, damping, snapshot-based communication, multi-threaded decoupling, and an embedded torque slew-rate limiter.
+	\item \textbf{Demonstration of bounded contact interaction under non-negligible communication delay.} Bounded, controllable contact behaviour was observed during the tested interactions despite a measured round-trip latency of approximately 15--16\,ms --- more than an order of magnitude above the nominal 1\,ms local haptic/device-loop period. This behaviour was achieved without a formal passivity guarantee through the combined use of virtual coupling, damping, snapshot-based communication, multi-threaded decoupling, and an embedded torque slew-rate limiter.
 	
 	\item \textbf{Quantitative identification of transport delay, not computation, as the dominant performance constraint.} Instrumented runtime logging isolates host-side processing latency from transport-layer delay (as quantified in Section~\ref{sec:results_host_timing}), demonstrating that the communication interface, not the host processor, is the bottleneck. This finding directly motivates communication-architecture improvements as the primary route to higher haptic stiffness in this class of system.
 	

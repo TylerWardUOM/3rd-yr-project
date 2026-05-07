@@ -128,7 +128,7 @@ This dissertation presents the design, implementation, and evaluation of a low-c
 
 The system combines embedded torque-controlled actuation, high-rate host--device communication, physics-based simulation, and proxy-based haptic rendering within a multi-threaded software architecture. The main contributions are the co-design of the complete closed-loop pipeline, quantitative separation of host-side processing from transport delay, and characterisation of USB CDC burst behaviour together with a snapshot-based mitigation strategy.
 
-Experimental evaluation demonstrates that the system achieves update rates of approximately 1 kHz with low host-side processing latency (mean 0.299\,ms, 99th percentile 2.04\,ms), but is primarily constrained by a consistent communication round-trip delay of 15.60--15.67\,ms. Simulation validation produced a fitted virtual stiffness of 489.57\,N\,m$^{-1}$ with $R^2=0.9973$, showing that the command-side force model reproduced the configured 500\,N\,m$^{-1}$ coupling stiffness. Despite the communication delay, bounded and controllable contact behaviour was observed during the tested interactions, supported by snapshot-based communication, virtual coupling with damping, actuator-side torque rate limiting at 55\,N\,m\,s$^{-1}$, force saturation at 31\,N, and watchdog fail-safe behaviour.
+Experimental evaluation demonstrates nominal 1\,kHz embedded packet generation and host-side haptic/device-loop execution with low host-side processing latency (mean 0.299\,ms, 99th percentile 2.04\,ms). However, this should not be interpreted as a true 1\,kHz end-to-end haptic loop, since force computation operated on latest-available state snapshots affected by asynchronous simulation timing and a consistent communication round-trip delay of 15.60--15.67\,ms. Simulation validation produced a fitted virtual stiffness of 489.57\,N\,m$^{-1}$ with $R^2=0.9973$, showing that the command-side force model reproduced the configured 500\,N\,m$^{-1}$ coupling stiffness. Despite the communication delay, bounded and controllable contact behaviour was observed during the tested interactions, supported by snapshot-based communication, virtual coupling with damping, actuator-side torque rate limiting at 55\,N\,m\,s$^{-1}$, force saturation at 31\,N, and watchdog fail-safe behaviour.
 
 The results show that communication latency, rather than computational performance, is the dominant factor limiting achievable haptic fidelity, imposing a practical bound on renderable virtual stiffness. Hardware limitations, including the absence of current sensing and transmission non-idealities, further constrain force accuracy and consistency.
 
@@ -378,7 +378,7 @@ This appendix records the continuing professional development activities underta
 \end{landscape}
 
 \section{Source Code and Repository Information}
-	Repository Link: \href{https://github.com/TylerWardUOM/3rd-yr-project}{3rd-yr-project} \\
+	Repository Link: \href{https://github.com/TylerWardUOM/3rd-yr-project}{https://github.com/TylerWardUOM/3rd-yr-project} \\
 	
 	Below is the README for the repo:
 	\begingroup

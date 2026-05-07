@@ -40,7 +40,7 @@ Inter-arrival jitter, measured as the standard deviation of packet inter-arrival
 	\label{fig:jitter}
 \end{figure}
 
-Overall, the serial link supported packet rates at or above 1~kHz with negligible packet loss in the tested configuration.
+Overall, the serial link supported nominal packet throughput at or above 1~kHz with negligible packet loss in the tested configuration. This result describes packet generation and throughput, rather than low-latency delivery or 1\,ms closed-loop state freshness.
 
 \subsubsection{Round-Trip Latency Results} \label{sec:results_rtt}
 Round-trip latency results were highly consistent across all tested ping intervals. For nominal transmission intervals of 1~ms, 2~ms, and 10~ms, the success rate was 100\% in all cases, with no timeouts observed over 1000 samples per test.
@@ -92,9 +92,9 @@ Analysis of host-side parsed-packet inter-arrival timing revealed significant va
 	\label{fig:raw_host_hist}
 \end{figure}
 
-Despite this non-uniform host-side processing pattern, analysis of MCU-side timestamps showed that the embedded system maintained a consistent update rate. The effective MCU period per state was approximately 1.00~ms, corresponding to an update rate of 1000~Hz, with very low variability.
+Despite this non-uniform host-side processing pattern, analysis of MCU-side timestamps showed that the embedded system generated state packets at a consistent rate. The effective MCU period per state was approximately 1.00~ms, corresponding to a nominal packet generation rate of 1000~Hz, with very low variability.
 
-Taken together, the embedded controller generated packets at a regular rate, while host-side packet timing was non-uniform. Host-side processing latency nevertheless remained low.
+Taken together, the embedded controller generated packets at a regular rate, while host-side packet timing was non-uniform. Host-side processing latency nevertheless remained low. These results separate local packet generation and host computation from the effective age of the state used for haptic feedback.
 
 \subsection{Simulation Validation Results}
 
