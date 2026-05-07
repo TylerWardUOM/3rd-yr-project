@@ -9,6 +9,7 @@ Part of the [[Implementation_Index]].
 - [[#SnapshotChannel (Latest-Value)]]
 - [[#MessageBus]]
 - [[#Named Channels in Use]]
+- [[Thread_Message_Bus_Diagram]]
 
 ---
 
@@ -61,9 +62,9 @@ API:
 - `tryRead(out, lastVersion)` — if version changed since last read, copy the current buffer into `out` and update `lastVersion`; returns false if nothing new
 
 This design means readers **never block the writer** and always get the latest complete value.  
-Multiple readers (renderer + physics) can read independently without contention.
+Multiple readers can read independently without contention.
 
-Used for: `world.snapshots` (WorldManager → Renderer + Physics).
+Used for: `world.snapshots` (simulation loop/WorldManager → Renderer + HapticEngine in the current `main.cpp` wiring).
 
 ---
 
@@ -86,14 +87,18 @@ If the same name is requested with a different type or kind, it throws.
 
 | Name                    | Type                             | Producer         | Consumer(s)                             |
 | ----------------------- | -------------------------------- | ---------------- | --------------------------------------- |
-| `world.commands`        | `Channel<WorldCommand>`          | UI/any           | `WorldManager`                          |
-| `world.snapshots`       | `SnapshotChannel<WorldSnapshot>` | `WorldManager`   | `GlSceneRenderer`, `PhysicsEnginePhysX` |
-| `haptics.tool_in`       | `Channel<ToolStateMsg>`          | (mouse fallback) | `HapticEngine`                          |
-| `haptics.snapshots`     | `Channel<HapticSnapshotMsg>`     | `HapticEngine`   | `GlSceneRenderer`                       |
+| `world.commands`        | `Channel<WorldCommand>`          | UI/render        | `WorldManager`                          |
+| `world.snapshots`       | `SnapshotChannel<WorldSnapshot>` | simulation loop  | `GlSceneRenderer`, `HapticEngine`       |
+| `haptics.tool_in`       | `Channel<ToolStateMsg>`          | mouse/debug path | viewport debug path, optional PhysX path |
+| `haptics.snapshots`     | `Channel<HapticSnapshotMsg>`     | `HapticEngine`   | `GlSceneRenderer` / viewport path       |
 | `haptics.wrenches`      | `Channel<HapticWrenchCmd>`       | `HapticEngine`   | `PhysicsEnginePhysX`                    |
 | `device.tool_in`        | `Channel<ToolStateMsg>`          | `DeviceAdapter`  | `HapticEngine`                          |
 | `device.wrench_cmd`     | `Channel<HapticWrenchCmd>`       | `HapticEngine`   | `DeviceAdapter`                         |
 | `logging.device_timing` | `Channel<DeviceTimingLogMsg>`    | `DeviceAdapter`  | log thread                              |
 | `logging.device_state`  | `Channel<DeviceStateLogMsg>`     | `DeviceAdapter`  | log thread                              |
+| `logging.sim_validation` | `Channel<SimulationValidationLogMsg>` | `HapticEngine` | log thread                              |
+| `physics.haptics_wrenches` | `Channel<HapticWrenchCmd>`    | reserved PhysX output | none active in current code        |
 
-In `main.cpp`, `haptics.tool_in` is used for a software mouse-based tool input, and `device.tool_in` is used when the physical device is connected — both feed `HapticEngine` depending on configuration.
+In the current `main.cpp`, `HapticEngine` is wired to `device.tool_in` for the physical device path. `haptics.tool_in` remains available for the software mouse/debug path, but it is not the live haptic input unless the constructor wiring is changed.
+
+See [[Thread_Message_Bus_Diagram]] for the thread-level block diagram and a payload-by-payload summary.

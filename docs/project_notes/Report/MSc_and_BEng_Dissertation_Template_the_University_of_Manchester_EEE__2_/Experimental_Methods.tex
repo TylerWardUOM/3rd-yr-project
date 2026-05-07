@@ -64,7 +64,7 @@ Testing verified that the embedded slew-rate limiter smoothed rapid command chan
 
 A watchdog timeout test verified safe system behaviour under communication loss by interrupting the incoming command stream during operation.
 
-The test verified that the watchdog triggered when command updates ceased, removed commanded torque within the timeout window, and returned the device to a passive state.
+The test verified that the watchdog triggered when command updates ceased, removed commanded torque within the timeout window, and returned the device to a zero-torque command state.
 
 \subsection{Hardware Validation} \label{sec:method_hardware_validation}
 

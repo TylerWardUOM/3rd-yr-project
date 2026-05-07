@@ -18,14 +18,20 @@ GlSceneRenderer      WorldManager          HapticEngine         DeviceAdapter
 
 ### Shared channels (from [[Messaging]])
 
+See [[Thread_Message_Bus_Diagram]] for the full thread block diagram and payload notes.
+
 | Channel name | Type | Direction |
 |---|---|---|
-| `world.commands` | Queue | UI/any → WorldManager |
-| `world.snapshots` | Snapshot | WorldManager → Renderer, Physics |
-| `haptics.tool_in` | Queue | DeviceAdapter → HapticEngine |
+| `world.commands` | Queue | UI/render → WorldManager |
+| `world.snapshots` | Snapshot | WorldManager/simulation loop → Renderer, HapticEngine |
+| `haptics.tool_in` | Queue | Viewport debug path → viewport/optional PhysX path |
+| `device.tool_in` | Queue | DeviceAdapter → HapticEngine |
 | `haptics.snapshots` | Queue | HapticEngine → Renderer |
 | `haptics.wrenches` | Queue | HapticEngine → Physics |
 | `device.wrench_cmd` | Queue | HapticEngine → DeviceAdapter |
+| `logging.device_timing` | Queue | DeviceAdapter → log thread |
+| `logging.device_state` | Queue | DeviceAdapter → log thread |
+| `logging.sim_validation` | Queue | HapticEngine → log thread |
 
 ---
 

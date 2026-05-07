@@ -7,7 +7,11 @@ contact behaviour under delay, and hardware limitations. It analyses how these f
 
 The central finding from the communication evaluation is that transport delay, measured at 15.60--15.67\,ms mean round-trip with 95th and 99th percentiles around 16.2--16.4\,ms, is the dominant limitation on closed-loop performance. In contrast, host-side processing latency remained low (mean 0.299\,ms, 99th percentile 2.04\,ms), confirming that computation is not the bottleneck for 1\,kHz haptic control.
 
-This delay bounds achievable virtual stiffness because delayed force feedback introduces phase lag and reduces stability margins. The ST-Link virtual COM interface was convenient for development, but the observed burst-like delivery pattern and low-rate packet loss suggest USB CDC buffering and host scheduling overhead that is large relative to the control timestep. Although the present work does not isolate every stage in the communication path, the evidence shows that communication architecture must be treated as a first-order design constraint alongside control and mechanical design.
+This delay imposes a fundamental limitation on achievable haptic performance, since it directly bounds the maximum renderable virtual stiffness. As delay increases, the stability margin decreases, requiring lower stiffness values to maintain stable interaction. Consequently, the system is unable to render rigid contact and instead exhibits compliant behaviour. 
+
+This behaviour is consistent with sampled-data haptic stability theory, in which communication delay introduces phase lag and can result in effective energy injection into the system, reducing stability margins \cite{colgatePassivityClassSampleddata1997}.
+
+The ST-Link virtual COM interface was convenient for development, but the observed burst-like delivery pattern and low-rate packet loss suggest USB CDC buffering and host scheduling overhead that is large relative to the control timestep. Although the present work does not isolate every stage in the communication path, the evidence shows that communication architecture must be treated as a first-order design constraint alongside control and mechanical design.
 
 \subsection{Observed Contact Behaviour Under Delay} \label{sec:discussion_stability}
 
@@ -16,9 +20,9 @@ Although communication timing was imperfect, the tested interactions remained bo
 Damping and embedded torque rate limiting were central to controllable contact. The virtual coupling introduced dissipation to counter delayed feedback effects, while the slew-rate limiter prevented abrupt torque transitions that can excite oscillations.
 Watchdog activation data provide further evidence that communication interruptions were handled safely: 259 activation events were recorded, with a mean duration of 2\,ms and torque removed during activation (Section~\ref{sec:results}).
 
-These stabilisation mechanisms relate to the passivity concerns identified by Colgate and Schenkel \cite{colgatePassivityClassSampleddata1997}, where delay and discrete-time effects can inject artificial energy into the feedback loop. However, the present implementation provides empirical evidence of bounded behaviour in the tested cases rather than a formal passivity or stability guarantee.
+These stabilisation mechanisms relate to the passivity concerns identified by Colgate and Schenkel \cite{colgatePassivityClassSampleddata1997}, where delay and discrete-time effects can inject artificial energy into the feedback loop. However, the present implementation provides empirical evidence of bounded behaviour in the tested cases rather than a formal passivity or stability guarantee. Stability is therefore achieved through practical damping and limiting mechanisms rather than theoretical guarantees, reflecting a trade-off between implementation simplicity and formal stability assurance.
 
-Together, these mechanisms enabled controllable contact without divergent motion or sustained oscillation in the tested cases, despite communication delays that would otherwise limit performance in a purely high-stiffness haptic rendering framework.
+Together, these mechanisms enabled controllable contact without divergent motion or sustained oscillation in the tested cases, despite communication delays that would otherwise limit performance in a purely high-stiffness haptic rendering framework. However, the observed contact behaviour remains fundamentally limited by communication delay. The compliant interaction observed in practice is therefore not a limitation of the force model itself, but a direct consequence of delayed feedback within the closed loop. Even with a correctly implemented virtual coupling model, rigid contact cannot be achieved under the measured latency conditions.
 
 \subsection{Hardware Limitations} \label{sec:discussion_hardware_limitations}
 The hardware results must be interpreted within clear prototype constraints. These constraints do not invalidate the architectural findings, but they do bound the achievable force fidelity and the generalisability of quantitative conclusions.
@@ -29,9 +33,11 @@ Due to the increased implementation complexity and project time constraints, a d
 
 However, the use of SimpleFOC Mini drivers without current sensing introduces an important limitation: commanded torque cannot be interpreted as a calibrated physical torque output. Torque control is therefore effectively open-loop with respect to current, making output dependent on motor and load conditions. This limitation is consistent with the command consistency result in Section~\ref{sec:results}, where the mean applied torque magnitude error was 0.134~N\,m. Consequently, the hardware evaluation should be read primarily as evidence of logged command consistency and qualitative interaction capability, rather than absolute physical force accuracy.
 
+However, this limitation does not affect the validity of the communication, timing, and control stability results, which are independent of absolute torque calibration. These aspects of system performance can therefore be interpreted with confidence despite the absence of direct force measurement.
+
 A second limitation arises from the mechanical transmission used to increase actuator torque. A GT2 timing belt reduction was implemented on the base joint to compensate for the limited torque output of the selected low-cost gimbal motors. While effective in increasing available torque, this transmission introduced non-ideal behaviour under high load conditions. During interaction with large rendered forces, the belt was observed to slip when the applied load exceeded the transmission capability. An adjustable idler pulley was introduced to increase belt tension and reduce slip; however, this did not fully eliminate the issue. Residual slip is likely due to the use of 3D-printed pulleys, which do not achieve the same tooth profile precision and engagement as manufactured components.
 
-In addition, the overall torque capability of the selected motors was insufficient for convincingly rigid contact rendering. Even without transmission slip, actuator limits imposed compliance, constraining the maximum practically renderable stiffness.
+Even without transmission slip, actuator torque limits impose an upper bound on achievable force output, which directly constrains the maximum renderable stiffness and reinforces the compliant contact behaviour observed during interaction.
 
 A further limitation arose from the failure of one actuator during development. As a result, final hardware validation used single-joint actuation with two-joint sensing. This reduced force-feedback dimensionality during physical testing, so conclusions about full 2-DOF force rendering remain provisional.
 
@@ -46,7 +52,7 @@ An additional perceptual limitation was observed at contact release: after susta
 
 This trade-off was necessary to avoid large oscillatory responses in the presence of communication delay. During informal tuning, high stiffness settings without sufficient damping or rate limiting produced oscillatory contact behaviour; the measured effects of the rate limiter and bounded contact tests are reported in Sections~\ref{sec:results_rate_limiting} and~\ref{sec:results_stable_contact_hardware}. The implemented approach therefore prioritises controllability over maximum stiffness.
 
-These findings highlight a key design consideration in practical haptic systems: obtaining bounded and controllable contact under real-world constraints often requires compromising on ideal force rendering performance.
+These results highlight a key design consideration in practical haptic systems: achieving bounded and controllable interaction under real-world constraints requires trade-offs between communication latency, actuator capability, and control design. High-fidelity force rendering cannot be improved by optimising any single subsystem in isolation, as overall performance is fundamentally limited by the interaction between these factors.
 
 \subsection{Project Management and Development Process} \label{sec:discussion_project_management}
 

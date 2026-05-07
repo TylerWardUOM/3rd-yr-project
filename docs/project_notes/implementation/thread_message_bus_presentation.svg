@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Thread and Message Bus Overview</title>
+  <desc id="desc">PowerPoint-friendly runtime-only block diagram showing active message buses between render, simulation, haptic, device, firmware, and log threads.</desc>
+
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .title { font: 700 42px Arial, Helvetica, sans-serif; fill: #172033; }
+      .subtitle { font: 400 22px Arial, Helvetica, sans-serif; fill: #546071; }
+      .thread { fill: #ffffff; stroke: #25324a; stroke-width: 3; rx: 18; }
+      .external { fill: #fff8e8; stroke: #8a6517; stroke-width: 3; rx: 18; }
+      .thread-title { font: 700 25px Arial, Helvetica, sans-serif; fill: #172033; }
+      .thread-sub { font: 400 18px Arial, Helvetica, sans-serif; fill: #546071; }
+      .queue { fill: #e7f0ff; stroke: #2b5fab; stroke-width: 2.5; rx: 10; }
+      .snapshot { fill: #e8f7ea; stroke: #2f7d3b; stroke-width: 2.5; rx: 10; }
+      .logbus { fill: #fff1df; stroke: #a46316; stroke-width: 2.5; rx: 10; }
+      .bus-title { font: 700 17px Arial, Helvetica, sans-serif; fill: #172033; }
+      .bus-sub { font: 400 14px Arial, Helvetica, sans-serif; fill: #4d5969; }
+      .arrow { fill: none; stroke: #2b3548; stroke-width: 3; marker-end: url(#arrowhead); }
+      .arrow-snapshot { fill: none; stroke: #2f7d3b; stroke-width: 3; marker-end: url(#arrowhead-green); }
+      .arrow-log { fill: none; stroke: #8c5a13; stroke-width: 3; marker-end: url(#arrowhead-log); }
+      .serial { fill: none; stroke: #6b4f12; stroke-width: 3; marker-end: url(#arrowhead-serial); marker-start: url(#arrowhead-serial-start); }
+      .legend-text { font: 400 17px Arial, Helvetica, sans-serif; fill: #384456; }
+      .note { font: 400 16px Arial, Helvetica, sans-serif; fill: #687386; }
+    </style>
+
+    <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#2b3548"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#2f7d3b"/>
+    </marker>
+    <marker id="arrowhead-log" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#8c5a13"/>
+    </marker>
+    <marker id="arrowhead-serial" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#6b4f12"/>
+    </marker>
+    <marker id="arrowhead-serial-start" markerWidth="12" markerHeight="12" refX="2" refY="6" orient="auto">
+      <path d="M 12 0 L 0 6 L 12 12 z" fill="#6b4f12"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="900"/>
+
+  <text class="title" x="80" y="76">Thread and Message Bus Overview</text>
+  <text class="subtitle" x="80" y="112">Active runtime communication paths only</text>
+
+  <!-- Thread blocks -->
+  <rect class="thread" x="80" y="190" width="280" height="125" rx="18"/>
+  <text class="thread-title" x="220" y="235" text-anchor="middle">Main / Render</text>
+  <text class="thread-sub" x="220" y="268" text-anchor="middle">OpenGL, ImGui,</text>
+  <text class="thread-sub" x="220" y="292" text-anchor="middle">viewport display</text>
+
+  <rect class="thread" x="560" y="190" width="320" height="125" rx="18"/>
+  <text class="thread-title" x="720" y="235" text-anchor="middle">Simulation</text>
+  <text class="thread-sub" x="720" y="268" text-anchor="middle">WorldManager + PhysX</text>
+  <text class="thread-sub" x="720" y="292" text-anchor="middle">object state authority</text>
+
+  <rect class="thread" x="1120" y="190" width="300" height="125" rx="18"/>
+  <text class="thread-title" x="1270" y="235" text-anchor="middle">Haptic</text>
+  <text class="thread-sub" x="1270" y="268" text-anchor="middle">1 kHz SDF contact</text>
+  <text class="thread-sub" x="1270" y="292" text-anchor="middle">virtual coupling</text>
+
+  <rect class="thread" x="1120" y="615" width="300" height="125" rx="18"/>
+  <text class="thread-title" x="1270" y="660" text-anchor="middle">Device</text>
+  <text class="thread-sub" x="1270" y="693" text-anchor="middle">1 kHz serial bridge</text>
+  <text class="thread-sub" x="1270" y="717" text-anchor="middle">FK + torque mapping</text>
+
+  <rect class="thread" x="560" y="615" width="320" height="125" rx="18"/>
+  <text class="thread-title" x="720" y="660" text-anchor="middle">Log</text>
+  <text class="thread-sub" x="720" y="693" text-anchor="middle">non-blocking drain</text>
+  <text class="thread-sub" x="720" y="717" text-anchor="middle">CSV output on shutdown</text>
+
+  <rect class="external" x="1460" y="615" width="95" height="125" rx="18"/>
+  <text class="thread-title" x="1508" y="660" text-anchor="middle">MCU</text>
+  <text class="thread-sub" x="1508" y="693" text-anchor="middle">state</text>
+  <text class="thread-sub" x="1508" y="717" text-anchor="middle">torque</text>
+
+  <!-- Bus labels -->
+  <rect class="queue" x="398" y="210" width="125" height="85" rx="10"/>
+  <text class="bus-title" x="461" y="243" text-anchor="middle">World</text>
+  <text class="bus-sub" x="461" y="267" text-anchor="middle">commands</text>
+  <text class="bus-sub" x="461" y="287" text-anchor="middle">queue</text>
+
+  <rect class="snapshot" x="590" y="72" width="540" height="78" rx="10"/>
+  <text class="bus-title" x="860" y="103" text-anchor="middle">World snapshots</text>
+  <text class="bus-sub" x="860" y="127" text-anchor="middle">latest object poses, roles, physics properties</text>
+  <text class="bus-sub" x="860" y="145" text-anchor="middle">SnapshotChannel</text>
+
+  <rect class="queue" x="925" y="210" width="150" height="85" rx="10"/>
+  <text class="bus-title" x="1000" y="243" text-anchor="middle">Object</text>
+  <text class="bus-sub" x="1000" y="267" text-anchor="middle">wrench</text>
+  <text class="bus-sub" x="1000" y="287" text-anchor="middle">queue</text>
+
+  <rect class="queue" x="560" y="388" width="345" height="78" rx="10"/>
+  <text class="bus-title" x="733" y="419" text-anchor="middle">Haptic snapshots</text>
+  <text class="bus-sub" x="733" y="443" text-anchor="middle">device pose, proxy pose, display force</text>
+  <text class="bus-sub" x="733" y="461" text-anchor="middle">queue</text>
+
+  <rect class="queue" x="1115" y="435" width="190" height="78" rx="10"/>
+  <text class="bus-title" x="1210" y="466" text-anchor="middle">Device pose</text>
+  <text class="bus-sub" x="1210" y="490" text-anchor="middle">FK tool input</text>
+  <text class="bus-sub" x="1210" y="508" text-anchor="middle">queue</text>
+
+  <rect class="queue" x="1328" y="435" width="190" height="78" rx="10"/>
+  <text class="bus-title" x="1423" y="466" text-anchor="middle">Device force</text>
+  <text class="bus-sub" x="1423" y="490" text-anchor="middle">torque command</text>
+  <text class="bus-sub" x="1423" y="508" text-anchor="middle">queue</text>
+
+  <rect class="logbus" x="920" y="650" width="170" height="82" rx="10"/>
+  <text class="bus-title" x="1005" y="682" text-anchor="middle">Logging</text>
+  <text class="bus-sub" x="1005" y="706" text-anchor="middle">timing, state,</text>
+  <text class="bus-sub" x="1005" y="724" text-anchor="middle">validation</text>
+
+  <!-- Active arrows: short, mostly orthogonal, routed through gaps -->
+  <path class="arrow" d="M 360 252 L 398 252"/>
+  <path class="arrow" d="M 523 252 L 560 252"/>
+
+  <path class="arrow-snapshot" d="M 720 190 L 720 150"/>
+  <path class="arrow-snapshot" d="M 700 150 L 700 165 L 220 165 L 220 190"/>
+  <path class="arrow-snapshot" d="M 1020 150 L 1020 165 L 1270 165 L 1270 190"/>
+
+  <path class="arrow" d="M 1120 252 L 1075 252"/>
+  <path class="arrow" d="M 925 252 L 880 252"/>
+
+  <path class="arrow" d="M 1270 315 L 1270 360 L 905 360 L 905 427"/>
+  <path class="arrow" d="M 560 427 L 220 427 L 220 315"/>
+
+  <path class="arrow" d="M 1270 615 L 1270 560 L 1210 560 L 1210 513"/>
+  <path class="arrow" d="M 1210 435 L 1210 315"/>
+
+  <path class="arrow" d="M 1270 315 L 1270 390 L 1423 390 L 1423 435"/>
+  <path class="arrow" d="M 1423 513 L 1423 677 L 1420 677"/>
+
+  <path class="serial" d="M 1420 677 L 1460 677"/>
+
+  <path class="arrow-log" d="M 1270 315 L 1270 545 L 1075 545 L 1075 650"/>
+  <path class="arrow-log" d="M 1120 690 L 1090 690"/>
+  <path class="arrow-log" d="M 920 690 L 880 690"/>
+
+  <!-- Legend -->
+  <rect class="snapshot" x="80" y="795" width="42" height="24" rx="5"/>
+  <text class="legend-text" x="137" y="814">latest-value snapshot</text>
+  <rect class="queue" x="340" y="795" width="42" height="24" rx="5"/>
+  <text class="legend-text" x="397" y="814">FIFO queue</text>
+  <rect class="logbus" x="535" y="795" width="42" height="24" rx="5"/>
+  <text class="legend-text" x="592" y="814">logging queue group</text>
+
+  <text class="note" x="80" y="855">Presentation version: unused debug paths omitted; detailed channel names and payload fields remain in Thread_Message_Bus_Diagram.md.</text>
+</svg>

@@ -36,7 +36,7 @@
 
 // Watchdog timeout injection test controls (host TX pause).
 // Set ENABLE to 1 to pause outgoing torque packets once during runtime.
-#define WATCHDOG_TX_PAUSE_ENABLE        1
+#define WATCHDOG_TX_PAUSE_ENABLE        0
 #define WATCHDOG_TX_PAUSE_START_S       10.0
 #define WATCHDOG_TX_PAUSE_MS            300.0
 

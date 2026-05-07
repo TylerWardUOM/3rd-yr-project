@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include "DeviceComms.h"
 
-constexpr bool ENABLE_MOTORS = false;
+constexpr bool ENABLE_MOTORS = true;
 
 // ===================== Motors / Drivers =====================
 
