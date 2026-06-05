@@ -102,9 +102,9 @@ Simulation validation was performed as described in Section~\ref{sec:method_simu
 
 \subsubsection{Virtual Wall Contact Response} \label{sec:results_virtual_wall}
 
-The virtual wall response was evaluated using a single-depth hold test. During contact, the rendered force magnitude had a mean value of 11.46~N and a standard deviation of 0.30~N, corresponding to a coefficient of variation of 0.026.
+The virtual wall response was evaluated using a single-depth hold test. During contact, the logged rendered-force command magnitude had a mean value of 11.46~N and a standard deviation of 0.30~N, corresponding to a coefficient of variation of 0.026.
 
-As shown in Fig.~\ref{fig:single_depth_contact}, force was generated only when the end-effector penetrated the virtual wall. When the end-effector was outside the wall, the output force remained approximately zero.
+As shown in Fig.~\ref{fig:single_depth_contact}, the rendered-force command was generated only when the end-effector penetrated the virtual wall. When the end-effector was outside the wall, the command-side force output remained approximately zero.
 
 \begin{figure}[htbp]
 	\centering
@@ -117,7 +117,7 @@ As shown in Fig.~\ref{fig:single_depth_contact}, force was generated only when t
 
 \subsubsection{Force--Penetration Characterisation} \label{sec:results_force_penetration}
 
-A multi-depth hold test was used to quantify the relationship between virtual penetration depth and logged rendered-force magnitude. A linear fit to the force--penetration data produced an effective stiffness of 489.57~N\,m$^{-1}$ with $R^2 = 0.9973$, as shown in Fig.~\ref{fig:force_penetration_fit}.
+A multi-depth hold test was used to check the command-side relationship between virtual penetration depth and logged rendered-force command magnitude. A linear fit to the command--penetration data produced an effective stiffness of 489.57~N\,m$^{-1}$ with $R^2 = 0.9973$, as shown in Fig.~\ref{fig:force_penetration_fit}. This is an internal model-consistency check, not a measurement of physical output force.
 
 This closely matches the configured virtual coupling stiffness of 500~N\,m$^{-1}$ over the tested range.
 
@@ -140,7 +140,7 @@ A deep-penetration test was also performed to verify host-side force limiting. U
 	\centering
 	\includegraphics[width=0.58\textwidth]{images/Saturated_Force_Vs_Pen.png}
 	\caption{
-		Deep-penetration simulation test showing force saturation at the host-side limit of approximately 31~N.
+		Deep-penetration simulation test showing force-command saturation at the host-side limit of approximately 31~N.
 	}
 	\label{fig:force_saturation}
 \end{figure}
@@ -206,14 +206,13 @@ Hardware validation was performed with actuator feedback enabled. Because direct
 
 During repeated motor-enabled contact with the virtual wall, penetration remained bounded. The mean penetration depth was 0.0342~m, the 95th percentile penetration depth was 0.0498~m, and the maximum penetration depth was 0.0517~m.
 
-The force--penetration relationship during this test remained approximately linear, with an effective stiffness of 490.99~N\,m$^{-1}$ and $R^2 = 0.9979$. This indicates that the rendered force command remained consistent with the virtual coupling model during closed-loop interaction.
-The fitted stiffness of 490.99~N\,m$^{-1}$ agrees closely with the simulation-only result of 489.57~N\,m$^{-1}$ in Section~\ref{sec:results_force_penetration}. This comparison is based on logged command data rather than direct force measurement.
+The command--penetration relationship during this test remained approximately linear, with an effective command-side stiffness of 490.99~N\,m$^{-1}$ and $R^2 = 0.9979$. This indicates that the rendered-force command remained internally consistent with the virtual coupling model during closed-loop interaction. The comparison with the simulation-only value of 489.57~N\,m$^{-1}$ in Section~\ref{sec:results_force_penetration} is based on logged command data rather than direct force measurement.
 
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.58\textwidth]{images/MotorON_Pen_vs_Tine.png}
 	\caption{
-		Motor-enabled repeated contact test. Maximum penetration was approximately 0.052~m; the force--penetration fit gave 490.99~N\,m$^{-1}$ with $R^2=0.9979$.
+		Motor-enabled repeated contact test. Maximum penetration was approximately 0.052~m; the command--penetration fit gave 490.99~N\,m$^{-1}$ with $R^2=0.9979$.
 	}
 	\label{fig:motor_contact_penetration}
 \end{figure}
@@ -222,7 +221,7 @@ The fitted stiffness of 490.99~N\,m$^{-1}$ agrees closely with the simulation-on
 
 Constrained motion was evaluated by bringing the end-effector into contact with the virtual wall and moving along the surface. Metrics were computed over the sustained-contact window from 20.50~s to 23.20~s, excluding entry and release transients. During this window, the mean penetration depth, computed from device--proxy separation, was 0.0492~m and the maximum penetration depth was 0.0512~m.
 
-Force decomposition showed that the rendered force was predominantly normal to the surface, with a median $|F_n|/|F_t|$ ratio of 17.72 and a 95th percentile ratio of 266.03. The sustained-contact force magnitude had a mean value of 24.68~N and a standard deviation of 0.72~N, corresponding to a coefficient of variation of 0.029.
+Force-command decomposition showed that the rendered force command was predominantly normal to the surface, with a median $|F_n|/|F_t|$ ratio of 17.72 and a 95th percentile ratio of 266.03. The sustained-contact logged force-command magnitude had a mean value of 24.68~N and a standard deviation of 0.72~N, corresponding to a coefficient of variation of 0.029.
 
 The device and proxy trajectories are shown in Fig.~\ref{fig:constrained_motion_traj}. The proxy remains aligned with the virtual wall, while the device trajectory shows bounded displacement normal to the wall and motion along the tangential direction.
 

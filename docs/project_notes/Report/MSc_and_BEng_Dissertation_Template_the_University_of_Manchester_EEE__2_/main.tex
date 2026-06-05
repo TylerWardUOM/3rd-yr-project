@@ -124,15 +124,7 @@
 
 %%%%%%%%%%%%%%%%%% ABSTRACT %%%%%%%%%%%%%%%%%%
 \begin{abstract} % put abstract here.
-This dissertation presents the design, implementation, and evaluation of a low-cost real-time haptic rendering system integrating a two-degree-of-freedom physical interface with a custom simulation and visualisation framework. The approximately £180 hardware platform is developed as an accessible alternative to commercial haptic devices while addressing the challenge of bounded bidirectional haptic interaction under practical constraints, including limited actuator capability and non-negligible communication latency.
-
-The system combines embedded torque-controlled actuation, high-rate host--device communication, physics-based simulation, and proxy-based haptic rendering within a multi-threaded software architecture. The main contributions are the co-design of the complete closed-loop pipeline, quantitative separation of host-side processing from transport delay, and characterisation of USB CDC burst behaviour together with a snapshot-based mitigation strategy.
-
-Experimental evaluation demonstrates nominal 1\,kHz embedded packet generation and host-side haptic/device-loop execution with low host-side processing latency (mean 0.299\,ms, 99th percentile 2.04\,ms). However, this should not be interpreted as a true 1\,kHz end-to-end haptic loop, since force computation operated on latest-available state snapshots affected by asynchronous simulation timing and a consistent communication round-trip delay of 15.60--15.67\,ms. Simulation validation produced a fitted virtual stiffness of 489.57\,N\,m$^{-1}$ with $R^2=0.9973$, showing that the command-side force model reproduced the configured 500\,N\,m$^{-1}$ coupling stiffness. Despite the communication delay, bounded and controllable contact behaviour was observed during the tested interactions, supported by snapshot-based communication, virtual coupling with damping, actuator-side torque rate limiting at 55\,N\,m\,s$^{-1}$, force saturation at 31\,N, and watchdog fail-safe behaviour.
-
-The results show that communication latency, rather than computational performance, is the dominant factor limiting achievable haptic fidelity, imposing a practical bound on renderable virtual stiffness. Hardware limitations, including the absence of current sensing and transmission non-idealities, further constrain force accuracy and consistency.
-
-Overall, the work demonstrates bounded and usable real-time haptic interaction on a low-cost platform, while highlighting the central role of communication architecture and control design in determining system performance. Final hardware validation was limited to single-axis force feedback due to actuator failure, so full two-degree-of-freedom force-rendering conclusions remain provisional. The findings provide insight into the trade-offs between cost, contact behaviour, responsiveness, and fidelity in practical haptic systems, and identify clear directions for future improvement.
+This dissertation presents the design, implementation, and evaluation of a low-cost haptic rendering system that combines a two-degree-of-freedom physical interface with custom simulation and visualisation software. The work addresses bounded bidirectional haptic interaction on a low-cost platform where actuator capability, communication delay, and transmission behaviour limit achievable fidelity. The system integrates embedded torque-command actuation, host-device communication, physics-based simulation, and proxy-based haptic rendering in a multi-threaded architecture. Although selected subsystems achieved nominal one kilohertz operation with low host-side latency, a round-trip communication delay of approximately 16 ms prevented true end-to-end kilohertz interaction. Simulation tests showed the command-side force model reproduced configured virtual coupling stiffness within five per cent; motor-enabled tests showed bounded contact behaviour in tested interactions. Final physical validation was limited to single-axis force feedback following actuator failure. No calibrated force sensing or current measurement was available. The main finding is that communication architecture and actuator capability, rather than host computation alone, determine achievable stiffness, responsiveness, and force fidelity on this low-cost prototype.
 \end{abstract}%
 \clearpage
 
@@ -228,7 +220,7 @@ Overall, the work demonstrates bounded and usable real-time haptic interaction o
 This appendix shows the final project schedule and the main development phases completed during the project.
 \begin{figure}[H]
 	\centering
-	\includegraphics[angle=0,height=0.80\textheight]{"images/gantt"}
+	\includegraphics[angle=0,height=0.75\textheight]{"images/gantt"}
 	\caption{Final Gantt chart showing the execution of the project over time. The chart reflects the iterative development process, including overlapping software and hardware work, as well as deviations from the original plan due to motor driver integration issues, hardware delays, and subsystem integration challenges.}
 	\label{fig:gantt}
 \end{figure}
@@ -368,7 +360,7 @@ This appendix records the continuing professional development activities underta
 	\rotatebox{0}{%
 		\begin{minipage}{0.95\textheight}
 			\centering
-			\includegraphics[height=0.80\textheight]{"images/V2 Base Drawing v1"}
+			\includegraphics[height=0.75\textheight]{"images/V2 Base Drawing v1"}
 			
 			\captionof{figure}{CAD assembly of the 2-DOF haptic interface illustrating link geometry, actuator configuration, belt-driven base joint, and encoder placement. Link dimensions are annotated to define the kinematic model used for forward kinematics and Jacobian-based torque mapping.}
 			\label{fig:v2-base-drawing-v1}
@@ -378,20 +370,18 @@ This appendix records the continuing professional development activities underta
 \end{landscape}
 
 \section{Source Code and Repository Information}
-	Repository Link: \href{https://github.com/TylerWardUOM/3rd-yr-project}{https://github.com/TylerWardUOM/3rd-yr-project} \\
-	
-	Below is the README for the repo:
-	\begingroup
-	\markdownSetup{
-		renderers = {
-			headingOne = {\section*{#1}},
-			headingTwo = {\subsection*{#1}},
-			headingThree = {\subsubsection*{#1}},
-			headingFour = {\paragraph*{#1}}
-		}
-	}
-	\markdownInput{README.md}
-	\endgroup
+	The project source code is available from the GitHub repository:
+	\begin{center}
+		\href{https://github.com/TylerWardUOM/3rd-yr-project}{\texttt{https://github.com/TylerWardUOM/3rd-yr-project}}
+	\end{center}
+
+	This repository contains the software, firmware, analysis scripts, and documentation used to develop and evaluate the low-cost haptic rendering prototype. The main application is a C++17 Windows program built with CMake. It integrates OpenGL/ImGui visualisation, PhysX-based simulation, proxy-based haptic rendering, serial communication, runtime logging, and torque-command generation for the physical device. The firmware directory contains the microcontroller code for encoder reading, packet generation, torque-command reception, actuator command output, slew-rate limiting, and watchdog safety behaviour.
+
+	The repository is organised around the main development artefacts rather than only the final report. The \texttt{src/} and \texttt{include/} directories contain the host-side application, including the renderer, physics engine wrapper, haptic engine, message-bus channels, serial link, and device adapter. The \texttt{firmware/} directory contains the embedded controller implementation. The \texttt{data/} and analysis-related files contain experimental logs and scripts used to generate the communication, timing, safety, and haptic interaction results reported in the dissertation. The report source, figures, references, appendices, and supporting project documentation are stored in the report documentation folder.
+
+	Two executable entry points are most relevant. The main haptic application runs the integrated visualisation, physics, haptic rendering, and device-control pipeline. The \texttt{serial\_tests} utility performs standalone packet-rate, integrity, and round-trip latency tests using the same packet framing and parsing approach as the main application. These tools were used to separate host-side processing time from transport delay and to characterise the burst-like delivery observed through the USB virtual-COM communication path.
+
+	The repository should be read as supporting evidence for the design and evaluation described in the report. It documents the implemented architecture, the runtime logging framework, the experimental test utilities, and the limitations of the prototype. In particular, the code records that final motor-enabled validation used single-axis force feedback after actuator failure, and that logged force-command and torque-command data were used because no calibrated physical force sensor or phase-current measurement was available.
 \end{uomappendix}
 
 

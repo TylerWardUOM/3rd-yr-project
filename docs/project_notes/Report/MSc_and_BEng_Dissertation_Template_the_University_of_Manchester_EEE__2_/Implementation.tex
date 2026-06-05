@@ -1,6 +1,4 @@
-This section describes the realised system design, covering the physical device, embedded control and communication, and the host-side software stack used for rendering, simulation, and force feedback.
-
-The system prioritises bounded real-time interaction, modularity, and reproducibility within the constraints of a low-cost prototype. Because haptic interaction is sensitive to update rate and end-to-end latency (Section~\ref{sec:Literature Review}), time-critical embedded control is separated from asynchronous host-side simulation, rendering, and logging.
+This section describes how the haptic device, embedded firmware, communication layer, and host software were developed into the final integrated prototype. The system prioritises bounded real-time interaction, modularity, and reproducibility within the constraints of a low-cost build, with time-critical embedded control separated from asynchronous host-side simulation, rendering, and logging.
 
 \subsection{System Overview}
 
@@ -44,13 +42,17 @@ Time-critical control tasks are executed on the embedded system at high frequenc
 
 The physical interface is a planar two degree-of-freedom serial mechanism designed for low-cost fabrication and straightforward maintenance. A two-link layout was selected to provide a usable workspace while keeping actuator count, wiring complexity, and control overhead manageable.
 
-The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208)\cite{tmotor_gb2208}. The base joint incorporates a 3:1 GT2 belt reduction stage to increase available output torque, while the elbow joint is direct-drive to minimise mechanical complexity.
+The hardware was developed iteratively rather than as a single final build. The first design established the planar two-link geometry, approximate 150\,mm link lengths, and encoder-on-joint measurement strategy. Integration work then exposed three constraints that shaped the final device: low-friction backdrivable joints, more base-joint torque than direct drive could provide, and a motor-control route that could be debugged reliably within the project timescale.
+
+These constraints led to the final mechanical arrangement shown in Fig.~\ref{fig:final_device} and Appendix~\ref{app:mechanical_design}. The structure is primarily 3D printed, with each joint supported by steel shafts and rolling element bearings to reduce friction and improve backdrivability. Actuation is provided by brushless gimbal motors (T-Motor GB2208)\cite{tmotor_gb2208}. The base joint uses a 3:1 GT2 belt reduction stage to increase available output torque, while the elbow joint remains direct-drive to minimise inertia, backlash, and assembly complexity.
 
 An adjustable idler pulley is integrated into the belt stage to enable tensioning and reduce backlash. Despite this, non-ideal behaviour such as compliance and occasional slip under high load was observed, as discussed in Section~\ref{sec:discussion_hardware_limitations}.
 
 To ensure accurate joint angle measurement, absolute magnetic encoders (AS5048)\cite{ams_as5048_2018} are mounted directly on the joint axes and interfaced via SPI. This is particularly important for the belt-driven joint, where transmission compliance would otherwise introduce discrepancies between motor-side and output angles.
 
-For the belt-driven actuator, an additional AS5600 magnetic encoder\cite{ams_as5600_2018} is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement.
+For the belt-driven actuator, an additional AS5600 magnetic encoder\cite{ams_as5600_2018} is mounted on the motor shaft and interfaced via I\textsuperscript{2}C. This provides rotor position feedback required for field-oriented control (FOC), while the joint encoder provides accurate output angle measurement. A practical development challenge was positioning the rear motor-shaft encoder close enough to the magnet for reliable readings while still leaving a rigid fastening path between the motor and printed body; this affected the motor mount geometry and required the encoder support to be integrated into the structural bracket rather than added as a separate part.
+
+Motor-driver development also changed during the project. The initial approach targeted STM32 B-G431-ESC1 drivers because they offered integrated power electronics and current sensing for more quantitative torque control. In practice, combining these drivers with the selected encoder arrangement proved unreliable, so the design pivoted to SimpleFOC Mini driver modules controlled from the Nucleo board. This reduced force-control fidelity because phase current was no longer measured directly, but produced a more robust embedded platform and preserved the main integration, communication, and safety objectives.
 
 A complete mechanical assembly, including component layout and link geometry, is provided in Appendix~\ref{app:mechanical_design}.
 The assembled prototype is shown in Fig.~\ref{fig:final_device}, illustrating the realised mechanical structure and actuator configuration.
@@ -92,15 +94,15 @@ On the host, serial I/O and protocol handling are split across two layers: \text
 
 The device adapter runs in a dedicated nominal 1\,kHz loop. At each cycle, it retains the newest valid state packet, publishes tool pose and velocity to the haptic engine, consumes the latest wrench command, computes joint torques using the planar Jacobian transpose relation \(\tau = J^{T}F\), and transmits the resulting torque command packet.
 
-This ensures that control decisions are based on the most recent state available to the host, avoiding backlog-induced latency and improving responsiveness under high update rates. However, the newest available packet may still be delayed by the transport layer, so this mechanism mitigates queued stale samples rather than eliminating communication latency.
+This keeps control decisions based on the newest state available to the host and avoids queueing stale samples in the device path.
 
 \subsection{Host Software Architecture}
 
-The host application is implemented as a modular multi-threaded C++ system. Major responsibilities are partitioned into the renderer, world manager, physics engine, haptic engine, and device adapter. %Startup composition occurs in \texttt{main.cpp}, where channels are created, subsystems are constructed, and execution threads are launched.
+The host application is implemented as a modular multi-threaded C++ system, split into the renderer, world manager, physics engine, haptic engine, and device adapter. This separates user-interface rendering, scene ownership, physics stepping, haptic force computation, and serial device handling, rather than driving the whole application from a single monolithic update loop.
 
-Inter-thread communication is implemented through a message bus with two channel types: queue channels for discrete commands and events (e.g., world edits, wrench messages), and snapshot channels for latest-value shared state (e.g., world snapshots).
+Inter-thread communication uses a message bus with channel types chosen to match the data being transferred. Queue channels preserve ordered commands and events, such as world edits and wrench messages. Snapshot channels store only the newest value for continuously updated state, such as tool pose and world snapshots, so high-rate loops consume current data without building a backlog of obsolete samples.
 
-This separation allows command traffic to be drained in batches while continuous state can be accessed with low latency. Snapshot channels are used specifically to decouple the haptic loop from non-uniform packet delivery: when serial packets arrive in bursts, the loop consumes the newest state rather than accumulating stale samples in the feedback path.
+Subsystems exchange complete message objects rather than shared mutable structures. The world manager owns scene mutation, the device adapter owns serial parsing and torque-packet construction, and the haptic engine consumes snapshots and publishes force commands. These ownership boundaries make the thread responsibilities explicit and reduce cross-subsystem coupling during integration.
 
 \subsubsection{World and Rendering Subsystems}
 
@@ -110,7 +112,7 @@ Rendering is handled by an OpenGL subsystem running on the main thread. Each fra
 
 \subsubsection{Haptic Rendering Engine}
 
-The haptic engine executes at a nominal 1\,kHz in a dedicated loop. At each cycle, it reads the latest world snapshot and newest tool state, performs contact queries, computes force output, and publishes results to device, physics, and visualisation channels. This rate refers to the local haptic rendering computation cadence. It does not imply that the world state, device state, or returned force feedback are refreshed end-to-end every 1\,ms, since the loop operates on latest-available snapshots that may be older due to communication latency and asynchronous simulation timing.
+The haptic engine executes at a nominal 1\,kHz in a dedicated loop. At each cycle, it reads the latest world snapshot and newest tool state, performs contact queries, computes force output, and publishes results to device, physics, and visualisation channels. This rate refers to the local haptic rendering computation cadence, with end-to-end freshness limited by communication and asynchronous simulation timing.
 
 Contact detection is performed using signed distance field (SDF) queries, with penetration depth and surface normals obtained from the local distance field gradient~\cite{ericsonRealTimeCollisionDetection2004}. For each candidate object, the tool position is transformed into object-local coordinates and queried against that object's SDF. If penetration is detected (negative signed distance), the tool point is projected to the surface to define the proxy position; otherwise, the proxy follows the tool in free space.
 
@@ -118,13 +120,13 @@ Force output is generated using a proxy-based virtual coupling model, in which a
 \[
 \mathbf{F} = K\left(\mathbf{x}_{p}-\mathbf{x}_{t}\right) + D\left(\mathbf{v}_{p}-\mathbf{v}_{t}\right)
 \]
-where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and \(D = 0.7\cdot 2\sqrt{KM}\). The stiffness was selected as a conservative value for the measured communication delay while still producing clearly perceptible contact forces; the fitted stiffness reported in Section~\ref{sec:results_force_penetration} and the observed contact behaviour discussed in Section~\ref{sec:discussion_stability} are used to evaluate this choice.
+where \(\mathbf{x}_{p},\mathbf{x}_{t}\) are proxy and tool positions and \(\mathbf{v}_{p},\mathbf{v}_{t}\) are corresponding velocities. In the implemented configuration, \(K=500\,\mathrm{N\,m^{-1}}\), \(M=0.02\,\mathrm{kg}\), and \(D = 0.7\cdot 2\sqrt{KM}\). The stiffness was selected as a conservative value for the measured communication delay while still producing clearly perceptible contact feedback; Section~\ref{sec:results_force_penetration} checks command-side model consistency, while Section~\ref{sec:discussion_stability} discusses the resulting contact behaviour.
 
 This follows the standard virtual coupling formulation, although the present implementation does not explicitly enforce passivity-based design constraints. In particular, the proxy state is recomputed directly from the current tool position and contact geometry at each timestep, rather than being evolved as a persistent constrained dynamic state. As a result, the implementation captures the force-generation behaviour of virtual coupling but does not realise the full passivity-based formulation described by Adams and Hannaford, nor the continuously evolved contact proxy used in constraint-based haptic rendering approaches \cite{zillesConstraintbasedGodobjectMethod1995,ruspiniHapticDisplayComplex1997,salisburyHapticRenderingSurfaces1997}.
 
-Accordingly, the force command is generated using a deliberately conservative coupling configuration, with damping and actuator-side limiting used to reduce abrupt force changes during contact transitions. The observed behaviour of this design is discussed in Section~\ref{sec:discussion_stability}.
+Force commands are therefore generated using a conservative coupling configuration, with damping and actuator-side limiting used to reduce abrupt changes during contact transitions.
 
-To maintain safe interaction, force magnitude is clamped to a maximum of 31\,N before publication.
+To maintain safe interaction, the rendered-force command magnitude is clamped to a maximum of 31\,N before publication.
 
 \subsubsection{Physics Simulation Integration}
 

@@ -6,9 +6,13 @@
 
 ## Introduction
 
-This project implements a real-time haptic rendering system that allows a user to physically feel virtual 3D objects through a custom-built 2-DOF planar robot arm. The system tracks the position of the device's end-effector and uses that as the position of a virtual "tool" inside a simulated 3D environment. When the tool touches a virtual object, a force is calculated and fed back to the physical device — giving the user the sensation of actually pushing against something.
+This project implements a real-time haptic rendering system for testing virtual contact, haptic rendering, and hardware communication on a custom-built 2-DOF planar robot arm. The system tracks the position of the device's end-effector and uses that as the position of a virtual "tool" inside a simulated 3D environment. When the tool touches a virtual object, a rendered-force command is calculated and mapped to actuator torque commands so the physical prototype can provide contact feedback in the tested configuration.
 
-The software is written entirely in C++17 and runs on Windows. It brings together four real-time concerns — rendering, physics simulation, haptic force computation, and hardware communication — each running on its own thread and communicating through a shared message-bus. The rendering thread provides a live OpenGL 3D view of the scene with an ImGui control panel. The physics thread runs NVIDIA PhysX at 240 Hz for rigid-body dynamics. The haptic thread runs at 1 kHz to compute contact forces using Signed Distance Functions (SDFs). The device thread also runs at 1 kHz, reading joint angles from the robot over serial and sending torque commands back.
+The software is written entirely in C++17 and runs on Windows. It brings together four real-time concerns — rendering, physics simulation, haptic force computation, and hardware communication — each running on its own thread and communicating through a shared message-bus. The rendering thread provides a live OpenGL 3D view of the scene with an ImGui control panel. The physics thread runs NVIDIA PhysX at 240 Hz for rigid-body dynamics. The haptic and device threads target nominal 1 kHz local update rates for contact computation, serial parsing, forward kinematics, and torque-command output. This is a local-loop timing target, not a claim of 1 ms end-to-end physical haptic feedback.
+
+### Prototype Limitations
+
+The physical device should be treated as a low-cost prototype rather than a calibrated commercial haptic interface. Final motor-enabled validation used single-axis force feedback because one actuator failed during development, although both joints remained available for position sensing. The hardware has no direct force sensor or phase-current measurement, so logged force-command and stiffness results describe rendered-force commands and torque-command behaviour rather than calibrated physical output force. Communication delay and burst-like USB serial delivery also mean that the system does not provide a true 1 kHz end-to-end haptic loop.
 
 ---
 
@@ -21,8 +25,8 @@ The software is written entirely in C++17 and runs on Windows. It brings togethe
 |  Main Thread      Sim Thread        Haptic Thread   Device Thread  |
 |  -----------      ----------        ------------    -------------  |
 |  GlSceneRenderer  WorldManager      HapticEngine    DeviceAdapter  |
-|  + ImGui UI       PhysicsEnginePhysX   (1 kHz)      SerialLink     |
-|  + Camera         (30 Hz / 240 Hz sub-step)          (1 kHz)       |
+|  + ImGui UI       PhysicsEnginePhysX   (~1 kHz local) SerialLink   |
+|  + Camera         (30 Hz / 240 Hz sub-step)          (~1 kHz local)|
 +--------------------------------------------------------------------+
 
 Message Bus channels:
@@ -83,7 +87,7 @@ This pulls in the vendored `imgui` and `glm` libraries automatically.
 
 Open `CMakeLists.txt` and change this line to match where your vcpkg is installed:
 
-```cmake
+```
 set(VCPKG_INSTALLED_DIR "C:/Users/<you>/vcpkg/installed/x64-windows")
 ```
 
@@ -115,7 +119,7 @@ The application will run without the hardware connected; it will fall back to mo
 
 ### Main Application
 
-```powershell
+```
 cd build\Release
 ./app.exe
 ```
@@ -190,7 +194,7 @@ Parameters used in this implementation:
 | K | 500 N/m | Spring stiffness |
 | M | 0.02 kg | Virtual mass (for critical damping calc) |
 | D | 0.7 x 2 sqrt(KM) approx. 8.9 N s/m | ~70% of critical damping |
-| F_max | 31 N | Hard force clamp for device safety |
+| F_max | 31 N | Host-side rendered-force command clamp |
 
 The equal and opposite reaction force (-F) is applied as an impulse to the corresponding PhysX rigid body each physics step, so virtual objects can be pushed around by the device.
 
@@ -227,8 +231,8 @@ These torques are packed into a `TorqueCommandPacket` (with header `0xAA 0x55` a
 |---|---|---|
 | Main | OpenGL render loop, ImGui, camera | Display refresh |
 | Simulation | WorldManager step, PhysX step | ~30 Hz (1/240 s substeps) |
-| Haptics | SDF contact search, proxy update, force computation | 1 kHz |
-| Device | Serial read/parse, FK, torque send | 1 kHz |
+| Haptics | SDF contact search, proxy update, force-command computation | Nominal 1 kHz local loop |
+| Device | Serial read/parse, FK, torque-command send | Nominal 1 kHz local loop |
 
 All inter-thread communication uses lock-free message bus channels (`Channel<T>` for queues, `SnapshotChannel<T>` for latest-value reads).
 
